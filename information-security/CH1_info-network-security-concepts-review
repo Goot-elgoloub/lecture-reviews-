@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مرجع المراجعة | Information &amp; Network Security Concepts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e16;
+    --bg-alt:#0d1220;
+    --card:#121a2b;
+    --card2:#0f1524;
+    --border:#212b40;
+    --border-soft:#1a2336;
+    --text:#e7ecf5;
+    --text-dim:#93a1bd;
+    --text-faint:#5c6a89;
+    --accent:#38bdf8;
+    --accent-soft:#38bdf822;
+
+    --c-conf:#38bdf8;
+    --c-integ:#34d399;
+    --c-avail:#fbbf24;
+    --c-auth:#a78bfa;
+    --c-account:#94a3b8;
+    --c-passive:#38bdf8;
+    --c-active:#f87171;
+
+    --ok:#34d399;
+    --bad:#f87171;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, #12203a55, transparent 60%),
+      radial-gradient(900px 500px at -10% 20%, #1a123655, transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Tajawal', sans-serif;
+    line-height:1.75;
+  }
+  html[dir="ltr"] body{font-family:'Fira Code','Tajawal',sans-serif;}
+  code, .mono, .eq, .term-en{
+    font-family:'Fira Code', monospace;
+    direction:ltr;
+    unicode-bidi:isolate;
+  }
+  a{color:var(--accent);}
+  h1,h2,h3,h4{font-weight:800; margin:0 0 .5em;}
+  p{margin:0 0 1em; color:var(--text);}
+  .container{max-width:1080px; margin:0 auto; padding:0 20px;}
+
+  .lang-toggle{
+    position:fixed; top:16px; z-index:200;
+    inset-inline-end:16px;
+    display:flex; background:#0d1524ee; border:1px solid var(--border);
+    border-radius:999px; padding:4px; backdrop-filter:blur(8px);
+    box-shadow:0 4px 18px #00000055;
+  }
+  .lang-toggle button{
+    border:none; background:transparent; color:var(--text-dim); font-family:'Fira Code',monospace;
+    font-weight:600; font-size:.78rem; padding:7px 14px; border-radius:999px; cursor:pointer; transition:.2s;
+  }
+  .lang-toggle button.active{background:var(--accent); color:#04121c;}
+
+  .hero{position:relative; padding:70px 0 50px; overflow:hidden; border-bottom:1px solid var(--border-soft);}
+  .hero-bg-curve{position:absolute; inset:0; opacity:.3; pointer-events:none;}
+  .hero .kicker{
+    display:inline-block; font-family:'Fira Code',monospace; font-size:.78rem;
+    letter-spacing:.12em; color:var(--accent); background:var(--accent-soft);
+    border:1px solid #38bdf844; padding:5px 12px; border-radius:999px; margin-bottom:18px;
+  }
+  .hero h1{font-size:2.4rem; line-height:1.25; max-width:780px;}
+  .hero h1 .glow{color:var(--accent); text-shadow:0 0 30px #38bdf866;}
+  .hero p.sub{font-size:1.08rem; color:var(--text-dim); max-width:640px;}
+  @media(max-width:640px){ .hero h1{font-size:1.7rem;} .lang-toggle{top:10px;} }
+
+  .nav-wrap{position:sticky; top:0; z-index:50; background:#0a0e16dd; backdrop-filter:blur(10px); border-bottom:1px solid var(--border-soft);}
+  .nav-scroll{display:flex; gap:6px; overflow-x:auto; padding:10px 20px; max-width:1080px; margin:0 auto; scrollbar-width:none;}
+  .nav-scroll::-webkit-scrollbar{display:none;}
+  .nav-scroll a{
+    flex:none; white-space:nowrap; font-size:.86rem; font-weight:500;
+    color:var(--text-dim); text-decoration:none; padding:8px 14px; border-radius:999px; border:1px solid transparent; transition:.2s;
+  }
+  .nav-scroll a:hover{color:var(--text); border-color:var(--border);}
+  .nav-scroll a.active{color:#04121c; background:var(--accent); font-weight:700;}
+
+  section{padding:56px 0; border-bottom:1px solid var(--border-soft);}
+  section:last-of-type{border-bottom:none;}
+  .eyebrow{font-family:'Fira Code',monospace; font-size:.75rem; color:var(--accent); letter-spacing:.1em; margin-bottom:8px; display:block;}
+  section > .container > h2{font-size:1.7rem; margin-bottom:.25em;}
+  section > .container > p.lead{color:var(--text-dim); max-width:720px; margin-bottom:2em; font-size:1.02rem;}
+
+  .grid{display:grid; gap:16px;}
+  .grid-2{grid-template-columns:repeat(2,1fr);}
+  .grid-3{grid-template-columns:repeat(3,1fr);}
+  .grid-4{grid-template-columns:repeat(4,1fr);}
+  .grid-5{grid-template-columns:repeat(5,1fr);}
+  @media(max-width:860px){ .grid-2,.grid-3,.grid-4,.grid-5{grid-template-columns:1fr;} }
+
+  .card{background:linear-gradient(180deg, var(--card), var(--card2)); border:1px solid var(--border); border-radius:var(--radius); padding:22px 22px;}
+  .card h3{font-size:1.12rem; margin-bottom:.4em;}
+  .card h3 .num{color:var(--accent); font-family:'Fira Code',monospace; margin-left:6px;}
+  .card.tinted{border-color:#38bdf844; background:linear-gradient(180deg,#0f1a2c,#0d1524);}
+
+  .badge{display:inline-flex; align-items:center; gap:6px; font-size:.72rem; font-weight:700; font-family:'Fira Code',monospace; padding:3px 10px; border-radius:999px; letter-spacing:.03em;}
+  .b-conf{color:var(--c-conf); background:#38bdf81a; border:1px solid #38bdf855;}
+  .b-integ{color:var(--c-integ); background:#34d3991a; border:1px solid #34d39955;}
+  .b-avail{color:var(--c-avail); background:#fbbf241a; border:1px solid #fbbf2455;}
+  .b-auth{color:var(--c-auth); background:#a78bfa1a; border:1px solid #a78bfa55;}
+  .b-account{color:var(--c-account); background:#94a3b81a; border:1px solid #94a3b855;}
+  .b-passive{color:var(--c-passive); background:#38bdf81a; border:1px solid #38bdf855;}
+  .b-active{color:var(--c-active); background:#f871711a; border:1px solid #f8717155;}
+
+  pre{background:#080b12; border:1px solid var(--border); border-radius:10px; padding:16px 18px; overflow-x:auto; direction:ltr; text-align:left; font-family:'Fira Code',monospace; font-size:.88rem; color:#c9e6ff; margin:12px 0;}
+  .line-note{display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-top:1px dashed var(--border-soft);}
+  .line-note:first-child{border-top:none;}
+  .line-note .ln{font-family:'Fira Code',monospace; font-size:.78rem; color:var(--accent); background:#0d1524; border:1px solid var(--border); border-radius:6px; padding:2px 8px; flex:none; margin-top:2px;}
+
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:.95rem;}
+  th,td{padding:11px 12px; text-align:start; border-bottom:1px solid var(--border-soft);}
+  th{color:var(--accent); font-family:'Fira Code',monospace; font-size:.78rem; letter-spacing:.04em; border-bottom:1px solid var(--border);}
+  tr:hover td{background:#ffffff05;}
+  td .mono{color:#c9e6ff;}
+
+  .note{border-radius:10px; border:1px solid #fbbf2444; background:#fbbf240d; padding:14px 16px; font-size:.95rem; color:#f3e2b0;}
+  .note.good{border-color:#34d39944; background:#34d3990d; color:#bdf3da;}
+  .note.info{border-color:#38bdf844; background:#38bdf80d; color:#bfe6fb;}
+  .note.warn{border-color:#f8717144; background:#f871710d; color:#fbd7d7;}
+
+  .diagram-block{border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:22px; background:var(--card);}
+  .diagram-head{padding:16px 20px; border-bottom:1px solid var(--border-soft); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;}
+  .diagram-head h3{margin:0;}
+  .diagram-body{padding:20px;}
+
+  .flow-box{border:1px solid var(--border); background:#0d1524; border-radius:10px; padding:12px 16px; text-align:center; font-weight:700; font-family:'Fira Code',monospace; font-size:.9rem;}
+  .flow-arrow{display:flex; align-items:center; justify-content:center; font-size:1.4rem; color:var(--text-faint);}
+  .panel-diagram{border:1px solid var(--border-soft); border-radius:10px; padding:16px; background:#080b12; margin-bottom:10px;}
+  .panel-label{font-family:'Fira Code',monospace; font-size:.78rem; color:var(--text-faint); margin-top:8px; text-align:center;}
+
+  .level-tabs{display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;}
+  .level-tab{padding:9px 16px; border-radius:10px; border:1px solid var(--border); background:var(--card2); color:var(--text-dim); cursor:pointer; font-family:'Tajawal',sans-serif; font-weight:700; font-size:.9rem;}
+  .level-tab.active{background:var(--accent); color:#04121c; border-color:var(--accent);}
+  .level-panel{display:none;}
+  .level-panel.active{display:block;}
+  .quickref-list{list-style:none; padding:0; margin:0; font-family:'Fira Code',monospace; direction:ltr; text-align:left;}
+  .quickref-list li{padding:10px 14px; margin-bottom:6px; border-radius:8px; background:#0d1524; border:1px solid var(--border-soft); font-size:.86rem; color:#d7e6f7;}
+
+  .quiz-progress{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 18px; gap:14px; flex-wrap:wrap;}
+  .quiz-score{font-family:'Fira Code',monospace; font-weight:600; color:var(--accent); font-size:1.05rem;}
+  .quiz-bar{flex:1; min-width:140px; height:8px; border-radius:99px; background:#1a2336; overflow:hidden;}
+  .quiz-bar-fill{height:100%; width:0%; background:linear-gradient(90deg,#38bdf8,#34d399); transition:width .3s;}
+
+  .q-card{border:1px solid var(--border); background:var(--card); border-radius:var(--radius); padding:20px 22px; margin-bottom:16px;}
+  .q-card .q-meta{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:10px; flex-wrap:wrap;}
+  .q-type-tag{font-family:'Fira Code',monospace; font-size:.7rem; color:var(--text-faint); border:1px solid var(--border); padding:2px 9px; border-radius:999px;}
+  .q-prompt{font-weight:700; font-size:1.02rem; margin-bottom:14px;}
+  .q-prompt code{background:#0d1524; padding:1px 6px; border-radius:5px; font-size:.9em;}
+  .opt-list{display:flex; flex-direction:column; gap:8px;}
+  .opt{display:flex; align-items:center; gap:10px; padding:11px 14px; border-radius:10px; border:1px solid var(--border); background:var(--card2); cursor:pointer; transition:.15s; font-size:.95rem;}
+  .opt:hover{border-color:#38bdf866;}
+  .opt input{accent-color:var(--accent); width:16px; height:16px; flex:none;}
+  .opt.correct-flash{border-color:var(--ok); background:#34d3991a;}
+  .opt.wrong-flash{border-color:var(--bad); background:#f871711a;}
+  .fill-input{width:100%; max-width:320px; background:#0d1524; border:1px solid var(--border); border-radius:9px; padding:11px 14px; color:var(--text); font-family:'Fira Code',monospace; font-size:.95rem; direction:ltr; text-align:left;}
+  .fill-input:focus{outline:none; border-color:var(--accent);}
+  .check-btn{margin-top:14px; background:var(--accent); color:#04121c; border:none; padding:9px 20px; border-radius:9px; font-weight:700; cursor:pointer; font-family:'Tajawal',sans-serif; font-size:.9rem;}
+  .check-btn:disabled{opacity:.5; cursor:default;}
+  .check-btn:hover:not(:disabled){filter:brightness(1.1);}
+  .q-feedback{margin-top:12px; padding:12px 14px; border-radius:10px; font-size:.9rem; display:none;}
+  .q-feedback.show{display:block;}
+  .q-feedback.correct{background:#34d3991a; border:1px solid #34d39955; color:#c8f5e2;}
+  .q-feedback.incorrect{background:#f871711a; border:1px solid #f8717155; color:#fbd7d7;}
+  .final-score{text-align:center; padding:30px 20px; border-radius:var(--radius); border:1px solid var(--accent); background:linear-gradient(180deg,#0f1a2c,#0d1524); margin-top:20px; display:none;}
+  .final-score.show{display:block;}
+  .final-score .big{font-size:2.4rem; font-weight:800; color:var(--accent); font-family:'Fira Code',monospace;}
+  .reset-btn{margin-top:14px; background:transparent; border:1px solid var(--border); color:var(--text); padding:9px 20px; border-radius:9px; cursor:pointer; font-family:'Tajawal',sans-serif; font-weight:700;}
+
+  .timeline{position:relative; padding-inline-start:26px; border-inline-start:2px solid var(--border);}
+  .t-item{position:relative; padding-bottom:26px;}
+  .t-item:last-child{padding-bottom:0;}
+  .t-item::before{content:''; position:absolute; inset-inline-start:-32px; top:4px; width:12px; height:12px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 4px #38bdf822;}
+  .t-time{font-family:'Fira Code',monospace; color:var(--accent); font-size:.82rem; margin-bottom:2px;}
+  .t-title{font-weight:700; margin-bottom:3px;}
+
+  .tip-item, .mistake-item{display:flex; gap:12px; padding:14px 0; border-top:1px solid var(--border-soft);}
+  .tip-item:first-child, .mistake-item:first-child{border-top:none;}
+  .tip-icon, .mistake-icon{flex:none; font-size:1.2rem; line-height:1.4;}
+
+  footer{padding:30px 0 60px; text-align:center; color:var(--text-faint); font-size:.85rem;}
+</style>
+</head>
+<body>
+
+<div class="lang-toggle">
+  <button id="btnAr" class="active" onclick="setLang('ar')">AR · عربي</button>
+  <button id="btnEn" onclick="setLang('en')">EN</button>
+</div>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <svg class="hero-bg-curve" viewBox="0 0 1080 260" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M540,20 L860,150 L740,230 L340,230 L220,150 Z" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+    <path d="M540,60 L800,165 L710,215 L370,215 L280,165 Z" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+    <path d="M540,100 L740,180 L680,205 L400,205 L340,180 Z" fill="none" stroke="#34d399" stroke-width="1.5"/>
+  </svg>
+  <div class="container">
+    <span class="kicker">CHAPTER 1 · REVIEW SHEET</span>
+    <h1><span class="i18n" data-en="Information &amp; Network">Information &amp; Network</span> <span class="glow i18n" data-en="Security Concepts">Security Concepts</span></h1>
+    <p class="sub i18n" data-en="An interactive review sheet covering the CIA+ triad, the OSI Security Architecture (attacks, services, mechanisms), passive vs. active attacks, cryptographic algorithm families, and the trust model — based on Stallings' Cryptography and Network Security, Chapter 1.">مرجع مراجعة تفاعلي يغطي ثالوث CIA+ الموسّع، بنية أمن OSI (الهجمات، الخدمات، الآليات)، الهجمات السلبية مقابل النشطة، عائلات خوارزميات التشفير، ونموذج الثقة — مبني على الفصل الأول من كتاب Stallings في التشفير وأمن الشبكات.</p>
+  </div>
+</header>
+
+<!-- ============ STICKY NAV ============ -->
+<div class="nav-wrap">
+  <nav class="nav-scroll" id="navScroll">
+    <a href="#overview" class="i18n" data-en="Overview">نظرة عامة</a>
+    <a href="#explain" class="i18n" data-en="Full Explanation">الشرح الكامل</a>
+    <a href="#diagrams" class="i18n" data-en="Diagrams &amp; Figures">الرسومات والمخططات</a>
+    <a href="#summary" class="i18n" data-en="Summary Table">جدول التلخيص</a>
+    <a href="#levels" class="i18n" data-en="3 Levels">3 مستويات</a>
+    <a href="#quiz" class="i18n" data-en="Interactive Quiz">الاختبار التفاعلي</a>
+    <a href="#plan" class="i18n" data-en="Study Plan">خطة المذاكرة</a>
+    <a href="#tips" class="i18n" data-en="Pro Tips">نصائح احترافية</a>
+  </nav>
+</div>
+
+<!-- ============ 1. OVERVIEW ============ -->
+<section id="overview">
+  <div class="container">
+    <span class="eyebrow">01 / OVERVIEW</span>
+    <h2 class="i18n" data-en="Chapter Overview">نظرة عامة على الفصل</h2>
+    <p class="lead i18n" data-en="This opening chapter lays the conceptual foundation for the entire course: what cybersecurity, information security, and network security mean; the core security objectives (confidentiality, integrity, availability, plus authenticity and accountability); how the OSI Security Architecture organizes attacks, services, and mechanisms; the three families of cryptographic algorithms; and finally, the concept of trust as the human/organizational layer underneath all technical security.">
+      يضع هذا الفصل الافتتاحي الأساس المفاهيمي لكل المقرر: ماذا تعني الأمن السيبراني (cybersecurity) وأمن المعلومات وأمن الشبكات؛ الأهداف الأمنية الجوهرية (السرية، السلامة، التوافر، بالإضافة إلى الموثوقية والمساءلة)؛ كيف تنظّم بنية أمن OSI الهجمات والخدمات والآليات؛ عائلات خوارزميات التشفير الثلاث؛ وأخيرًا، مفهوم الثقة (trust) كطبقة إنسانية/تنظيمية أسفل كل الأمن التقني.
+    </p>
+
+    <div class="grid grid-2">
+      <div class="card tinted">
+        <h3 class="i18n" data-en="🎯 The Core Idea">🎯 الفكرة المحورية</h3>
+        <p class="i18n" data-en="Security is not one property — it's a small set of distinct objectives (confidentiality, integrity, availability, authenticity, accountability) that can each be attacked in different ways (passively or actively) and defended with different mechanisms. Understanding security means being able to map a given scenario onto this framework: which objective is threatened? Which kind of attack is this? Which mechanism or service would counter it?">
+          الأمن ليست خاصية واحدة — إنها مجموعة صغيرة من الأهداف المتمايزة (السرية، السلامة، التوافر، الموثوقية، المساءلة) يمكن أن يُهاجَم كل منها بطرق مختلفة (سلبيًا أو نشطًا) وتُحمى بآليات مختلفة. فهم الأمن يعني القدرة على وضع أي سيناريو معطى داخل هذا الإطار: أي هدف مُهدَّد؟ أي نوع هجوم هذا؟ أي آلية أو خدمة تتصدى له؟
+        </p>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="🧠 Key Concepts in This Chapter">🧠 أهم المفاهيم في هذا الفصل</h3>
+        <ul style="margin:0; padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="Cybersecurity vs. Information Security vs. Network Security">الأمن السيبراني مقابل أمن المعلومات مقابل أمن الشبكات</li>
+          <li class="i18n" data-en="The CIA+ objectives: Confidentiality, Integrity, Availability, Authenticity, Accountability">أهداف CIA+: السرية، السلامة، التوافر، الموثوقية، المساءلة</li>
+          <li class="i18n" data-en="The OSI Security Architecture: Attack, Mechanism, Service">بنية أمن OSI: الهجوم، الآلية، الخدمة</li>
+          <li class="i18n" data-en="Passive vs. Active attacks, and their four active sub-types">الهجمات السلبية مقابل النشطة، وأنواعها الفرعية النشطة الأربعة</li>
+          <li class="i18n" data-en="Security services: authentication, access control, confidentiality, integrity, nonrepudiation, availability">الخدمات الأمنية: الموثوقية، ضبط الوصول، السرية، السلامة، عدم الإنكار، التوافر</li>
+          <li class="i18n" data-en="Cryptographic algorithm families: keyless, single-key, two-key">عائلات خوارزميات التشفير: بلا مفتاح، مفتاح واحد، مفتاحان</li>
+          <li class="i18n" data-en="The Trust Model and how organizations establish trust relationships">نموذج الثقة وكيف تبني المؤسسات علاقات ثقة</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid grid-3" style="margin-top:16px;">
+      <div class="card">
+        <h3 class="i18n" data-en="🛠️ Skills Gained">🛠️ المهارات المكتسبة</h3>
+        <p style="color:var(--text-dim); margin:0;" class="i18n" data-en="Classifying any security scenario as a passive or active attack, and identifying which security objective it threatens.">تصنيف أي سيناريو أمني كهجوم سلبي أو نشط، وتحديد أي هدف أمني يُهدِّده.</p>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="🔑 Distinguishing Algorithm Families">🔑 التمييز بين عائلات الخوارزميات</h3>
+        <p style="color:var(--text-dim); margin:0;" class="i18n" data-en="Telling apart keyless, symmetric (single-key), and asymmetric (two-key) cryptography and their typical uses.">التمييز بين التشفير بلا مفتاح، والتناظري (مفتاح واحد)، وغير التناظري (مفتاحان) واستخداماتها النموذجية.</p>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="🤝 Thinking About Trust">🤝 التفكير في الثقة</h3>
+        <p style="color:var(--text-dim); margin:0;" class="i18n" data-en="Recognizing that technical security always rests on an organizational layer of trust relationships.">إدراك أن الأمن التقني يرتكز دائمًا على طبقة تنظيمية من علاقات الثقة.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. FULL EXPLANATION ============ -->
+<section id="explain">
+  <div class="container">
+    <span class="eyebrow">02 / FULL EXPLANATION</span>
+    <h2 class="i18n" data-en="Full Explanation of Every Section">الشرح الكامل لكل قسم في الفصل</h2>
+    <p class="lead i18n" data-en="Each card covers one part of the chapter in order, without dropping any information from the slides.">كل بطاقة تغطي جزءًا من الفصل بالترتيب، دون تجاوز أي معلومة واردة في الشرائح.</p>
+
+    <!-- 1.1 -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.1</span> <span class="i18n" data-en="Cybersecurity: The Umbrella Definition">الأمن السيبراني: التعريف الجامع</span></h3>
+      <p class="i18n" data-en="Per ITU-T Recommendation X.1205, cybersecurity is the full collection of tools, policies, security concepts, safeguards, guidelines, risk-management approaches, training, best practices, assurance, and technologies used to protect the cyberspace environment and the assets of organizations and users.">وفقًا لتوصية ITU-T رقم X.1205، الأمن السيبراني هو المجموعة الكاملة من الأدوات والسياسات والمفاهيم الأمنية والضمانات والإرشادات ومناهج إدارة المخاطر والتدريب وأفضل الممارسات والضمان والتقنيات المستخدمة لحماية بيئة الفضاء السيبراني وأصول المؤسسات والمستخدمين.</p>
+      <p class="i18n" data-en="Those assets include connected devices, personnel, infrastructure, applications, services, telecom systems, and all transmitted/stored information. The general security objectives it strives for are: availability, integrity (including data authenticity and nonrepudiation), and confidentiality.">تشمل هذه الأصول الأجهزة المتصلة، والموظفين، والبنية التحتية، والتطبيقات، والخدمات، وأنظمة الاتصالات، وكل المعلومات المُرسَلة/المخزَّنة. الأهداف الأمنية العامة التي يسعى إليها هي: التوافر، والسلامة (بما فيها موثوقية البيانات وعدم الإنكار)، والسرية.</p>
+    </div>
+
+    <!-- 1.2 -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.2</span> <span class="i18n" data-en="Information Security vs. Network Security">أمن المعلومات مقابل أمن الشبكات</span></h3>
+      <table>
+        <tr><th class="i18n" data-en="Term">المصطلح</th><th class="i18n" data-en="Definition">التعريف</th></tr>
+        <tr><td><b>Information Security</b></td><td class="i18n" data-en="Preservation of confidentiality, integrity, and availability of information. May also involve authenticity, accountability, nonrepudiation, and reliability.">الحفاظ على سرية وسلامة وتوافر المعلومات. قد يشمل أيضًا الموثوقية والمساءلة وعدم الإنكار والاعتمادية.</td></tr>
+        <tr><td><b>Network Security</b></td><td class="i18n" data-en="Protection of networks and their services from unauthorized modification, destruction, or disclosure — with assurance that the network performs its critical functions correctly and without harmful side effects.">حماية الشبكات وخدماتها من التعديل أو التدمير أو الإفشاء غير المصرَّح به — مع ضمان أن الشبكة تؤدي وظائفها الحيوية بشكل صحيح وبدون آثار جانبية ضارة.</td></tr>
+      </table>
+      <div class="note info" class="i18n" data-en="Cybersecurity encompasses information security (with respect to electronic information) and network security. Information security also covers physical (e.g. paper-based) information. In practice, the terms “cybersecurity” and “information security” are often used interchangeably.">الأمن السيبراني يشمل أمن المعلومات (فيما يخص المعلومات الإلكترونية) وأمن الشبكات. أمن المعلومات يغطي أيضًا المعلومات المادية (مثل الورقية). عمليًا، يُستخدم مصطلحا "الأمن السيبراني" و"أمن المعلومات" بالتبادل غالبًا.</div>
+    </div>
+
+    <!-- 1.3 confidentiality -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.3</span> <span class="i18n" data-en="Security Objective 1 — Confidentiality">الهدف الأمني 1 — السرية (Confidentiality)</span></h3>
+      <p><span class="badge b-conf">Confidentiality</span></p>
+      <table>
+        <tr><th class="i18n" data-en="Concept">المفهوم</th><th class="i18n" data-en="Meaning">المعنى</th></tr>
+        <tr><td><b class="i18n" data-en="Data Confidentiality">سرية البيانات</b></td><td class="i18n" data-en="Assures private/confidential information is not disclosed to unauthorized individuals.">تضمن ألا يُفشى المعلومات الخاصة/السرية لأفراد غير مصرَّح لهم.</td></tr>
+        <tr><td><b class="i18n" data-en="Privacy">الخصوصية</b></td><td class="i18n" data-en="Assures individuals control what information about them is collected/stored, and by/to whom it may be disclosed.">تضمن للأفراد التحكم بما يُجمَع/يُخزَّن من معلومات عنهم، ومن يستطيع الإفشاء لها.</td></tr>
+      </table>
+    </div>
+
+    <!-- 1.4 integrity + availability -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.4</span> <span class="i18n" data-en="Security Objectives 2 &amp; 3 — Integrity and Availability">الهدفان الأمنيان 2 و3 — السلامة والتوافر</span></h3>
+      <p><span class="badge b-integ">Integrity</span> &nbsp; <span class="badge b-avail">Availability</span></p>
+      <table>
+        <tr><th class="i18n" data-en="Concept">المفهوم</th><th class="i18n" data-en="Meaning">المعنى</th></tr>
+        <tr><td><b class="i18n" data-en="Data Integrity">سلامة البيانات</b></td><td class="i18n" data-en="Data and programs are changed only in a specified, authorized manner. Encompasses data authenticity (an object is what it claims to be) and nonrepudiation (sender/receiver cannot later deny processing the information).">تُغيَّر البيانات والبرامج فقط بطريقة محدَّدة ومصرَّح بها. يشمل موثوقية البيانات (الكائن هو ما يزعم أنه هو) وعدم الإنكار (لا يستطيع المُرسِل/المُستقبِل إنكار معالجة المعلومة لاحقًا).</td></tr>
+        <tr><td><b class="i18n" data-en="System Integrity">سلامة النظام</b></td><td class="i18n" data-en="The system performs its intended function unimpaired, free from deliberate or accidental unauthorized manipulation.">يؤدي النظام وظيفته المقصودة دون إعاقة، وبمنأى عن التلاعب غير المصرَّح به المتعمَّد أو العرضي.</td></tr>
+        <tr><td><b>Availability</b></td><td class="i18n" data-en="Systems work promptly and service is not denied to authorized users.">تعمل الأنظمة فورًا ولا يُحرَم المستخدمون المصرَّح لهم من الخدمة.</td></tr>
+      </table>
+    </div>
+
+    <!-- 1.5 CIA+ extended -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.5</span> <span class="i18n" data-en="The CIA Triad — and Its Extension">ثالوث CIA — وامتداده</span></h3>
+      <p class="i18n" data-en="Confidentiality, Integrity, and Availability together form the classic “CIA triad” — the fundamental security objectives cited by standards like NIST FIPS 199. But many security professionals argue two more concepts are needed for a complete picture:">تشكّل السرية والسلامة والتوافر معًا "ثالوث CIA" الكلاسيكي — الأهداف الأمنية الجوهرية التي تذكرها معايير مثل NIST FIPS 199. لكن كثيرًا من خبراء الأمن يرون أن مفهومين إضافيين ضروريان لصورة كاملة:</p>
+      <table>
+        <tr><th class="i18n" data-en="Concept">المفهوم</th><th class="i18n" data-en="Definition">التعريف</th></tr>
+        <tr><td><span class="badge b-auth">Authenticity</span></td><td class="i18n" data-en="Being genuine, verifiable, and trusted — confidence in the validity of a transmission or its originator. Verifies users/sources are who they claim to be.">كون الشيء أصليًا وقابلًا للتحقق وموثوقًا به — الثقة في صحة الإرسال أو مصدره. يتحقق من أن المستخدمين/المصادر هم من يزعمون أنهم عليه.</td></tr>
+        <tr><td><span class="badge b-account">Accountability</span></td><td class="i18n" data-en="The requirement that an entity's actions be traceable uniquely to that entity — supports nonrepudiation, deterrence, intrusion detection, and forensic recovery.">مطلب أن تكون تصرفات الكيان قابلة للتتبع بشكل فريد إلى ذلك الكيان — يدعم عدم الإنكار والردع والكشف عن التسلل والتعافي الجنائي.</td></tr>
+      </table>
+      <div class="note good" class="i18n" data-en="NIST FIPS 199 phrases the loss version of each CIA objective: loss of confidentiality = unauthorized disclosure; loss of integrity = unauthorized modification/destruction; loss of availability = disruption of access.">تصيغ NIST FIPS 199 نسخة "الخسارة" لكل هدف من أهداف CIA: خسارة السرية = إفشاء غير مصرَّح به؛ خسارة السلامة = تعديل/تدمير غير مصرَّح به؛ خسارة التوافر = تعطّل الوصول.</div>
+    </div>
+
+    <!-- 1.6 computer security challenges -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.6</span> <span class="i18n" data-en="Why Computer Security Is Hard">لماذا أمن الحاسوب صعب</span></h3>
+      <p class="i18n" data-en="Ten reasons security is fascinating and complex, given in the lecture:">عشرة أسباب تجعل الأمن مثيرًا ومعقدًا، كما وردت في المحاضرة:</p>
+      <div class="grid grid-2">
+        <ul style="padding-inline-start:20px; color:var(--text-dim); margin:0;">
+          <li class="i18n" data-en="Security is not simple — one-word requirements hide complex mechanisms">الأمن ليس بسيطًا — متطلبات ذات كلمة واحدة تخفي آليات معقدة</li>
+          <li class="i18n" data-en="Must always consider potential attacks on the security features themselves">يجب دائمًا مراعاة الهجمات المحتملة على ميزات الأمن نفسها</li>
+          <li class="i18n" data-en="Procedures are often counter-intuitive">الإجراءات غالبًا غير بديهية</li>
+          <li class="i18n" data-en="Must decide where (physically and logically) to place mechanisms">يجب تحديد أين (فعليًا ومنطقيًا) توضع الآليات</li>
+          <li class="i18n" data-en="Mechanisms need secret info (keys) — raising creation/distribution questions">الآليات تحتاج معلومات سرية (مفاتيح) — مما يطرح أسئلة الإنشاء والتوزيع</li>
+        </ul>
+        <ul style="padding-inline-start:20px; color:var(--text-dim); margin:0;">
+          <li class="i18n" data-en="Security is a battle of wits — attacker needs one weakness, defender must find all">الأمن معركة ذكاء — المهاجم يحتاج نقطة ضعف واحدة، والمُدافع يجب أن يجد كل نقاط الضعف</li>
+          <li class="i18n" data-en="Little perceived benefit until a failure occurs">فائدة مُتصوَّرة قليلة حتى يحدث فشل</li>
+          <li class="i18n" data-en="Requires constant, ongoing monitoring">يتطلب مراقبة مستمرة دائمة</li>
+          <li class="i18n" data-en="Too often treated as an afterthought, not part of design">غالبًا ما يُعامَل كفكرة لاحقة، لا كجزء من التصميم</li>
+          <li class="i18n" data-en="Strong security is often seen as an obstacle to usability">الأمن القوي غالبًا يُنظر إليه كعائق أمام سهولة الاستخدام</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 1.7 OSI security architecture -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.7</span> <span class="i18n" data-en="The OSI Security Architecture: Three Core Terms">بنية أمن OSI: ثلاثة مصطلحات جوهرية</span></h3>
+      <p class="i18n" data-en="ITU-T Recommendation X.800 (“Security Architecture for OSI”) defines a systematic way to organize security work, using three concepts:">توصية ITU-T رقم X.800 ("بنية الأمن لـ OSI") تُعرِّف طريقة منهجية لتنظيم العمل الأمني، باستخدام ثلاثة مفاهيم:</p>
+      <table>
+        <tr><th class="i18n" data-en="Term">المصطلح</th><th class="i18n" data-en="Definition">التعريف</th></tr>
+        <tr><td><b>Security Attack</b></td><td class="i18n" data-en="Any action that compromises the security of information owned by an organization.">أي فعل يُهدِّد أمن المعلومات التي تملكها المؤسسة.</td></tr>
+        <tr><td><b>Security Mechanism</b></td><td class="i18n" data-en="A process (or device) designed to detect, prevent, or recover from a security attack.">عملية (أو جهاز) مصمَّم للكشف عن هجوم أمني أو منعه أو التعافي منه.</td></tr>
+        <tr><td><b>Security Service</b></td><td class="i18n" data-en="A processing or communication service that enhances the security of data-processing systems and information transfers. Services counter attacks using one or more mechanisms.">خدمة معالجة أو اتصال تعزّز أمن أنظمة معالجة البيانات وعمليات نقل المعلومات. الخدمات تتصدى للهجمات باستخدام آلية واحدة أو أكثر.</td></tr>
+      </table>
+    </div>
+
+    <!-- 1.8 threats vs attacks -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.8</span> <span class="i18n" data-en="Threats vs. Attacks">التهديدات مقابل الهجمات</span></h3>
+      <table>
+        <tr><th class="i18n" data-en="Term">المصطلح</th><th class="i18n" data-en="Meaning">المعنى</th></tr>
+        <tr><td><b>Threat</b></td><td class="i18n" data-en="Any circumstance or event with the potential to adversely impact operations, assets, individuals, or organizations via unauthorized access, destruction, disclosure, modification, or denial of service.">أي ظرف أو حدث لديه احتمال التأثير سلبًا على العمليات أو الأصول أو الأفراد أو المؤسسات عبر الوصول أو التدمير أو الإفشاء أو التعديل غير المصرَّح به، أو حجب الخدمة.</td></tr>
+        <tr><td><b>Attack</b></td><td class="i18n" data-en="Any kind of malicious activity that attempts to collect, disrupt, deny, degrade, or destroy information system resources or the information itself.">أي نشاط خبيث يحاول جمع أو تعطيل أو حجب أو إضعاف أو تدمير موارد نظام المعلومات أو المعلومات نفسها.</td></tr>
+      </table>
+      <p style="color:var(--text-dim); font-size:.92rem;" class="i18n" data-en="A threat is the potential; an attack is the actual attempt to realize that potential.">التهديد هو الإمكانية؛ والهجوم هو المحاولة الفعلية لتحقيق تلك الإمكانية.</p>
+    </div>
+
+    <!-- 1.9 passive vs active classification -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.9</span> <span class="i18n" data-en="Classifying Security Attacks: Passive vs. Active">تصنيف الهجمات الأمنية: سلبية مقابل نشطة</span></h3>
+      <p class="i18n" data-en="X.800 and RFC 4949 both classify security attacks along one key dimension:">يُصنِّف كل من X.800 و RFC 4949 الهجمات الأمنية عبر بُعد أساسي واحد:</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:16px; border-color:#38bdf844;">
+          <b><span class="badge b-passive">Passive Attack</span></b>
+          <p style="margin-top:8px; color:var(--text-dim);" class="i18n" data-en="Attempts to learn or make use of information from the system but does NOT affect system resources.">يحاول معرفة أو استخدام معلومات من النظام لكنه لا يؤثر على موارد النظام.</p>
+        </div>
+        <div class="card" style="padding:16px; border-color:#f8717144;">
+          <b><span class="badge b-active">Active Attack</span></b>
+          <p style="margin-top:8px; color:var(--text-dim);" class="i18n" data-en="Attempts to alter system resources or affect their operation.">يحاول تغيير موارد النظام أو التأثير على عملها.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1.10 passive attacks detail -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.10</span> <span class="i18n" data-en="Passive Attacks in Detail">الهجمات السلبية بالتفصيل</span></h3>
+      <p class="i18n" data-en="In the nature of eavesdropping or monitoring transmissions — the opponent's goal is to obtain the information being transmitted.">في طبيعة التنصت أو مراقبة الإرسال — هدف الخصم هو الحصول على المعلومات المُرسَلة.</p>
+      <table>
+        <tr><th class="i18n" data-en="Type">النوع</th><th class="i18n" data-en="Description">الوصف</th></tr>
+        <tr><td><b class="i18n" data-en="Release of Message Contents">إفشاء محتوى الرسالة</b></td><td class="i18n" data-en="A phone call, email, or file may contain sensitive information the opponent simply reads/listens to.">مكالمة هاتفية أو بريد إلكتروني أو ملف قد يحتوي معلومات حساسة يقرأها/يسمعها الخصم ببساطة.</td></tr>
+        <tr><td><b class="i18n" data-en="Traffic Analysis">تحليل حركة البيانات</b></td><td class="i18n" data-en="Even if content is masked (encrypted), the opponent observes patterns: location/identity of hosts, and frequency/length of messages — useful for guessing the nature of communication.">حتى لو أُخفي المحتوى (مشفّرًا)، يرصد الخصم الأنماط: موقع/هوية المضيفين، وتكرار/طول الرسائل — مفيد لتخمين طبيعة الاتصال.</td></tr>
+      </table>
+      <div class="note info" class="i18n" data-en="Passive attacks are very hard to detect (no data alteration), so the defensive emphasis is on prevention (typically via encryption) rather than detection.">الهجمات السلبية صعبة الكشف جدًا (لا يوجد تعديل للبيانات)، فالتركيز الدفاعي يكون على المنع (عادةً عبر التشفير) وليس الكشف.</div>
+    </div>
+
+    <!-- 1.11 active attacks detail -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.11</span> <span class="i18n" data-en="Active Attacks in Detail — Four Subtypes">الهجمات النشطة بالتفصيل — أربعة أنواع فرعية</span></h3>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Masquerade">التنكّر (Masquerade)</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="One entity pretends to be a different entity. Usually paired with another active attack type.">كيان يتنكّر بصفة كيان آخر. غالبًا مقترن بنوع آخر من الهجوم النشط.</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Replay">إعادة التشغيل (Replay)</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Passive capture of a data unit, then its later retransmission to produce an unauthorized effect.">التقاط سلبي لوحدة بيانات، ثم إعادة إرسالها لاحقًا لإحداث تأثير غير مصرَّح به.</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Data Modification">تعديل البيانات</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Part of a legitimate message is altered, or messages are delayed/reordered, to produce an unauthorized effect.">جزء من رسالة مشروعة يُعدَّل، أو تتأخر/تُعاد ترتيب الرسائل لإحداث تأثير غير مصرَّح به.</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Denial of Service (DoS)">حجب الخدمة (DoS)</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Prevents or inhibits the normal use/management of communications facilities — may target one destination or disrupt an entire network.">يمنع أو يعيق الاستخدام/الإدارة العادية لمرافق الاتصال — قد يستهدف وجهة واحدة أو يُعطِّل شبكة كاملة.</p></div>
+      </div>
+      <div class="note warn" style="margin-top:12px;" class="i18n" data-en="Active attacks are the mirror image of passive ones: hard to prevent absolutely (given the wide variety of vulnerabilities), so the goal shifts to detection and recovery from disruption.">الهجمات النشطة هي الصورة المعكوسة للسلبية: يصعب منعها كليًا (نظرًا لتنوع نقاط الضعف)، فينتقل الهدف إلى الكشف والتعافي من التعطّل.</div>
+    </div>
+
+    <!-- 1.12 authentication -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.12</span> <span class="i18n" data-en="Security Service: Authentication">الخدمة الأمنية: الموثوقية (Authentication)</span></h3>
+      <p class="i18n" data-en="Concerned with assuring a communication is authentic. For a single message, it assures the recipient the message is really from the claimed source. For ongoing interaction, it assures both entities are authentic and that no third party can masquerade as one of them.">تهتم بضمان أن الاتصال أصلي. لرسالة واحدة، تضمن للمستقبِل أن الرسالة فعلًا من المصدر المزعوم. للتفاعل المستمر، تضمن أن كلا الكيانين أصلي وأنه لا يمكن لطرف ثالث التنكّر كأحدهما.</p>
+      <table>
+        <tr><th class="i18n" data-en="Type">النوع</th><th class="i18n" data-en="Description">الوصف</th></tr>
+        <tr><td><b class="i18n" data-en="Peer Entity Authentication">موثوقية الكيان النظير</b></td><td class="i18n" data-en="Corroborates the identity of a peer entity in an association, at connection setup or during data transfer — guards against masquerade or unauthorized replay.">تُثبِت هوية كيان نظير في ارتباط، عند إنشاء الاتصال أو أثناء نقل البيانات — تحمي من التنكّر أو إعادة التشغيل غير المصرَّح بها.</td></tr>
+        <tr><td><b class="i18n" data-en="Data Origin Authentication">موثوقية مصدر البيانات</b></td><td class="i18n" data-en="Corroborates the source of a data unit; does not protect against duplication/modification. Suits applications like email with no prior interaction.">تُثبِت مصدر وحدة بيانات؛ لا تحمي من التكرار/التعديل. تناسب تطبيقات مثل البريد الإلكتروني بدون تفاعل مسبق.</td></tr>
+      </table>
+    </div>
+
+    <!-- 1.13 access control -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.13</span> <span class="i18n" data-en="Security Service: Access Control">الخدمة الأمنية: ضبط الوصول (Access Control)</span></h3>
+      <p class="i18n" data-en="The ability to limit and control access to host systems and applications via communications links. To achieve this, every entity trying to gain access must first be identified/authenticated, so access rights can be tailored to the individual.">القدرة على تحديد والتحكم بالوصول إلى الأنظمة المُستضافة والتطبيقات عبر روابط الاتصال. لتحقيق ذلك، يجب أولًا تحديد هوية/توثيق كل كيان يحاول الوصول، حتى تُصمَّم صلاحيات الوصول حسب الفرد.</p>
+    </div>
+
+    <!-- 1.14 data confidentiality service -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.14</span> <span class="i18n" data-en="Security Service: Data Confidentiality">الخدمة الأمنية: سرية البيانات</span></h3>
+      <p class="i18n" data-en="Protection of transmitted data from passive attacks. Several levels exist:">حماية البيانات المُرسَلة من الهجمات السلبية. توجد مستويات عدة:</p>
+      <table>
+        <tr><th class="i18n" data-en="Level">المستوى</th><th class="i18n" data-en="Description">الوصف</th></tr>
+        <tr><td><b class="i18n" data-en="Broadest">الأوسع</b></td><td class="i18n" data-en="Protects all user data transmitted between two users over a period of time (e.g. an entire TCP connection).">يحمي كل بيانات المستخدم المُرسَلة بين مستخدمين خلال فترة زمنية (مثل اتصال TCP كامل).</td></tr>
+        <tr><td><b class="i18n" data-en="Narrower">الأضيق</b></td><td class="i18n" data-en="Protection of a single message, or even specific fields within a message — less useful and often more complex/expensive.">حماية رسالة واحدة، أو حتى حقول محدَّدة داخل رسالة — أقل فائدة وغالبًا أكثر تعقيدًا وتكلفة.</td></tr>
+        <tr><td><b class="i18n" data-en="Traffic-Flow Confidentiality">سرية تدفق حركة البيانات</b></td><td class="i18n" data-en="Prevents an attacker from observing source/destination, frequency, length, or other traffic characteristics.">تمنع المهاجم من رصد المصدر/الوجهة أو التكرار أو الطول أو خصائص أخرى لحركة البيانات.</td></tr>
+      </table>
+    </div>
+
+    <!-- 1.15 data integrity service -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.15</span> <span class="i18n" data-en="Security Service: Data Integrity">الخدمة الأمنية: سلامة البيانات</span></h3>
+      <p class="i18n" data-en="Can apply to a stream of messages, a single message, or selected fields.">يمكن أن تنطبق على سلسلة رسائل، أو رسالة واحدة، أو حقول مختارة.</p>
+      <table>
+        <tr><th class="i18n" data-en="Type">النوع</th><th class="i18n" data-en="Description">الوصف</th></tr>
+        <tr><td><b class="i18n" data-en="Connection-Oriented">موجّهة نحو الاتصال</b></td><td class="i18n" data-en="Deals with a stream of messages; assures messages are received as sent — no duplication, insertion, modification, reordering, or replay.">تتعامل مع سلسلة رسائل؛ تضمن استقبال الرسائل كما أُرسِلت — بلا تكرار أو إدراج أو تعديل أو إعادة ترتيب أو إعادة تشغيل.</td></tr>
+        <tr><td><b class="i18n" data-en="Connectionless">بلا اتصال</b></td><td class="i18n" data-en="Deals with individual messages without broader context; generally protects against message modification only.">تتعامل مع رسائل فردية بلا سياق أوسع؛ تحمي عمومًا من تعديل الرسالة فقط.</td></tr>
+      </table>
+    </div>
+
+    <!-- 1.16 nonrepudiation + availability service -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.16</span> <span class="i18n" data-en="Security Services: Nonrepudiation and Availability">الخدمتان الأمنيتان: عدم الإنكار والتوافر</span></h3>
+      <table>
+        <tr><th class="i18n" data-en="Service">الخدمة</th><th class="i18n" data-en="Description">الوصف</th></tr>
+        <tr><td><b>Nonrepudiation</b></td><td class="i18n" data-en="Prevents either sender or receiver from denying a transmitted message. The receiver can prove the alleged sender did send it; the sender can prove the alleged receiver did receive it.">تمنع المُرسِل أو المُستقبِل من إنكار رسالة مُرسَلة. يستطيع المُستقبِل إثبات أن المُرسِل المزعوم أرسلها فعلًا؛ ويستطيع المُرسِل إثبات أن المُستقبِل المزعوم استقبلها فعلًا.</td></tr>
+        <tr><td><b>Availability Service</b></td><td class="i18n" data-en="Protects a system to ensure its availability, addressing denial-of-service concerns. Depends on proper resource management and other security services (like access control).">تحمي نظامًا لضمان توافره، وتتصدى لمخاوف حجب الخدمة. تعتمد على الإدارة الصحيحة للموارد وعلى خدمات أمنية أخرى (مثل ضبط الوصول).</td></tr>
+      </table>
+    </div>
+
+    <!-- 1.17 security mechanisms -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.17</span> <span class="i18n" data-en="Security Mechanisms — Eight Types">الآليات الأمنية — ثمانية أنواع</span></h3>
+      <table>
+        <tr><th class="i18n" data-en="Mechanism">الآلية</th><th class="i18n" data-en="Description">الوصف</th></tr>
+        <tr><td><b class="i18n" data-en="Cryptographic Algorithms">خوارزميات التشفير</b></td><td class="i18n" data-en="Reversible (encryption, can decrypt) vs. irreversible (hash functions, MACs — used in signatures/authentication).">قابلة للعكس (تشفير، يمكن فك تشفيرها) مقابل غير قابلة للعكس (دوال hash، رموز MAC — تُستخدم في التوقيعات/الموثوقية).</td></tr>
+        <tr><td><b class="i18n" data-en="Data Integrity">سلامة البيانات</b></td><td class="i18n" data-en="A variety of mechanisms to assure the integrity of a data unit or stream.">مجموعة متنوعة من الآليات لضمان سلامة وحدة بيانات أو سلسلة بيانات.</td></tr>
+        <tr><td><b class="i18n" data-en="Digital Signature">التوقيع الرقمي</b></td><td class="i18n" data-en="Data appended/transformed cryptographically so a recipient can prove the source and integrity of the data, protecting against forgery.">بيانات مُلحَقة/مُحوَّلة تشفيريًا حتى يستطيع المستقبِل إثبات مصدر البيانات وسلامتها، مما يحمي من التزوير.</td></tr>
+        <tr><td><b class="i18n" data-en="Authentication Exchange">تبادل الموثوقية</b></td><td class="i18n" data-en="A mechanism to ensure an entity's identity via information exchange.">آلية لضمان هوية كيان عبر تبادل معلومات.</td></tr>
+        <tr><td><b class="i18n" data-en="Traffic Padding">حشو حركة البيانات</b></td><td class="i18n" data-en="Inserting bits into gaps in a data stream to frustrate traffic analysis.">إدراج بتّات في فجوات سلسلة البيانات لإحباط تحليل حركة البيانات.</td></tr>
+        <tr><td><b class="i18n" data-en="Routing Control">ضبط التوجيه</b></td><td class="i18n" data-en="Selecting particular secure routes for certain data, and changing routes when a breach is suspected.">اختيار مسارات آمنة مُحدَّدة لبيانات معينة، وتغيير المسارات عند الاشتباه بخرق.</td></tr>
+        <tr><td><b class="i18n" data-en="Notarization">التوثيق (Notarization)</b></td><td class="i18n" data-en="Using a trusted third party to assure certain properties of a data exchange.">استخدام طرف ثالث موثوق لضمان خصائص معينة لتبادل بيانات.</td></tr>
+        <tr><td><b class="i18n" data-en="Access Control">ضبط الوصول</b></td><td class="i18n" data-en="A variety of mechanisms that enforce access rights to resources.">مجموعة متنوعة من الآليات التي تفرض حقوق الوصول للموارد.</td></tr>
+      </table>
+    </div>
+
+    <!-- 1.18 crypto algorithm families -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.18</span> <span class="i18n" data-en="Three Families of Cryptographic Algorithms">ثلاث عائلات لخوارزميات التشفير</span></h3>
+      <table>
+        <tr><th class="i18n" data-en="Family">العائلة</th><th class="i18n" data-en="Description">الوصف</th></tr>
+        <tr><td><b>Keyless</b></td><td class="i18n" data-en="Do not use any keys during the cryptographic transformation.">لا تستخدم أي مفاتيح أثناء التحويل التشفيري.</td></tr>
+        <tr><td><b>Single-Key</b></td><td class="i18n" data-en="The transformation result is a function of the input data and a single secret key.">نتيجة التحويل دالة في بيانات الإدخال ومفتاح سري واحد.</td></tr>
+        <tr><td><b>Two-Key</b></td><td class="i18n" data-en="Uses two different but related keys at various stages: a private key and a public key.">تستخدم مفتاحين مختلفين ولكن مرتبطين في مراحل مختلفة: مفتاح خاص ومفتاح عام.</td></tr>
+      </table>
+    </div>
+
+    <!-- 1.19 keyless -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.19</span> <span class="i18n" data-en="Keyless Algorithms">الخوارزميات بلا مفتاح</span></h3>
+      <p class="i18n" data-en="Deterministic functions with properties useful for cryptography, even without any key.">دوال حتمية بخصائص مفيدة للتشفير، حتى بدون أي مفتاح.</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Cryptographic Hash Function">دالة Hash التشفيرية</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Turns a variable amount of text into a small, fixed-length hash value/code/digest. Extra properties make it useful in MACs or digital signatures.">تحوّل كمية متغيّرة من النص إلى قيمة/رمز/بصمة صغيرة ثابتة الطول (hash). خصائص إضافية تجعلها مفيدة في رموز MAC أو التوقيعات الرقمية.</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Pseudorandom Number Generator (PRNG)">مولّد الأرقام العشوائية الزائفة</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Produces a deterministic sequence of numbers/bits that appears truly random — sufficient for some cryptographic purposes.">يُنتج تسلسلًا حتميًا من الأرقام/البتّات يبدو عشوائيًا حقًا — كافٍ لبعض الأغراض التشفيرية.</p></div>
+      </div>
+    </div>
+
+    <!-- 1.20 single key -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.20</span> <span class="i18n" data-en="Single-Key Algorithms — Symmetric Encryption">خوارزميات المفتاح الواحد — التشفير التناظري</span></h3>
+      <p class="i18n" data-en="Algorithms using a single (secret) key are called symmetric encryption algorithms. An encryption algorithm takes data + secret key → unintelligible output; the matching decryption algorithm takes that output + the same secret key → recovers the original data.">الخوارزميات التي تستخدم مفتاحًا واحدًا (سريًا) تُسمى خوارزميات التشفير التناظري. خوارزمية التشفير تأخذ البيانات + المفتاح السري ← مُخرَج غير مفهوم؛ خوارزمية فك التشفير المطابقة تأخذ ذلك المُخرَج + نفس المفتاح السري ← تستعيد البيانات الأصلية.</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Block Cipher">شفرة الكتل (Block Cipher)</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Operates on data as a sequence of blocks. In most “modes of operation”, the transformation depends on the current block, the key, AND preceding blocks.">تعمل على البيانات كسلسلة من الكتل (blocks). في أغلب "أنماط التشغيل"، يعتمد التحويل على الكتلة الحالية والمفتاح والكتل السابقة أيضًا.</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Stream Cipher">شفرة التدفق (Stream Cipher)</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Operates on data as a sequence of bits; the transformation depends on the secret key, like the block cipher.">تعمل على البيانات كسلسلة من البتّات؛ يعتمد التحويل على المفتاح السري، مثل شفرة الكتل.</p></div>
+      </div>
+      <div class="note info" style="margin-top:12px;"><b class="i18n" data-en="Also from this family:">أيضًا من هذه العائلة:</b> <span class="i18n" data-en="the Message Authentication Code (MAC) — a data element generated via a secret key + (typically) a hash function of the message. Anyone with the secret key can recompute the MAC and verify the message wasn't altered.">رمز موثوقية الرسالة (MAC) — عنصر بيانات يُولَّد عبر مفتاح سري + (عادةً) دالة hash للرسالة. أي من يملك المفتاح السري يستطيع إعادة حساب MAC والتحقق من أن الرسالة لم تُعدَّل.</span></div>
+    </div>
+
+    <!-- 1.21 two key / asymmetric -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.21</span> <span class="i18n" data-en="Two-Key (Asymmetric) Algorithms">الخوارزميات ثنائية المفتاح (غير التناظرية)</span></h3>
+      <p class="i18n" data-en="A private key is known only to one entity, while the matching public key is available to many. Asymmetric encryption can work in either direction: encrypt with the private key so anyone with the public key can decrypt (proves the sender's identity), or encrypt with the public key so only the private-key holder can decrypt (protects confidentiality).">يُعرَف المفتاح الخاص فقط لكيان واحد، بينما يتوفَّر المفتاح العام المطابق للكثيرين. يمكن للتشفير غير التناظري أن يعمل في أي اتجاه: التشفير بالمفتاح الخاص حتى يستطيع أي من يملك المفتاح العام فك التشفير (يُثبت هوية المُرسِل)، أو التشفير بالمفتاح العام حتى يستطيع فقط حامل المفتاح الخاص فك التشفير (يحمي السرية).</p>
+      <table>
+        <tr><th class="i18n" data-en="Application">التطبيق</th><th class="i18n" data-en="Description">الوصف</th></tr>
+        <tr><td><b class="i18n" data-en="Digital Signature Algorithm">خوارزمية التوقيع الرقمي</b></td><td class="i18n" data-en="A value computed with a cryptographic algorithm and tied to a data object so any recipient can verify the data's origin and integrity.">قيمة تُحسَب بخوارزمية تشفيرية ومرتبطة بكائن بيانات حتى يستطيع أي مستقبِل التحقق من مصدر البيانات وسلامتها.</td></tr>
+        <tr><td><b class="i18n" data-en="Key Exchange">تبادل المفاتيح</b></td><td class="i18n" data-en="The process of securely distributing a symmetric key to two or more parties.">عملية توزيع مفتاح تناظري بشكل آمن لطرفين أو أكثر.</td></tr>
+        <tr><td><b class="i18n" data-en="User Authentication">توثيق المستخدم</b></td><td class="i18n" data-en="Authenticating that a user (and, similarly, an application/service) attempting access is genuine.">توثيق أن المستخدم (وبالمثل، تطبيق/خدمة) الذي يحاول الوصول أصلي.</td></tr>
+      </table>
+    </div>
+
+    <!-- 1.22 network security scope -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.22</span> <span class="i18n" data-en="Network Security: Two Dimensions">أمن الشبكات: بُعدان</span></h3>
+      <p class="i18n" data-en="Network security is a broad term encompassing security of the communications pathways AND security of the network devices/attached devices.">أمن الشبكات مصطلح واسع يشمل أمن مسارات الاتصال وأمن أجهزة الشبكة/الأجهزة المتصلة بها.</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:16px;"><b class="i18n" data-en="Communications Security">أمن الاتصالات</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Protects communications through the network against both passive and active attacks — implemented via network protocols. A security protocol may enhance an existing protocol (e.g. IPsec, IEEE 802.11i) or stand alone (e.g. TLS, SSH).">تحمي الاتصالات عبر الشبكة من الهجمات السلبية والنشطة — تُنفَّذ عبر بروتوكولات الشبكة. بروتوكول الأمن قد يعزّز بروتوكولًا موجودًا (مثل IPsec، IEEE 802.11i) أو يكون مستقلًا (مثل TLS، SSH).</p></div>
+        <div class="card" style="padding:16px;"><b class="i18n" data-en="Device Security">أمن الأجهزة</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Protects network devices (routers, switches) and end systems (clients, servers). Primary concerns: intruders, malware insertion, resource exhaustion.">تحمي أجهزة الشبكة (المُوجِّهات، المُبدِّلات) والأنظمة النهائية (العملاء، الخوادم). المخاوف الأساسية: المتسلّلون، إدخال البرمجيات الخبيثة، استنزاف الموارد.</p></div>
+      </div>
+    </div>
+
+    <!-- 1.23 device security types -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.23</span> <span class="i18n" data-en="Three Types of Device Security">ثلاثة أنواع من أمن الأجهزة</span></h3>
+      <table>
+        <tr><th class="i18n" data-en="Type">النوع</th><th class="i18n" data-en="Description">الوصف</th></tr>
+        <tr><td><b>Firewall</b></td><td class="i18n" data-en="Hardware/software that limits access between a network and attached devices per a security policy — filters incoming/outgoing traffic by rules based on content/pattern.">أجهزة/برمجيات تحدّ من الوصول بين شبكة والأجهزة المتصلة بها وفقًا لسياسة أمنية — تُصفّي حركة البيانات الداخلة/الخارجة بقواعد تعتمد على المحتوى/النمط.</td></tr>
+        <tr><td><b class="i18n" data-en="Intrusion Detection">الكشف عن التسلل</b></td><td class="i18n" data-en="Products that gather/analyze information to find and warn (in real- or near-real-time) of unauthorized access attempts.">منتجات تجمع/تحلّل المعلومات لإيجاد والتحذير (بوقت فعلي أو قريب منه) من محاولات وصول غير مصرَّح بها.</td></tr>
+        <tr><td><b class="i18n" data-en="Intrusion Prevention">منع التسلل</b></td><td class="i18n" data-en="Products designed to detect intrusive activity and attempt to stop it, ideally before it reaches its target.">منتجات مصمَّمة للكشف عن نشاط تسلّلي ومحاولة إيقافه، والأفضل قبل وصوله لهدفه.</td></tr>
+      </table>
+    </div>
+
+    <!-- 1.24 trust model -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.24</span> <span class="i18n" data-en="The Trust Model">نموذج الثقة</span></h3>
+      <p class="i18n" data-en="A widely cited definition of trust: “the willingness of a party to be vulnerable to the actions of another party based on the expectation that the other will perform a particular action important to the trustor, irrespective of the ability to monitor or control that other party.”">تعريف شائع الاستخدام للثقة: "استعداد طرف لأن يكون عرضة لتصرفات طرف آخر، بناءً على توقّع أن الطرف الآخر سيؤدي فعلًا معينًا مهمًا للطرف الواثق، بصرف النظر عن القدرة على مراقبة أو التحكم بذلك الطرف الآخر."</p>
+      <table>
+        <tr><th class="i18n" data-en="Concept">المفهوم</th><th class="i18n" data-en="Description">الوصف</th></tr>
+        <tr><td><b class="i18n" data-en="Trustworthiness">الموثوقية (Trustworthiness)</b></td><td class="i18n" data-en="A characteristic of an entity reflecting the degree to which it deserves trust.">خاصية لكيان تعكس درجة استحقاقه للثقة.</td></tr>
+        <tr><td><b class="i18n" data-en="Propensity to Trust">النزوع إلى الثقة</b></td><td class="i18n" data-en="A tendency to be willing to trust others broadly — every individual has a baseline trust level influencing reliance on others.">نزعة للاستعداد للثقة بالآخرين على نطاق واسع — كل فرد لديه مستوى ثقة أساسي يؤثر على اعتماده على الآخرين.</td></tr>
+        <tr><td><b>Risk</b></td><td class="i18n" data-en="A measure of how much an entity is threatened by a potential event — a function of (1) adverse impact if it occurs, and (2) likelihood of occurrence.">مقياس لمدى تهديد كيان بحدث محتمل — دالة في (1) الأثر السلبي إن حدث، و(2) احتمالية الحدوث.</td></tr>
+      </table>
+    </div>
+
+    <!-- 1.25 trust and info security + trustworthiness of individual/org/systems -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.25</span> <span class="i18n" data-en="Trust in Information Security &amp; Trustworthiness Levels">الثقة في أمن المعلومات ومستويات الموثوقية</span></h3>
+      <p class="i18n" data-en="Trust is confidence that an entity will act in a way that does not prejudice the security of the system it's part of — always restricted to specific functions and meaningful only within a security policy's context.">الثقة هي الثقة بأن كيانًا سيتصرف بطريقة لا تُضعِف أمن النظام الذي هو جزء منه — تنحصر دائمًا بوظائف محدَّدة وذات معنى فقط في سياق سياسة أمنية.</p>
+      <table>
+        <tr><th class="i18n" data-en="Level">المستوى</th><th class="i18n" data-en="Key Point">النقطة الأساسية</th></tr>
+        <tr><td><b class="i18n" data-en="Individual">الفرد</b></td><td class="i18n" data-en="Trust in internal users is built via Human Resource Security (embedding security into the whole employment lifecycle) and Security Awareness &amp; Training.">تُبنى الثقة بالمستخدمين الداخليين عبر أمن الموارد البشرية (دمج الأمن في كل دورة حياة التوظيف) والوعي والتدريب الأمني.</td></tr>
+        <tr><td><b class="i18n" data-en="Organization">المؤسسة</b></td><td class="i18n" data-en="Trust relationships with external organizations (cloud providers, supply chain) can be formally established, scalable, and either bilateral or many-to-many (per NIST SP 800-39).">علاقات الثقة مع المؤسسات الخارجية (مزوّدي السحابة، سلسلة التوريد) قد تُبنى رسميًا، وقابلة للتوسع، وثنائية أو متعددة (وفق NIST SP 800-39).</td></tr>
+        <tr><td><b class="i18n" data-en="Information Systems">أنظمة المعلومات</b></td><td class="i18n" data-en="Trustworthiness = degree to which a system can be expected to preserve CIA across the full range of threats. Two factors: Security Functionality (features employed) and Security Assurance (confidence those features work as intended).">الموثوقية = درجة توقُّع أن يحافظ النظام على CIA عبر كل نطاق التهديدات. عاملان: الوظائف الأمنية (الميزات المُستخدَمة) وضمان الأمن (الثقة بأن هذه الميزات تعمل كما هو مقصود).</td></tr>
+      </table>
+    </div>
+
+    <!-- 1.26 establishing trust relationships -->
+    <div class="card" style="margin-bottom:0;">
+      <h3><span class="num">1.26</span> <span class="i18n" data-en="Establishing Trust Relationships — Four Methods">بناء علاقات الثقة — أربع طرق</span></h3>
+      <p class="i18n" data-en="Per NIST SP 800-39, organizations use a combination of these methods:">وفقًا لـ NIST SP 800-39، تستخدم المؤسسات مزيجًا من هذه الطرق:</p>
+      <table>
+        <tr><th class="i18n" data-en="Method">الطريقة</th><th class="i18n" data-en="Description">الوصف</th></tr>
+        <tr><td><b class="i18n" data-en="Validated Trust">الثقة المُثبَتة</b></td><td class="i18n" data-en="Based on evidence obtained about the trusted party — e.g. its security policy, measures, and level of oversight.">تعتمد على دليل يُجمَع عن الطرف الموثوق به — مثل سياسته الأمنية، وتدابيره، ومستوى الإشراف عليه.</td></tr>
+        <tr><td><b class="i18n" data-en="Direct Historical Trust">الثقة التاريخية المباشرة</b></td><td class="i18n" data-en="Based on the security track record an organization has exhibited in the past.">تعتمد على السجل الأمني الذي أظهرته مؤسسة في الماضي.</td></tr>
+        <tr><td><b class="i18n" data-en="Mediated Trust">الثقة المُتوسَّطة</b></td><td class="i18n" data-en="A mutually trusted third party provides assurance/guarantee of trust between two parties (e.g. public-key certificate authorities).">طرف ثالث موثوق من الطرفين يوفّر ضمانًا للثقة بينهما (مثل سلطات إصدار الشهادات العامة).</td></tr>
+        <tr><td><b class="i18n" data-en="Mandated Trust">الثقة المُفوَّضة</b></td><td class="i18n" data-en="Trust established based on a specific mandate issued by a third party in a position of authority.">ثقة تُبنى بناءً على تفويض محدَّد صادر عن طرف ثالث في موقع سلطة.</td></tr>
+      </table>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 3. DIAGRAMS ============ -->
+<section id="diagrams">
+  <div class="container">
+    <span class="eyebrow">03 / DIAGRAMS &amp; FIGURES</span>
+    <h2 class="i18n" data-en="Explaining the Diagrams and Figures">شرح الرسومات والمخططات</h2>
+    <p class="lead i18n" data-en="A precise description of every figure in the chapter, tied back to the theory behind it.">وصف دقيق لكل شكل ورد في الفصل، مرتبط بالمفهوم النظري خلفه.</p>
+
+    <!-- Figure 1.1 pentagon -->
+    <div class="diagram-block">
+      <div class="diagram-head">
+        <h3 class="i18n" data-en="⬠ Figure 1.1 — Essential Information and Network Security Objectives">⬠ الشكل 1.1 — الأهداف الجوهرية لأمن المعلومات والشبكات</h3>
+        <span class="badge b-auth">Pentagon Diagram</span>
+      </div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="A five-sided pentagon shape, with the label “Information and Network Security” in a black pentagon at the center. Each of the five outer edges of the pentagon is colored differently and labeled with one security objective, arranged clockwise starting from the top: Confidentiality (plus privacy) in green at the top-left edge, Integrity (plus data authenticity, non-repudiation) in purple at the top-right edge, Authenticity in orange/pink along the right edge, Availability in light blue along the bottom edge, and Accountability in yellow along the left edge.">
+          شكل خماسي (pentagon)، مع تسمية "Information and Network Security" في خماسي أسود في المنتصف. كل حافة من الحواف الخارجية الخمس مُلوَّنة بشكل مختلف وموسومة بهدف أمني واحد، مرتَّبة في اتجاه الساعة بدءًا من الأعلى: السرية (Confidentiality plus privacy) بالأخضر عند الحافة العلوية اليسرى، السلامة (Integrity plus data authenticity, non-repudiation) بالبنفسجي عند الحافة العلوية اليمنى، الموثوقية (Authenticity) بالبرتقالي/الوردي على الحافة اليمنى، التوافر (Availability) بالأزرق الفاتح على الحافة السفلية، والمساءلة (Accountability) بالأصفر على الحافة اليسرى.
+        </p>
+        <p class="i18n" data-en="The five-sided shape itself is the visual argument of the figure: security rests on five equal “sides,” not just the classic three-sided CIA triad — visually elevating Authenticity and Accountability to the same structural importance as Confidentiality, Integrity, and Availability.">الشكل الخماسي نفسه هو الحجة البصرية للشكل: الأمن يرتكز على خمسة "جوانب" متساوية، ليس فقط ثالوث CIA الكلاسيكي ثلاثي الجوانب — مما يرفع بصريًا الموثوقية والمساءلة إلى نفس الأهمية البنائية للسرية والسلامة والتوافر.</p>
+      </div>
+    </div>
+
+    <!-- Figure 1.2 key concepts -->
+    <div class="diagram-block">
+      <div class="diagram-head">
+        <h3 class="i18n" data-en="🗂️ Figure 1.2 — Key Concepts in Security (Attacks / Services / Mechanisms)">🗂️ الشكل 1.2 — المفاهيم الأساسية في الأمن (هجمات / خدمات / آليات)</h3>
+        <span class="badge b-active">Three-Panel Taxonomy</span>
+      </div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="Three green rounded rectangles stacked vertically, each containing smaller labeled boxes — a complete taxonomy of the chapter's three core concepts:">ثلاثة مستطيلات خضراء بزوايا دائرية مصفوفة عموديًا، كل منها يحتوي مربعات أصغر موسومة — تصنيف كامل للمفاهيم الأساسية الثلاثة في الفصل:</p>
+        <div class="grid grid-3">
+          <div class="card" style="padding:14px;">
+            <b class="i18n" data-en="(a) Attacks">(أ) الهجمات</b>
+            <p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="Split into two boxes: Passive Attacks (Release of message contents, Traffic analysis) and Active Attacks (Replay, Data modification, Masquerade, Denial of service).">مُقسَّمة إلى مربعين: الهجمات السلبية (إفشاء محتوى الرسالة، تحليل حركة البيانات) والهجمات النشطة (إعادة التشغيل، تعديل البيانات، التنكّر، حجب الخدمة).</p>
+          </div>
+          <div class="card" style="padding:14px;">
+            <b class="i18n" data-en="(b) Services">(ب) الخدمات</b>
+            <p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="Six boxes in a 3×2 grid: Authentication, Access control, Data confidentiality, Data integrity, Nonrepudiation, Availability service.">ستة مربعات في شبكة 3×2: الموثوقية، ضبط الوصول، سرية البيانات، سلامة البيانات، عدم الإنكار، خدمة التوافر.</p>
+          </div>
+          <div class="card" style="padding:14px;">
+            <b class="i18n" data-en="(c) Mechanisms">(ج) الآليات</b>
+            <p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="Eight boxes in a 4×2 grid: Cryptographic algorithms, Data integrity, Digital signature, Authentication exchange, Traffic padding, Routing control, Notarization, Access control.">ثمانية مربعات في شبكة 4×2: خوارزميات التشفير، سلامة البيانات، التوقيع الرقمي، تبادل الموثوقية، حشو حركة البيانات، ضبط التوجيه، التوثيق، ضبط الوصول.</p>
+          </div>
+        </div>
+        <div class="note good" style="margin-top:10px;" class="i18n" data-en="Reading the whole figure as one unit: attacks are the threats, services are the goals we want to guarantee, and mechanisms are the concrete tools that implement those services to counter those attacks — three layers of the same problem.">قراءة الشكل كوحدة واحدة: الهجمات هي التهديدات، والخدمات هي الأهداف التي نريد ضمانها، والآليات هي الأدوات الملموسة التي تُنفِّذ تلك الخدمات للتصدي لتلك الهجمات — ثلاث طبقات لنفس المشكلة.</div>
+      </div>
+    </div>
+
+    <!-- Figure 1.3 client server attacks -->
+    <div class="diagram-block">
+      <div class="diagram-head">
+        <h3 class="i18n" data-en="🖥️ Figure 1.3 — Security Attacks (Client/Server Context)">🖥️ الشكل 1.3 — الهجمات الأمنية (سياق عميل/خادم)</h3>
+        <span class="badge b-passive">Five Panels</span>
+      </div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="Five green boxes, each showing a Client box and a Server box, sometimes with a third box labeled Attacker, connected by arrows that visually encode the attack's mechanics:">خمسة مربعات خضراء، كل منها يعرض مربع Client ومربع Server، وبعضها بمربع ثالث موسوم Attacker، متصلة بأسهم تُرمِّز بصريًا آلية الهجوم:</p>
+        <div class="grid grid-2">
+          <div class="panel-diagram">
+            <div style="display:flex; align-items:center; justify-content:center; gap:20px;">
+              <div class="flow-box">Client</div><div class="flow-arrow">↔</div><div class="flow-box">Server</div>
+            </div>
+            <div class="panel-label i18n" data-en="(a) Normal flow — a plain two-way arrow, no attacker present.">(أ) التدفق العادي — سهم ثنائي الاتجاه بسيط، بلا مهاجم.</div>
+          </div>
+          <div class="panel-diagram">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+              <div style="display:flex; align-items:center; gap:20px;"><div class="flow-box">Client</div><div class="flow-arrow">↔</div><div class="flow-box">Server</div></div>
+              <div style="font-size:1.2rem; color:var(--text-faint);">┊ ↓</div>
+              <div class="flow-box" style="border-color:#f8717166;">Attacker</div>
+            </div>
+            <div class="panel-label i18n" data-en="(b) Passive attack (eavesdrop, traffic analysis) — the Client↔Server flow is untouched (solid arrow); the Attacker only watches via a dashed line, never interrupting the flow.">(ب) هجوم سلبي (تنصت، تحليل حركة البيانات) — تدفق Client↔Server لم يُلمَس (سهم متصل)؛ المهاجم فقط يرصد عبر خط متقطّع، بلا مقاطعة التدفق أبدًا.</div>
+          </div>
+          <div class="panel-diagram">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+              <div style="display:flex; align-items:center; gap:20px;"><div class="flow-box">Client</div><div style="width:60px;"></div><div class="flow-box">Server</div></div>
+              <div style="font-size:1rem; color:var(--text-faint);">↘ &nbsp; &nbsp; &nbsp; ↙</div>
+              <div class="flow-box" style="border-color:#f8717166;">Attacker</div>
+            </div>
+            <div class="panel-label i18n" data-en="(c) Active attack: masquerade / data modification — the direct Client–Server arrow is GONE; instead both Client and Server point down to the Attacker, who now sits in the middle of every exchange (a “man-in-the-middle”).">(ج) هجوم نشط: تنكّر / تعديل بيانات — السهم المباشر بين Client و Server غائب؛ بدلًا من ذلك يشير كلاهما للأسفل نحو المهاجم، الذي يقف الآن في وسط كل تبادل ("man-in-the-middle").</div>
+          </div>
+          <div class="panel-diagram">
+            <div style="display:flex; align-items:center; justify-content:center; gap:40px;">
+              <div class="flow-box">Client</div>
+              <div style="display:flex; flex-direction:column; align-items:center;"><span style="font-size:1.2rem;">↗</span><div class="flow-box" style="border-color:#f8717166;">Attacker</div></div>
+              <div class="flow-box">Server</div>
+            </div>
+            <div class="panel-label i18n" data-en="(d) Active attack: masquerade / data modification / denial of service — the Client is disconnected entirely; only the Attacker has an arrow pointing at the Server, impersonating the client or attacking the server directly.">(د) هجوم نشط: تنكّر / تعديل بيانات / حجب خدمة — Client مقطوع تمامًا؛ فقط المهاجم له سهم يشير إلى Server، متنكّرًا كالعميل أو مهاجمًا الخادم مباشرة.</div>
+          </div>
+        </div>
+        <div class="panel-diagram" style="max-width:360px; margin:14px auto 0;">
+          <div style="display:flex; flex-direction:column; align-items:center; gap:8px;">
+            <div style="display:flex; align-items:center; gap:20px;"><div class="flow-box">Client</div><div class="flow-arrow">↔</div><div class="flow-box">Server</div></div>
+            <div style="font-size:1rem; color:var(--text-faint);">┊ ↓ &nbsp; &nbsp; &nbsp; ↑</div>
+            <div class="flow-box" style="border-color:#f8717166;">Attacker</div>
+          </div>
+          <div class="panel-label i18n" data-en="(e) Active attack: replay — like the passive case, the attacker captures the Client's message via a dashed line (no disruption yet), but then has its own solid arrow forward to the Server: it replays the captured message later.">(هـ) هجوم نشط: إعادة تشغيل — مثل الحالة السلبية، يلتقط المهاجم رسالة العميل عبر خط متقطّع (بلا تعطيل بعد)، ثم له سهم متصل خاص به موجَّه إلى Server: يُعيد تشغيل الرسالة المُلتقَطة لاحقًا.</div>
+        </div>
+        <div class="note info" style="margin-top:12px;" class="i18n" data-en="The visual pattern across all five panels: a solid, unbroken Client↔Server arrow means the attacker isn't disrupting the channel (panels a, b, e); a broken/redirected arrow through the Attacker box means the channel itself has been hijacked (panels c, d). This single visual cue is the fastest way to tell passive from active attacks in any diagram like this.">النمط البصري عبر الأشكال الخمسة كلها: سهم Client↔Server متصل وغير منقطع يعني أن المهاجم لا يُعطّل القناة (الأشكال أ، ب، هـ)؛ سهم مقطوع/مُعاد توجيهه عبر مربع Attacker يعني أن القناة نفسها اختُطفت (الأشكال ج، د). هذه الإشارة البصرية الواحدة هي أسرع طريقة للتمييز بين الهجمات السلبية والنشطة في أي مخطط كهذا.</div>
+      </div>
+    </div>
+
+    <!-- Figure 1.4 crypto algorithms -->
+    <div class="diagram-block">
+      <div class="diagram-head">
+        <h3 class="i18n" data-en="🔐 Figure 1.4 — Cryptographic Algorithms">🔐 الشكل 1.4 — خوارزميات التشفير</h3>
+        <span class="badge b-integ">Three-Column Tree</span>
+      </div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="Three tall green columns side by side, titled (left to right) Keyless, Single-Key, and Two-Key. Each column contains its own smaller nested boxes listing the specific algorithm types that belong to that family:">ثلاثة أعمدة خضراء طويلة جنبًا إلى جنب، بعناوين (من اليسار إلى اليمين) Keyless و Single-Key و Two-Key. كل عمود يحتوي مربعاته الفرعية الأصغر التي تسرد أنواع الخوارزميات المحدَّدة التي تنتمي لتلك العائلة:</p>
+        <div class="grid grid-3">
+          <div class="card" style="padding:14px;"><b>Keyless</b><ul style="margin-top:8px; padding-inline-start:18px; color:var(--text-dim); font-size:.88rem;"><li>Cryptographic hash function</li><li>Pseudorandom number generator</li></ul></div>
+          <div class="card" style="padding:14px;"><b>Single-Key</b><ul style="margin-top:8px; padding-inline-start:18px; color:var(--text-dim); font-size:.88rem;"><li>Block cipher symmetric encryption</li><li>Stream cipher symmetric encryption</li><li>Message authentication code</li></ul></div>
+          <div class="card" style="padding:14px;"><b>Two-Key</b><ul style="margin-top:8px; padding-inline-start:18px; color:var(--text-dim); font-size:.88rem;"><li>Asymmetric encryption</li><li>Digital signature</li><li>Key exchange</li><li>User authentication</li></ul></div>
+        </div>
+        <p class="i18n" data-en="The column heights increase left to right (2 boxes, then 3, then 4) — visually showing that as key complexity increases (no key → one key → two keys), the number of distinct applications that family enables also grows.">ارتفاع الأعمدة يزداد من اليسار إلى اليمين (مربعان، ثم 3، ثم 4) — يُظهر بصريًا أنه مع زيادة تعقيد المفتاح (بلا مفتاح ← مفتاح واحد ← مفتاحان)، يزداد أيضًا عدد التطبيقات المتمايزة التي تُمكِّنها تلك العائلة.</p>
+      </div>
+    </div>
+
+    <!-- Figure 1.5 network security elements -->
+    <div class="diagram-block">
+      <div class="diagram-head">
+        <h3 class="i18n" data-en="🌐 Figure 1.5 — Key Elements of Network Security">🌐 الشكل 1.5 — العناصر الأساسية لأمن الشبكات</h3>
+        <span class="badge b-avail">Two-Region Map</span>
+      </div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="Two side-by-side green regions at the top labeled (a) Communications Security and (b) Device Security, with a third green box below.">منطقتان خضراوان جنبًا إلى جنب في الأعلى موسومتان (أ) أمن الاتصالات و(ب) أمن الأجهزة، مع مربع أخضر ثالث أسفلهما.</p>
+        <div class="grid grid-2">
+          <div class="card" style="padding:14px;">
+            <b class="i18n" data-en="(a) Communications Security">(أ) أمن الاتصالات</b>
+            <p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="Two sub-groups: “Network Protocols” (IPsec, TLS, HTTPS, SSH, IEEE 802.11i, S/MIME, with a “…” implying more) and, in a separate box, “Cryptography” (Keyless, Single-key, Two-key — the same three families from Figure 1.4).">مجموعتان فرعيتان: "Network Protocols" (IPsec، TLS، HTTPS، SSH، IEEE 802.11i، S/MIME، مع "…" تشير لوجود المزيد)، وفي مربع منفصل، "Cryptography" (Keyless، Single-key، Two-key — نفس العائلات الثلاث من الشكل 1.4).</p>
+          </div>
+          <div class="card" style="padding:14px;">
+            <b class="i18n" data-en="(b) Device Security">(ب) أمن الأجهزة</b>
+            <p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="A single row of three boxes: Firewall, Intrusion detection, Intrusion prevention.">صف واحد من ثلاثة مربعات: Firewall، Intrusion detection، Intrusion prevention.</p>
+          </div>
+        </div>
+        <p class="i18n" data-en="This figure ties the whole chapter together: the network protocols in part (a) are exactly the standalone/enhancement protocols mentioned earlier, and the cryptography box shows that every protocol ultimately relies on one of the three cryptographic families to actually provide its security.">يربط هذا الشكل الفصل كله معًا: بروتوكولات الشبكة في الجزء (أ) هي تمامًا بروتوكولات "الإحلال/التعزيز المستقل" المذكورة سابقًا، ومربع التشفير يُظهر أن كل بروتوكول يعتمد في النهاية على واحدة من عائلات التشفير الثلاث لتقديم أمنه فعليًا.</p>
+      </div>
+    </div>
+
+    <!-- Figure 1.6 trust model (described from notes, image missing) -->
+    <div class="diagram-block">
+      <div class="diagram-head">
+        <h3 class="i18n" data-en="🤝 Figure 1.6 — The Trust Model (described from the lecture notes)">🤝 الشكل 1.6 — نموذج الثقة (موصوف من ملاحظات المحاضرة)</h3>
+        <span class="badge b-account">Conceptual Model</span>
+      </div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="The figure image itself did not render in the source file, but the lecture notes describe its structure in detail: a trustor evaluates a trustee along three factors that feed into an overall trust judgment, which then combines with perceived Risk to produce a final decision about whether to take a risk-bearing action (relying on the trustee, or disclosing information to them).">لم يُعرَض الشكل نفسه في الملف المصدر، لكن ملاحظات المحاضرة تصف بنيته بالتفصيل: يُقيِّم الطرف الواثق (trustor) الطرف الموثوق به (trustee) عبر ثلاثة عوامل تُغذّي حُكمًا شاملًا بالثقة، والذي يتحد بعد ذلك مع الخطر المُتصوَّر (Risk) لإنتاج قرار نهائي حول اتخاذ فعل يحمل خطرًا (الاعتماد على الطرف الموثوق به، أو إفشاء معلومات له).</p>
+        <div class="grid grid-3" style="margin:14px 0;">
+          <div class="card" style="padding:14px;"><b class="i18n" data-en="Ability">القدرة (Ability)</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="Also called competence — the trustee's potential ability to do a given task or be entrusted with given information.">تُسمى أيضًا الكفاءة — قدرة الطرف الموثوق به المحتملة على أداء مهمة معينة أو أن يُعهَد له بمعلومة معينة.</p></div>
+          <div class="card" style="padding:14px;"><b class="i18n" data-en="Benevolence">حسن النية (Benevolence)</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="A disposition of goodwill toward the trusting party — the trustee does not intend to cause harm.">توجّه من حسن النية نحو الطرف الواثق — لا ينوي الطرف الموثوق به التسبّب في ضرر.</p></div>
+          <div class="card" style="padding:14px;"><b class="i18n" data-en="Integrity">النزاهة (Integrity)</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="The trustor's perception that the trustee adheres to a set of principles the trustor finds acceptable.">تصوّر الطرف الواثق بأن الطرف الموثوق به يلتزم بمبادئ يجدها الطرف الواثق مقبولة.</p></div>
+        </div>
+        <p class="i18n" data-en="Note this “Integrity” is a property of a trustworthy person/organization (an ethical disposition) — a different, non-technical sense of the word from “data integrity” or “system integrity” defined earlier in the chapter. Don't confuse the two on an exam.">لاحظ أن "النزاهة" هنا خاصية لشخص/مؤسسة موثوقة (توجّه أخلاقي) — معنى مختلف وغير تقني للكلمة عن "سلامة البيانات" أو "سلامة النظام" المُعرَّفتين سابقًا في الفصل. لا تخلط بينهما في الامتحان.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. SUMMARY TABLE ============ -->
+<section id="summary">
+  <div class="container">
+    <span class="eyebrow">04 / SUMMARY</span>
+    <h2 class="i18n" data-en="Comprehensive Summary — Key Concepts and Definitions">تلخيص شامل — المفاهيم والتعريفات الجوهرية</h2>
+    <table>
+      <tr><th class="i18n" data-en="Term">المصطلح</th><th class="i18n" data-en="Definition">التعريف</th></tr>
+      <tr><td class="mono">Cybersecurity</td><td class="i18n" data-en="Tools, policies, and technologies protecting cyberspace and organizational/user assets.">أدوات وسياسات وتقنيات تحمي الفضاء السيبراني وأصول المؤسسات/المستخدمين.</td></tr>
+      <tr><td class="mono">Information Security</td><td class="i18n" data-en="Preservation of confidentiality, integrity, availability (+ authenticity, accountability, nonrepudiation, reliability) of information.">الحفاظ على السرية والسلامة والتوافر (+ الموثوقية، المساءلة، عدم الإنكار، الاعتمادية) للمعلومات.</td></tr>
+      <tr><td class="mono">Network Security</td><td class="i18n" data-en="Protecting networks/services from unauthorized modification, destruction, or disclosure.">حماية الشبكات/الخدمات من التعديل أو التدمير أو الإفشاء غير المصرَّح به.</td></tr>
+      <tr><td><span class="badge b-conf">Confidentiality</span></td><td class="i18n" data-en="Info not disclosed to unauthorized individuals + privacy control.">عدم إفشاء المعلومة لغير المصرَّح لهم + التحكم بالخصوصية.</td></tr>
+      <tr><td><span class="badge b-integ">Integrity</span></td><td class="i18n" data-en="Data/programs changed only in authorized ways + system performs unimpaired.">تُغيَّر البيانات/البرامج فقط بطرق مصرَّح بها + يعمل النظام دون إعاقة.</td></tr>
+      <tr><td><span class="badge b-avail">Availability</span></td><td class="i18n" data-en="Systems work promptly; service not denied to authorized users.">تعمل الأنظمة فورًا؛ لا تُحجَب الخدمة عن المستخدمين المصرَّح لهم.</td></tr>
+      <tr><td><span class="badge b-auth">Authenticity</span></td><td class="i18n" data-en="Being genuine and verifiable — trust in a transmission/originator's validity.">كون الشيء أصليًا وقابلًا للتحقق — الثقة بصحة الإرسال/مصدره.</td></tr>
+      <tr><td><span class="badge b-account">Accountability</span></td><td class="i18n" data-en="Actions traceable uniquely to an entity.">التصرفات قابلة للتتبع بشكل فريد إلى كيان.</td></tr>
+      <tr><td><b>OSI Security Architecture</b></td><td class="i18n" data-en="X.800's framework of Attack / Mechanism / Service.">إطار X.800 للهجوم / الآلية / الخدمة.</td></tr>
+      <tr><td><span class="badge b-passive">Passive Attack</span></td><td class="i18n" data-en="Learns info without affecting resources (eavesdropping, traffic analysis). Defense: prevention (encryption).">يتعرّف على معلومات بلا تأثير على الموارد (تنصت، تحليل حركة). الدفاع: المنع (تشفير).</td></tr>
+      <tr><td><span class="badge b-active">Active Attack</span></td><td class="i18n" data-en="Alters resources/operation (masquerade, replay, data modification, DoS). Defense: detection + recovery.">يُغيِّر الموارد/العمل (تنكّر، إعادة تشغيل، تعديل بيانات، حجب خدمة). الدفاع: الكشف + التعافي.</td></tr>
+      <tr><td><b>Security Services</b></td><td class="i18n" data-en="Authentication, Access Control, Data Confidentiality, Data Integrity, Nonrepudiation, Availability.">الموثوقية، ضبط الوصول، سرية البيانات، سلامة البيانات، عدم الإنكار، التوافر.</td></tr>
+      <tr><td><b>Keyless / Single-Key / Two-Key</b></td><td class="i18n" data-en="Three crypto families: no key (hash, PRNG); one secret key (symmetric enc., MAC); two related keys (asymmetric enc., digital signature, key exchange).">ثلاث عائلات تشفير: بلا مفتاح (hash، PRNG)؛ مفتاح سري واحد (تشفير تناظري، MAC)؛ مفتاحان مرتبطان (تشفير غير تناظري، توقيع رقمي، تبادل مفاتيح).</td></tr>
+      <tr><td><b>Trust</b></td><td class="i18n" data-en="Willingness to be vulnerable to another party's actions based on expectation of their behavior.">الاستعداد لأن تكون عرضة لتصرفات طرف آخر بناءً على توقّع سلوكه.</td></tr>
+      <tr><td><b>Establishing Trust</b></td><td class="i18n" data-en="Validated, Direct historical, Mediated, or Mandated trust (NIST SP 800-39).">الثقة المُثبَتة، أو التاريخية المباشرة، أو المُتوسَّطة، أو المُفوَّضة (NIST SP 800-39).</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 5. THREE LEVELS ============ -->
+<section id="levels">
+  <div class="container">
+    <span class="eyebrow">05 / THREE LEVELS</span>
+    <h2 class="i18n" data-en="Simplified at 3 Levels">تبسيط على 3 مستويات</h2>
+    <div class="level-tabs">
+      <button class="level-tab active" data-level="beginner"><span class="i18n" data-en="🌱 Beginner">🌱 للمبتدئين</span></button>
+      <button class="level-tab" data-level="intermediate"><span class="i18n" data-en="🎓 University Level">🎓 مستوى جامعي</span></button>
+      <button class="level-tab" data-level="quick"><span class="i18n" data-en="⚡ Quick Review">⚡ مراجعة سريعة</span></button>
+    </div>
+
+    <div class="level-panel active" id="panel-beginner">
+      <div class="card">
+        <p class="i18n" data-en="Think of your house:">تخيّل منزلك:</p>
+        <ul style="padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="<b>Confidentiality</b> is curtains on your windows — strangers can't see what's inside."><b>السرية</b> هي الستائر على نوافذك — لا يستطيع الغرباء رؤية ما بالداخل.</li>
+          <li class="i18n" data-en="<b>Integrity</b> is a tamper-evident seal on your mailbox — you'd know if someone opened your mail and changed it."><b>السلامة</b> هي ختم يكشف العبث على صندوق بريدك — ستعرف إن فتح أحد بريدك وغيّره.</li>
+          <li class="i18n" data-en="<b>Availability</b> is your front door actually opening when you turn the key — a broken lock that locks YOU out is a loss of availability too."><b>التوافر</b> هو أن يُفتَح بابك الأمامي فعلًا عندما تُدير المفتاح — قفل معطّل يحبسك أنت أيضًا خسارة للتوافر.</li>
+          <li class="i18n" data-en="A <b>passive attack</b> is a nosy neighbor watching who comes and goes through binoculars — you'd never know they're watching. An <b>active attack</b> is someone actually breaking your lock or forging a letter in your name."><b>الهجوم السلبي</b> هو جار فضولي يرصد من يدخل ويخرج بمنظار — لن تعرف أبدًا أنه يرصدك. <b>الهجوم النشط</b> هو من يكسر قفلك فعلًا أو يزوّر خطابًا باسمك.</li>
+          <li class="i18n" data-en="<b>Symmetric (single-key) encryption</b> is like a house key you and a friend both hold — either of you can lock or unlock the door with the same key. <b>Asymmetric (two-key) encryption</b> is like a mailbox slot: anyone can drop a letter in (public key), but only you have the key to open the box and read it (private key)."><b>التشفير التناظري (مفتاح واحد)</b> مثل مفتاح منزل تحمله أنت وصديقك — يستطيع أي منكما قفل أو فتح الباب بنفس المفتاح. <b>التشفير غير التناظري (مفتاحان)</b> مثل فتحة صندوق بريد: يستطيع أي شخص إسقاط خطاب بها (المفتاح العام)، لكن أنت فقط تملك مفتاح فتح الصندوق وقراءته (المفتاح الخاص).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="level-panel" id="panel-intermediate">
+      <div class="card i18n" data-en="<p>The chapter's structure follows a deliberate logic: it starts by defining WHAT we're protecting (the CIA+ objectives), then HOW attacks are classified (the OSI architecture's attack/mechanism/service triad, refined into the passive/active split), then WHICH services counter those attacks (authentication, access control, confidentiality, integrity, nonrepudiation, availability — each with formal X.800 sub-definitions), then WHAT tools implement those services (the eight security mechanisms, and underneath them, the three cryptographic algorithm families), and finally WHY any of this works at all — the Trust Model, which grounds every technical guarantee in an underlying assumption about the behavior of other parties.</p><p>A key analytical skill: when given a scenario, first classify it as passive or active (does it alter data/resources, or only observe?), then map it onto the four active sub-types if active (masquerade, replay, modification, DoS) or the two passive sub-types if passive (release of contents, traffic analysis). Then ask which CIA+ objective is threatened, and which service/mechanism would be the appropriate countermeasure. This four-step mapping (attack type → sub-type → objective threatened → countermeasure) is exactly how exam scenario-questions are typically structured.</p>">
+        <p>
+          يتبع بنية الفصل منطقًا متعمَّدًا: يبدأ بتعريف ماذا نحمي (أهداف CIA+)، ثم كيف تُصنَّف الهجمات (ثالوث بنية OSI: الهجوم/الآلية/الخدمة، المُنقَّى إلى تقسيم سلبي/نشط)، ثم أي الخدمات تتصدى لتلك الهجمات (الموثوقية، ضبط الوصول، السرية، السلامة، عدم الإنكار، التوافر — كل منها بتعريفات فرعية رسمية من X.800)، ثم ما الأدوات التي تُنفِّذ تلك الخدمات (الآليات الأمنية الثمانية، وتحتها، عائلات خوارزميات التشفير الثلاث)، وأخيرًا لماذا يعمل أي من هذا أساسًا — نموذج الثقة، الذي يُرسِّخ كل ضمان تقني في افتراض أساسي حول سلوك الأطراف الأخرى.
+        </p>
+        <p>
+          مهارة تحليلية أساسية: عند إعطائك سيناريو، صنِّفه أولًا كسلبي أو نشط (هل يُغيِّر البيانات/الموارد، أم فقط يرصد؟)، ثم اربطه بأحد الأنواع الفرعية النشطة الأربعة إذا كان نشطًا (تنكّر، إعادة تشغيل، تعديل، حجب خدمة) أو الأنواع الفرعية السلبية الاثنين إذا كان سلبيًا (إفشاء المحتوى، تحليل حركة البيانات). ثم اسأل أي هدف من CIA+ مُهدَّد، وأي خدمة/آلية ستكون الإجراء المضاد المناسب. هذا الربط بأربع خطوات (نوع الهجوم ← النوع الفرعي ← الهدف المُهدَّد ← الإجراء المضاد) هو تمامًا كيف تُصاغ أسئلة السيناريو في الامتحانات عادةً.
+        </p>
+      </div>
+    </div>
+
+    <div class="level-panel" id="panel-quick">
+      <div class="card">
+        <ul class="quickref-list">
+          <li>Cybersecurity ⊃ Information Security + Network Security.</li>
+          <li>CIA+: Confidentiality, Integrity, Availability, Authenticity, Accountability.</li>
+          <li>OSI arch: Attack (compromises security) / Mechanism (detect-prevent-recover) / Service (counters attacks via mechanisms).</li>
+          <li>Threat = potential; Attack = actual attempt.</li>
+          <li>Passive attack: observe only → prevent via encryption. Types: release of contents, traffic analysis.</li>
+          <li>Active attack: alters resources → detect + recover. Types: masquerade, replay, data modification, DoS.</li>
+          <li>Services: Authentication, Access control, Data confidentiality, Data integrity, Nonrepudiation, Availability.</li>
+          <li>Authentication types: Peer entity (connections) vs Data origin (single messages, e.g. email).</li>
+          <li>Integrity types: Connection-oriented (stream, full protection) vs Connectionless (single message, mod. only).</li>
+          <li>8 mechanisms: crypto algorithms, data integrity, digital signature, auth exchange, traffic padding, routing control, notarization, access control.</li>
+          <li>3 crypto families: Keyless (hash, PRNG) / Single-key (block cipher, stream cipher, MAC) / Two-key (asymmetric enc., digital signature, key exchange, user auth).</li>
+          <li>Network security = Communications security + Device security (firewall, IDS, IPS).</li>
+          <li>Trust factors: Ability, Benevolence, Integrity → combined with Risk → decision.</li>
+          <li>4 ways to establish trust: Validated, Direct historical, Mediated, Mandated.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. QUIZ ============ -->
+<section id="quiz">
+  <div class="container">
+    <span class="eyebrow">06 / INTERACTIVE QUIZ</span>
+    <h2 class="i18n" data-en="Interactive Quiz">اختبار تفاعلي</h2>
+    <p class="lead i18n" data-en="Answer the questions, then press “Check Answer” for each — your final score appears at the bottom.">أجب عن الأسئلة ثم اضغط "تحقق من الإجابة" لكل سؤال — النتيجة النهائية تظهر أسفل الصفحة.</p>
+
+    <div class="quiz-progress">
+      <div class="quiz-score"><span class="i18n" data-en="Score:">النتيجة:</span> <span id="scoreNow">0</span> / <span id="scoreTotal">0</span></div>
+      <div class="quiz-bar"><div class="quiz-bar-fill" id="quizBarFill"></div></div>
+    </div>
+
+    <div id="quizContainer"></div>
+
+    <div class="final-score" id="finalScore">
+      <div class="big" id="finalScoreText">0 / 0</div>
+      <p id="finalScoreMsg" style="margin-top:8px; color:var(--text-dim);"></p>
+      <button class="reset-btn" onclick="resetQuiz()"><span class="i18n" data-en="🔄 Try Again">🔄 إعادة المحاولة</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. STUDY PLAN ============ -->
+<section id="plan">
+  <div class="container">
+    <span class="eyebrow">07 / STUDY PLAN</span>
+    <h2 class="i18n" data-en="One-Day Study Plan">خطة مذاكرة ليوم واحد</h2>
+    <p class="lead i18n" data-en="A suggested schedule for reviewing this chapter in one study day before the exam.">جدول زمني مقترح لمراجعة هذا الفصل خلال يوم دراسي واحد قبل الامتحان.</p>
+    <div class="timeline">
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Hour 1">الساعة 1</div>
+        <div class="t-title i18n" data-en="Definitions: Cybersecurity, Info/Network Security, CIA+">التعريفات: الأمن السيبراني، أمن المعلومات/الشبكات، CIA+</div>
+        <p style="color:var(--text-dim);" class="i18n" data-en="Memorize the exact wording of Confidentiality, Integrity, and Availability, then add Authenticity and Accountability. Study Figure 1.1's pentagon shape as a memory anchor.">احفظ الصياغة الدقيقة للسرية والسلامة والتوافر، ثم أضف الموثوقية والمساءلة. راجع شكل الخماسي في الشكل 1.1 كمرساة للذاكرة.</p>
+      </div>
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Hour 2">الساعة 2</div>
+        <div class="t-title i18n" data-en="OSI Architecture + Passive/Active attacks">بنية OSI + الهجمات السلبية/النشطة</div>
+        <p style="color:var(--text-dim);" class="i18n" data-en="Drill the Attack/Mechanism/Service definitions, then the 2 passive sub-types and 4 active sub-types until you can classify any scenario instantly.">تدرّب على تعريفات الهجوم/الآلية/الخدمة، ثم النوعين الفرعيين السلبيين والأربعة النشطة حتى تستطيع تصنيف أي سيناريو فورًا.</p>
+      </div>
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Hour 3">الساعة 3</div>
+        <div class="t-title i18n" data-en="Security Services + Cryptographic Algorithm Families">الخدمات الأمنية + عائلات خوارزميات التشفير</div>
+        <p style="color:var(--text-dim);" class="i18n" data-en="Go through each of the 6 services, then the Keyless/Single-Key/Two-Key tree (Figure 1.4) and what each family enables.">راجع كل من الخدمات الست، ثم شجرة Keyless/Single-Key/Two-Key (الشكل 1.4) وما تُمكِّنه كل عائلة.</p>
+      </div>
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Hour 4">الساعة 4</div>
+        <div class="t-title i18n" data-en="Trust Model + the interactive quiz">نموذج الثقة + الاختبار التفاعلي</div>
+        <p style="color:var(--text-dim);" class="i18n" data-en="Review Trustworthiness/Propensity/Risk and the 4 trust-establishment methods, then take the full quiz and revisit any missed section.">راجع الموثوقية/النزوع للثقة/الخطر وطرق بناء الثقة الأربع، ثم حل الاختبار كاملًا وارجع لأي قسم أخطأت فيه.</p>
+      </div>
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Right before the exam (last 20 minutes)">قبل الامتحان مباشرة (آخر 20 دقيقة)</div>
+        <div class="t-title i18n" data-en="Final focused review of only:">مراجعة أخيرة مركّزة فقط على:</div>
+        <ul style="color:var(--text-dim); padding-inline-start:20px; margin-top:6px;">
+          <li class="i18n" data-en="The whole “Comprehensive Summary” table">جدول "التلخيص الشامل" كاملًا</li>
+          <li class="i18n" data-en="Figure 1.2's three-panel taxonomy (Attacks / Services / Mechanisms)">تصنيف الشكل 1.2 ثلاثي الأقسام (الهجمات / الخدمات / الآليات)</li>
+          <li class="i18n" data-en="Figure 1.3's visual cue: unbroken arrow = passive, redirected through attacker = active">الإشارة البصرية في الشكل 1.3: سهم غير مقطوع = سلبي، مُعاد توجيهه عبر المهاجم = نشط</li>
+          <li class="i18n" data-en="Peer entity vs. Data origin authentication; Connection-oriented vs. Connectionless integrity">موثوقية الكيان النظير مقابل مصدر البيانات؛ سلامة موجّهة نحو الاتصال مقابل بلا اتصال</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8. PRO TIPS ============ -->
+<section id="tips">
+  <div class="container">
+    <span class="eyebrow">08 / PRO TIPS</span>
+    <h2 class="i18n" data-en="Pro Tips">نصائح احترافية</h2>
+
+    <div class="grid grid-2" style="align-items:start;">
+      <div class="card">
+        <h3 class="i18n" data-en="💡 How to Understand Instead of Memorize">💡 كيف تفهم بدلًا من الحفظ</h3>
+        <div class="tip-item"><span class="tip-icon">🔍</span><div class="i18n" data-en="For any attack, ask ONE question first: “does this alter data/resources, or only observe them?” That single question sorts it into passive or active before you worry about sub-types.">لأي هجوم، اسأل سؤالًا واحدًا أولًا: "هل يُغيِّر هذا البيانات/الموارد، أم فقط يرصدها؟" هذا السؤال الوحيد يُصنِّفه كسلبي أو نشط قبل أن تقلق حول الأنواع الفرعية.</div></div>
+        <div class="tip-item"><span class="tip-icon">✍️</span><div class="i18n" data-en="Link each of the 4 active attack sub-types to a one-word verb: masquerade = pretend, replay = repeat, modification = change, DoS = block. This turns four definitions into four verbs you'll never forget.">اربط كل من الأنواع الفرعية النشطة الأربعة بفعل واحد: تنكّر = يتظاهر، إعادة تشغيل = يُكرِّر، تعديل = يُغيِّر، حجب خدمة = يمنع. هذا يحوّل أربعة تعريفات إلى أربعة أفعال لن تنساها أبدًا.</div></div>
+        <div class="tip-item"><span class="tip-icon">📐</span><div class="i18n" data-en="Don't memorize the CIA+ objectives as a flat list — use the pentagon shape from Figure 1.1 as a visual peg; five sides, five objectives, in order around the shape.">لا تحفظ أهداف CIA+ كقائمة مسطّحة — استخدم شكل الخماسي من الشكل 1.1 كمرساة بصرية؛ خمسة جوانب، خمسة أهداف، بالترتيب حول الشكل.</div></div>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="🏋️ Suggested Hands-On Practice">🏋️ تدريب عملي مقترح</h3>
+        <div class="tip-item"><span class="tip-icon">1️⃣</span><div class="i18n" data-en="Take 5 real-world news headlines about security breaches and classify each as passive or active, then name the specific sub-type.">اختر 5 عناوين أخبار حقيقية عن خروقات أمنية وصنِّف كل واحد كسلبي أو نشط، ثم اسمِ النوع الفرعي المحدَّد.</div></div>
+        <div class="tip-item"><span class="tip-icon">2️⃣</span><div class="i18n" data-en="For each of the 6 security services, write down one real app/protocol you use daily that relies on it (e.g. HTTPS padlock = confidentiality + authentication).">لكل من الخدمات الأمنية الست، اكتب تطبيقًا/بروتوكولًا حقيقيًا تستخدمه يوميًا يعتمد عليها (مثل قفل HTTPS = سرية + موثوقية).</div></div>
+        <div class="tip-item"><span class="tip-icon">3️⃣</span><div class="i18n" data-en="Draw Figure 1.3's five panels from memory on paper, focusing only on where the arrows point — this cements the passive-vs-active visual pattern better than re-reading text.">ارسم الأشكال الخمسة من الشكل 1.3 من الذاكرة على ورقة، مركِّزًا فقط على أين تشير الأسهم — هذا يُرسِّخ النمط البصري لسلبي مقابل نشط أفضل من إعادة قراءة النص.</div></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h3 class="i18n" data-en="⚠️ Common Mistakes Students Make on This Exact Topic">⚠️ أخطاء شائعة يقع فيها الطلاب في هذا الموضوع تحديدًا</h3>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Confusing “threat” with “attack”:</b> a threat is a potential circumstance; an attack is the actual malicious act. Every attack stems from a threat, but not every threat becomes an attack."><b>الخلط بين "التهديد" و"الهجوم":</b> التهديد ظرف مُحتمَل؛ الهجوم هو الفعل الخبيث الفعلي. كل هجوم ينشأ من تهديد، لكن ليس كل تهديد يصبح هجومًا.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Thinking masquerade is a standalone attack:</b> the notes explicitly say masquerade usually includes one of the other active attack forms (e.g. replaying a captured authentication sequence) — it's rarely used in complete isolation."><b>الاعتقاد بأن التنكّر هجوم مستقل بذاته:</b> تذكر الملاحظات صراحةً أن التنكّر غالبًا يشمل أحد الأشكال الأخرى للهجوم النشط (مثل إعادة تشغيل تسلسل توثيق مُلتقَط) — نادرًا ما يُستخدَم بمعزل كامل.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Mixing up Peer Entity and Data Origin authentication:</b> Peer entity is for ongoing CONNECTIONS (checked at setup and during transfer); Data origin is for individual MESSAGES with no prior interaction (like email) — it does not protect against duplication."><b>الخلط بين موثوقية الكيان النظير ومصدر البيانات:</b> الكيان النظير للاتصالات المستمرة (تُفحَص عند الإنشاء وأثناء النقل)؛ مصدر البيانات للرسائل الفردية بلا تفاعل مسبق (مثل البريد الإلكتروني) — لا تحمي من التكرار.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Assuming encryption alone solves integrity:</b> encryption (a reversible cryptographic mechanism) mainly protects confidentiality. Integrity typically needs a separate mechanism — hash functions, MACs, or digital signatures (irreversible mechanisms)."><b>افتراض أن التشفير وحده يحل مشكلة السلامة:</b> التشفير (آلية تشفيرية قابلة للعكس) يحمي السرية أساسًا. السلامة تحتاج عادةً آلية منفصلة — دوال hash، أو رموز MAC، أو توقيعات رقمية (آليات غير قابلة للعكس).</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Using “Integrity” from the Trust Model and “Integrity” as a CIA objective interchangeably:</b> in the Trust Model (Figure 1.6), Integrity means an entity's ethical adherence to acceptable principles; as a security objective, Integrity means data/system correctness. These are related in spirit but formally distinct definitions."><b>استخدام "النزاهة" من نموذج الثقة و"السلامة" كهدف من CIA بالتبادل:</b> في نموذج الثقة (الشكل 1.6)، النزاهة تعني التزام الكيان الأخلاقي بمبادئ مقبولة؛ كهدف أمني، السلامة تعني صحة البيانات/النظام. مرتبطتان في الجوهر لكنهما تعريفان رسميان متمايزان.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="i18n" data-en="Interactive review sheet — Chapter 1: Information &amp; Network Security Concepts">
+  مرجع مراجعة تفاعلي — Chapter 1: Information &amp; Network Security Concepts
+</footer>
+
+<script>
+/* ===== LANGUAGE TOGGLE ===== */
+let currentLang = 'ar';
+function setLang(lang){
+  currentLang = lang;
+  document.getElementById('htmlRoot').setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  document.getElementById('htmlRoot').setAttribute('lang', lang);
+  document.getElementById('btnAr').classList.toggle('active', lang === 'ar');
+  document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+
+  document.querySelectorAll('.i18n').forEach(el => {
+    if(!el.hasAttribute('data-ar-cache')){
+      el.setAttribute('data-ar-cache', el.innerHTML);
+    }
+    const ar = el.getAttribute('data-ar-cache');
+    const en = el.getAttribute('data-en');
+    el.innerHTML = (lang === 'en' && en) ? en : ar;
+  });
+
+  QUIZ_LANG = lang;
+  renderQuiz(true);
+}
+
+/* ===== sticky nav active-state on scroll ===== */
+(function(){
+  const links = document.querySelectorAll('.nav-scroll a');
+  const sections = Array.from(links).map(a => document.querySelector(a.getAttribute('href')));
+  function onScroll(){
+    let idx = 0;
+    const y = window.scrollY + 120;
+    sections.forEach((s,i) => { if(s && s.offsetTop <= y) idx = i; });
+    links.forEach((l,i) => l.classList.toggle('active', i===idx));
+    const active = links[idx];
+    if(active){
+      const wrap = document.getElementById('navScroll');
+      const target = active.offsetLeft - wrap.clientWidth/2 + active.clientWidth/2;
+      wrap.scrollTo({left: target, behavior:'smooth'});
+    }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+
+/* ===== level tabs ===== */
+document.querySelectorAll('.level-tab').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.level-tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.level-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.level).classList.add('active');
+  });
+});
+
+/* ===== QUIZ DATA (bilingual) ===== */
+let QUIZ_LANG = 'ar';
+const QUIZ = [
+  {
+    type:'mcq',
+    prompt:'ما الفرق الجوهري بين الهجوم السلبي والهجوم النشط؟',
+    promptEn:'What is the fundamental difference between a passive and an active attack?',
+    options:['السلبي أخطر من النشط دائمًا','السلبي لا يؤثر على موارد النظام، بينما النشط يغيّرها','النشط لا يمكن كشفه أبدًا','السلبي يستهدف فقط الشبكات اللاسلكية'],
+    optionsEn:['Passive is always more dangerous than active','Passive does not affect system resources, while active alters them','Active attacks can never be detected','Passive attacks only target wireless networks'],
+    correct:1,
+    explain:'الهجوم السلبي يحاول التعرّف على معلومات دون التأثير على الموارد؛ الهجوم النشط يحاول تغيير الموارد أو التأثير على عملها.',
+    explainEn:'A passive attack attempts to learn information without affecting resources; an active attack attempts to alter resources or affect their operation.'
+  },
+  {
+    type:'mcq',
+    prompt:'أي مما يلي مثال على هجوم سلبي؟',
+    promptEn:'Which of the following is an example of a passive attack?',
+    options:['تحليل حركة البيانات (Traffic analysis)','حجب الخدمة (Denial of service)','التنكّر (Masquerade)','تعديل البيانات (Data modification)'],
+    optionsEn:['Traffic analysis','Denial of service','Masquerade','Data modification'],
+    correct:0,
+    explain:'تحليل حركة البيانات وإفشاء محتوى الرسالة هما النوعان الوحيدان من الهجمات السلبية. البقية (حجب الخدمة، التنكّر، التعديل) هجمات نشطة.',
+    explainEn:'Traffic analysis and release of message contents are the only two passive attack types. The rest (DoS, masquerade, modification) are active attacks.'
+  },
+  {
+    type:'multi',
+    prompt:'أي مما يلي من الأنواع الفرعية الأربعة للهجوم النشط؟ (اختر كل ما ينطبق)',
+    promptEn:'Which of the following are among the four subtypes of active attacks? (select all that apply)',
+    options:['التنكّر (Masquerade)','تحليل حركة البيانات (Traffic analysis)','إعادة التشغيل (Replay)','حجب الخدمة (Denial of Service)'],
+    optionsEn:['Masquerade','Traffic analysis','Replay','Denial of Service'],
+    correctSet:[0,2,3],
+    explain:'الأنواع النشطة الأربعة هي: التنكّر، إعادة التشغيل، تعديل البيانات، وحجب الخدمة. تحليل حركة البيانات هجوم سلبي، ليس نشطًا.',
+    explainEn:'The four active subtypes are: masquerade, replay, data modification, and denial of service. Traffic analysis is a passive attack, not active.'
+  },
+  {
+    type:'tf',
+    prompt:'التركيز الدفاعي في التعامل مع الهجمات السلبية يكون على المنع (Prevention) أكثر من الكشف (Detection).',
+    promptEn:'The defensive emphasis for dealing with passive attacks is on prevention rather than detection.',
+    correct:true,
+    explain:'صحيح. الهجمات السلبية صعبة الكشف لأنها لا تغيّر البيانات، لذلك يُركَّز على المنع (عادةً عبر التشفير).',
+    explainEn:'True. Passive attacks are hard to detect since they don\'t alter data, so the focus is on prevention (typically via encryption).'
+  },
+  {
+    type:'mcq',
+    prompt:'وفقًا لبنية أمن OSI (X.800)، ما هو "Security Mechanism"؟',
+    promptEn:'Per the OSI Security Architecture (X.800), what is a "Security Mechanism"?',
+    options:['أي فعل يُهدِّد أمن المعلومات','عملية أو جهاز مصمَّم للكشف عن هجوم أو منعه أو التعافي منه','خدمة تعزّز أمن نقل المعلومات','مجموعة من السياسات التنظيمية فقط'],
+    optionsEn:['Any action that compromises information security','A process or device designed to detect, prevent, or recover from a security attack','A service that enhances the security of information transfer','Only a set of organizational policies'],
+    correct:1,
+    explain:'الآلية الأمنية (Security Mechanism) هي عملية (أو جهاز) مصمَّم للكشف عن هجوم أمني أو منعه أو التعافي منه. الوصف الأول تعريف "الهجوم"، والثالث تعريف "الخدمة".',
+    explainEn:'A Security Mechanism is a process (or device) designed to detect, prevent, or recover from a security attack. The first description is "attack", the third is "service".'
+  },
+  {
+    type:'fill',
+    prompt:'أكمل: خدمة الموثوقية التي تُثبِت هوية كيان نظير عند إنشاء اتصال أو أثناء نقل البيانات تُسمى موثوقية الكيان ______.',
+    promptEn:'Fill in: the authentication service that corroborates the identity of a peer entity at connection setup or during data transfer is called ______ entity authentication.',
+    accept:['peer','النظير'],
+    explain:'الإجابة: Peer (النظير). موثوقية الكيان النظير (Peer Entity Authentication) تُستخدَم للاتصالات، على عكس موثوقية مصدر البيانات التي تُستخدَم للرسائل الفردية.',
+    explainEn:'Answer: Peer. Peer Entity Authentication is used for connections, unlike Data Origin Authentication which is used for individual messages.'
+  },
+  {
+    type:'mcq',
+    prompt:'ما الفرق بين خدمة سلامة البيانات "الموجّهة نحو الاتصال" (connection-oriented) و"بلا اتصال" (connectionless)؟',
+    promptEn:'What is the difference between "connection-oriented" and "connectionless" data integrity service?',
+    options:['لا فرق، هما نفس الشيء','الموجّهة نحو الاتصال تحمي سلسلة رسائل كاملة (من تكرار، حذف، تعديل...)؛ بلا اتصال تحمي رسالة فردية من التعديل فقط','بلا اتصال أقوى من الموجّهة نحو الاتصال','الموجّهة نحو الاتصال تُستخدَم فقط في البريد الإلكتروني'],
+    optionsEn:['No difference, they are the same','Connection-oriented protects a whole stream of messages (from duplication, deletion, modification...); connectionless protects only a single message from modification','Connectionless is stronger than connection-oriented','Connection-oriented is only used for email'],
+    correct:1,
+    explain:'خدمة سلامة البيانات الموجّهة نحو الاتصال تتعامل مع سلسلة رسائل وتحمي من التكرار والإدراج والتعديل وإعادة الترتيب وإعادة التشغيل. الخدمة بلا اتصال تتعامل مع رسائل فردية وتحمي من التعديل فقط عمومًا.',
+    explainEn:'Connection-oriented integrity service deals with a stream of messages and protects against duplication, insertion, modification, reordering, and replay. Connectionless service deals with individual messages and generally protects against modification only.'
+  },
+  {
+    type:'mcq',
+    prompt:'أي عائلة من خوارزميات التشفير لا تستخدم أي مفتاح؟',
+    promptEn:'Which cryptographic algorithm family uses no key at all?',
+    options:['Single-Key','Two-Key','Keyless','Asymmetric'],
+    optionsEn:['Single-Key','Two-Key','Keyless','Asymmetric'],
+    correct:2,
+    explain:'الخوارزميات بلا مفتاح (Keyless) مثل دوال hash التشفيرية ومولّدات الأرقام العشوائية الزائفة لا تستخدم أي مفتاح أثناء التحويل.',
+    explainEn:'Keyless algorithms, such as cryptographic hash functions and pseudorandom number generators, do not use any key during the transformation.'
+  },
+  {
+    type:'mcq',
+    prompt:'رمز موثوقية الرسالة (MAC) ينتمي لأي عائلة من خوارزميات التشفير؟',
+    promptEn:'The Message Authentication Code (MAC) belongs to which cryptographic algorithm family?',
+    options:['Keyless','Single-Key','Two-Key','لا ينتمي لأي عائلة'],
+    optionsEn:['Keyless','Single-Key','Two-Key','It belongs to no family'],
+    correct:1,
+    explain:'MAC يُنتَج عبر تحويل تشفيري يشمل مفتاحًا سريًا واحدًا (typically) بالإضافة إلى دالة hash للرسالة — لذا هو من عائلة Single-Key.',
+    explainEn:'A MAC is generated via a cryptographic transformation involving a single secret key (typically) plus a hash function of the message — so it belongs to the Single-Key family.'
+  },
+  {
+    type:'mcq',
+    prompt:'التشفير غير التناظري (Two-Key) يُستخدَم في أي من التطبيقات التالية؟',
+    promptEn:'Two-key (asymmetric) cryptography is used in which of the following applications?',
+    options:['التوقيع الرقمي، تبادل المفاتيح، توثيق المستخدم','شفرة الكتل فقط','شفرة التدفق فقط','مولّد الأرقام العشوائية الزائفة فقط'],
+    optionsEn:['Digital signature, key exchange, user authentication','Block cipher only','Stream cipher only','Pseudorandom number generator only'],
+    correct:0,
+    explain:'التشفير ثنائي المفتاح (Two-Key) يُمكِّن ثلاثة تطبيقات رئيسية: التوقيع الرقمي، تبادل المفاتيح، وتوثيق المستخدم.',
+    explainEn:'Two-key (asymmetric) cryptography enables three main applications: digital signature, key exchange, and user authentication.'
+  },
+  {
+    type:'tf',
+    prompt:'التنكّر (Masquerade) غالبًا يتضمّن أحد الأشكال الأخرى للهجوم النشط، وليس نادرًا ما يحدث بمعزل تام.',
+    promptEn:'Masquerade usually includes one of the other forms of active attack, and rarely occurs in complete isolation.',
+    correct:true,
+    explain:'صحيح. تذكر الملاحظات أن التنكّر عادةً يشمل أحد الأشكال الأخرى للهجوم النشط، مثل إعادة تشغيل تسلسل توثيق مُلتقَط.',
+    explainEn:'True. The notes state masquerade usually includes one of the other forms of active attack, such as replaying a captured authentication sequence.'
+  },
+  {
+    type:'mcq',
+    prompt:'الجزء (c) في الشكل 1.3 (تنكّر/تعديل بيانات) يُصوَّر بصريًا كيف بالضبط؟',
+    promptEn:'Panel (c) in Figure 1.3 (masquerade/data modification) is visually depicted exactly how?',
+    options:['سهم مباشر متصل بين Client و Server بدون أي تغيير','لا يوجد سهم مباشر بين Client و Server؛ كلاهما يشير إلى Attacker في الوسط','Client فقط متصل، Server مفصول تمامًا','Attacker يظهر فقط كخط متقطّع يرصد دون تدخّل'],
+    optionsEn:['A direct connected arrow between Client and Server with no change','No direct Client–Server arrow; both point down to an Attacker in the middle','Only Client is connected, Server is fully disconnected','Attacker appears only as a dashed line observing without interfering'],
+    correct:1,
+    explain:'في الجزء (c)، السهم المباشر بين Client و Server غائب؛ كلاهما يشير إلى Attacker في الوسط — وهذا يصوّر هجوم "man-in-the-middle".',
+    explainEn:'In panel (c), the direct Client–Server arrow is absent; both point down to an Attacker in the middle — depicting a "man-in-the-middle" attack.'
+  },
+  {
+    type:'mcq',
+    prompt:'ما هي العوامل الثلاثة التي تُحدِّد "الموثوقية" (Trustworthiness) في نموذج الثقة؟',
+    promptEn:'What are the three factors that determine "Trustworthiness" in the Trust Model?',
+    options:['السرية، السلامة، التوافر','القدرة، حسن النية، النزاهة','التشفير، الموثوقية، ضبط الوصول','السرعة، التكلفة، الجودة'],
+    optionsEn:['Confidentiality, Integrity, Availability','Ability, Benevolence, Integrity','Encryption, Authentication, Access control','Speed, Cost, Quality'],
+    correct:1,
+    explain:'العوامل الثلاثة المُستشهد بها عمومًا لتحديد موثوقية كيان هي: القدرة (Ability/Competence)، وحسن النية (Benevolence)، والنزاهة (Integrity) — لا تخلط بينها وبين "سلامة البيانات" كهدف أمني.',
+    explainEn:'The three commonly cited factors for establishing an entity\'s trustworthiness are: Ability (competence), Benevolence, and Integrity — don\'t confuse this with "data integrity" as a security objective.'
+  },
+  {
+    type:'mcq',
+    prompt:'أي طريقة من طرق بناء الثقة تعتمد على استخدام سلطة إصدار شهادات (certificate authority) كطرف ثالث موثوق من الطرفين؟',
+    promptEn:'Which trust-establishment method relies on using a certificate authority as a mutually trusted third party?',
+    options:['الثقة المُثبَتة (Validated)','الثقة التاريخية المباشرة (Direct historical)','الثقة المُتوسَّطة (Mediated)','الثقة المُفوَّضة (Mandated)'],
+    optionsEn:['Validated trust','Direct historical trust','Mediated trust','Mandated trust'],
+    correct:2,
+    explain:'الثقة المُتوسَّطة (Mediated Trust) تتضمّن استخدام طرف ثالث موثوق من الطرفين، مثل سلطات إصدار الشهادات العامة (public-key certificate authorities).',
+    explainEn:'Mediated trust involves using a mutually trusted third party, such as public-key certificate authorities.'
+  }
+];
+
+let userAnswers = new Array(QUIZ.length).fill(null);
+let checked = new Array(QUIZ.length).fill(false);
+let score = 0;
+
+const TYPE_LABELS = {
+  ar: {mcq:'اختيار من متعدد', tf:'صح / خطأ', multi:'اختيار متعدد الإجابات', fill:'إكمال الفراغ'},
+  en: {mcq:'Multiple Choice', tf:'True / False', multi:'Multiple Select', fill:'Fill in the Blank'}
+};
+
+function renderQuiz(preserveState){
+  const c = document.getElementById('quizContainer');
+  c.innerHTML = '';
+  document.getElementById('scoreTotal').textContent = QUIZ.length;
+
+  QUIZ.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'q-'+qi;
+
+    const typeLabel = TYPE_LABELS[QUIZ_LANG][q.type];
+    const prompt = (QUIZ_LANG === 'en' && q.promptEn) ? q.promptEn : q.prompt;
+    const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+
+    let optsHtml = '';
+    if(q.type === 'mcq'){
+      optsHtml = '<div class="opt-list">' + options.map((opt,oi)=>
+        `<label class="opt" id="opt-${qi}-${oi}">
+          <input type="radio" name="q${qi}" value="${oi}" onchange="selectAnswer(${qi}, ${oi})">
+          <span>${opt}</span>
+        </label>`).join('') + '</div>';
+    } else if(q.type === 'tf'){
+      const trueLabel = QUIZ_LANG === 'en' ? '✅ True' : '✅ صح (True)';
+      const falseLabel = QUIZ_LANG === 'en' ? '❌ False' : '❌ خطأ (False)';
+      optsHtml = `<div class="opt-list">
+        <label class="opt" id="opt-${qi}-1"><input type="radio" name="q${qi}" value="true" onchange="selectAnswer(${qi}, true)"><span>${trueLabel}</span></label>
+        <label class="opt" id="opt-${qi}-0"><input type="radio" name="q${qi}" value="false" onchange="selectAnswer(${qi}, false)"><span>${falseLabel}</span></label>
+      </div>`;
+    } else if(q.type === 'multi'){
+      optsHtml = '<div class="opt-list">' + options.map((opt,oi)=>
+        `<label class="opt" id="opt-${qi}-${oi}">
+          <input type="checkbox" name="q${qi}" value="${oi}" onchange="toggleMulti(${qi}, ${oi})">
+          <span>${opt}</span>
+        </label>`).join('') + '</div>';
+    } else if(q.type === 'fill'){
+      const placeholder = QUIZ_LANG === 'en' ? 'Type your answer here…' : 'اكتب إجابتك هنا (English)…';
+      optsHtml = `<input type="text" class="fill-input" id="fill-${qi}" placeholder="${placeholder}" oninput="userAnswers[${qi}] = this.value; document.getElementById('checkbtn-${qi}').disabled = !this.value.trim();">`;
+    }
+
+    const checkLabel = QUIZ_LANG === 'en' ? 'Check Answer' : 'تحقق من الإجابة';
+    const qLabel = QUIZ_LANG === 'en' ? 'Question' : 'سؤال';
+
+    card.innerHTML = `
+      <div class="q-meta">
+        <span class="q-type-tag">${qLabel} ${qi+1} · ${typeLabel}</span>
+      </div>
+      <div class="q-prompt">${prompt.replace(/\n/g,'<br>')}</div>
+      ${optsHtml}
+      <button class="check-btn" id="checkbtn-${qi}" onclick="checkAnswer(${qi})" ${q.type==='fill' ? 'disabled':''}>${checkLabel}</button>
+      <div class="q-feedback" id="feedback-${qi}"></div>
+    `;
+    c.appendChild(card);
+  });
+
+  if(!preserveState){
+    userAnswers = new Array(QUIZ.length).fill(null);
+    checked = new Array(QUIZ.length).fill(false);
+    score = 0;
+  }
+  updateScoreBar();
+  document.getElementById('finalScore').classList.remove('show');
+}
+
+function selectAnswer(qi, val){ userAnswers[qi] = val; }
+function toggleMulti(qi, oi){
+  if(!Array.isArray(userAnswers[qi])) userAnswers[qi] = [];
+  const idx = userAnswers[qi].indexOf(oi);
+  if(idx === -1) userAnswers[qi].push(oi); else userAnswers[qi].splice(idx,1);
+}
+
+function checkAnswer(qi){
+  if(checked[qi]) return;
+  const q = QUIZ[qi];
+  let isCorrect = false;
+  const fb = document.getElementById('feedback-'+qi);
+  const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+  const explain = (QUIZ_LANG === 'en' && q.explainEn) ? q.explainEn : q.explain;
+
+  if(q.type === 'mcq'){
+    if(userAnswers[qi] === null){ alert(QUIZ_LANG==='en' ? 'Please choose an answer first' : 'من فضلك اختر إجابة أولًا'); return; }
+    isCorrect = Number(userAnswers[qi]) === q.correct;
+    for(let i=0;i<options.length;i++){
+      const el = document.getElementById(`opt-${qi}-${i}`);
+      if(i === q.correct) el.classList.add('correct-flash');
+      else if(i === Number(userAnswers[qi])) el.classList.add('wrong-flash');
+    }
+  } else if(q.type === 'tf'){
+    if(userAnswers[qi] === null){ alert(QUIZ_LANG==='en' ? 'Please choose an answer first' : 'من فضلك اختر إجابة أولًا'); return; }
+    const chosen = (userAnswers[qi] === true || userAnswers[qi] === 'true');
+    isCorrect = chosen === q.correct;
+    const correctId = q.correct ? `opt-${qi}-1` : `opt-${qi}-0`;
+    const wrongId = q.correct ? `opt-${qi}-0` : `opt-${qi}-1`;
+    document.getElementById(correctId).classList.add('correct-flash');
+    if(!isCorrect) document.getElementById(wrongId).classList.add('wrong-flash');
+  } else if(q.type === 'multi'){
+    const chosen = Array.isArray(userAnswers[qi]) ? userAnswers[qi].slice().sort() : [];
+    const correctSet = q.correctSet.slice().sort();
+    isCorrect = chosen.length === correctSet.length && chosen.every((v,i)=>v===correctSet[i]);
+    for(let i=0;i<options.length;i++){
+      const el = document.getElementById(`opt-${qi}-${i}`);
+      const shouldBeCorrect = q.correctSet.includes(i);
+      const wasChosen = chosen.includes(i);
+      if(shouldBeCorrect) el.classList.add('correct-flash');
+      else if(wasChosen) el.classList.add('wrong-flash');
+    }
+  } else if(q.type === 'fill'){
+    const val = (userAnswers[qi] || '').trim().toLowerCase();
+    isCorrect = q.accept.some(a => a.toLowerCase() === val || val.includes(a.toLowerCase()));
+    const input = document.getElementById('fill-'+qi);
+    input.style.borderColor = isCorrect ? 'var(--ok)' : 'var(--bad)';
+  }
+
+  checked[qi] = true;
+  if(isCorrect) score++;
+  fb.className = 'q-feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+  const correctTag = QUIZ_LANG==='en' ? '✅ <b>Correct!</b> ' : '✅ <b>إجابة صحيحة!</b> ';
+  const wrongTag = QUIZ_LANG==='en' ? '❌ <b>Not quite.</b> ' : '❌ <b>إجابة غير صحيحة.</b> ';
+  fb.innerHTML = (isCorrect ? correctTag : wrongTag) + explain;
+  document.getElementById('checkbtn-'+qi).disabled = true;
+  document.querySelectorAll(`#q-${qi} input`).forEach(inp => inp.disabled = true);
+
+  updateScoreBar();
+  if(checked.every(Boolean)) showFinalScore();
+}
+
+function updateScoreBar(){
+  document.getElementById('scoreNow').textContent = score;
+  const answered = checked.filter(Boolean).length;
+  const pct = QUIZ.length ? (answered / QUIZ.length) * 100 : 0;
+  document.getElementById('quizBarFill').style.width = pct + '%';
+}
+
+function showFinalScore(){
+  const el = document.getElementById('finalScore');
+  const pct = Math.round((score/QUIZ.length)*100);
+  document.getElementById('finalScoreText').textContent = `${score} / ${QUIZ.length} (${pct}%)`;
+  let msg = '';
+  if(QUIZ_LANG === 'en'){
+    if(pct >= 85) msg = 'Excellent! You\'re fully ready for Information & Network Security Concepts. 🎉';
+    else if(pct >= 60) msg = 'Good! Review the questions you missed via the “Full Explanation” section.';
+    else msg = 'It\'s recommended to revisit the “Full Explanation” and “3 Levels” sections before trying again.';
+  } else {
+    if(pct >= 85) msg = 'ممتاز! أنت جاهز تمامًا لموضوع Information & Network Security Concepts. 🎉';
+    else if(pct >= 60) msg = 'جيد! راجع الأسئلة التي أخطأت فيها من خلال قسم "الشرح الكامل".';
+    else msg = 'يُنصح بمراجعة قسم "الشرح الكامل" و"3 مستويات" مرة أخرى قبل إعادة المحاولة.';
+  }
+  document.getElementById('finalScoreMsg').textContent = msg;
+  el.classList.add('show');
+}
+
+function resetQuiz(){
+  userAnswers = new Array(QUIZ.length).fill(null);
+  checked = new Array(QUIZ.length).fill(false);
+  score = 0;
+  document.getElementById('finalScore').classList.remove('show');
+  renderQuiz(true);
+  document.getElementById('quiz').scrollIntoView({behavior:'smooth'});
+}
+
+renderQuiz(false);
+</script>
+
+</body>
+</html>

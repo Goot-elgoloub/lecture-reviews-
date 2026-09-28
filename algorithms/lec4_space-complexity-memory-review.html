@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مرجع المراجعة | Space Complexity &amp; Memory Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e16;
+    --bg-alt:#0d1220;
+    --card:#121a2b;
+    --card2:#0f1524;
+    --border:#212b40;
+    --border-soft:#1a2336;
+    --text:#e7ecf5;
+    --text-dim:#93a1bd;
+    --text-faint:#5c6a89;
+    --accent:#38bdf8;
+    --accent-soft:#38bdf822;
+
+    --c-o1:#94a3b8;
+    --c-ologn:#a78bfa;
+    --c-on:#38bdf8;
+    --c-onlogn:#34d399;
+    --c-on2:#fbbf24;
+    --c-input:#38bdf8;
+    --c-aux:#f87171;
+
+    --ok:#34d399;
+    --bad:#f87171;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, #12203a55, transparent 60%),
+      radial-gradient(900px 500px at -10% 20%, #1a123655, transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Tajawal', sans-serif;
+    line-height:1.75;
+  }
+  html[dir="ltr"] body{font-family:'Fira Code','Tajawal',sans-serif;}
+  code, .mono, .eq, .term-en{
+    font-family:'Fira Code', monospace;
+    direction:ltr;
+    unicode-bidi:isolate;
+  }
+  a{color:var(--accent);}
+  h1,h2,h3,h4{font-weight:800; margin:0 0 .5em;}
+  p{margin:0 0 1em; color:var(--text);}
+  .container{max-width:1080px; margin:0 auto; padding:0 20px;}
+
+  .lang-toggle{
+    position:fixed; top:16px; z-index:200;
+    inset-inline-end:16px;
+    display:flex; background:#0d1524ee; border:1px solid var(--border);
+    border-radius:999px; padding:4px; backdrop-filter:blur(8px);
+    box-shadow:0 4px 18px #00000055;
+  }
+  .lang-toggle button{
+    border:none; background:transparent; color:var(--text-dim); font-family:'Fira Code',monospace;
+    font-weight:600; font-size:.78rem; padding:7px 14px; border-radius:999px; cursor:pointer; transition:.2s;
+  }
+  .lang-toggle button.active{background:var(--accent); color:#04121c;}
+
+  .hero{position:relative; padding:70px 0 50px; overflow:hidden; border-bottom:1px solid var(--border-soft);}
+  .hero-bg-curve{position:absolute; inset:0; opacity:.3; pointer-events:none;}
+  .hero .kicker{
+    display:inline-block; font-family:'Fira Code',monospace; font-size:.78rem;
+    letter-spacing:.12em; color:var(--accent); background:var(--accent-soft);
+    border:1px solid #38bdf844; padding:5px 12px; border-radius:999px; margin-bottom:18px;
+  }
+  .hero h1{font-size:2.4rem; line-height:1.25; max-width:780px;}
+  .hero h1 .glow{color:var(--accent); text-shadow:0 0 30px #38bdf866;}
+  .hero p.sub{font-size:1.08rem; color:var(--text-dim); max-width:640px;}
+  @media(max-width:640px){ .hero h1{font-size:1.7rem;} .lang-toggle{top:10px;} }
+
+  .nav-wrap{position:sticky; top:0; z-index:50; background:#0a0e16dd; backdrop-filter:blur(10px); border-bottom:1px solid var(--border-soft);}
+  .nav-scroll{display:flex; gap:6px; overflow-x:auto; padding:10px 20px; max-width:1080px; margin:0 auto; scrollbar-width:none;}
+  .nav-scroll::-webkit-scrollbar{display:none;}
+  .nav-scroll a{
+    flex:none; white-space:nowrap; font-size:.86rem; font-weight:500;
+    color:var(--text-dim); text-decoration:none; padding:8px 14px; border-radius:999px; border:1px solid transparent; transition:.2s;
+  }
+  .nav-scroll a:hover{color:var(--text); border-color:var(--border);}
+  .nav-scroll a.active{color:#04121c; background:var(--accent); font-weight:700;}
+
+  section{padding:56px 0; border-bottom:1px solid var(--border-soft);}
+  section:last-of-type{border-bottom:none;}
+  .eyebrow{font-family:'Fira Code',monospace; font-size:.75rem; color:var(--accent); letter-spacing:.1em; margin-bottom:8px; display:block;}
+  section > .container > h2{font-size:1.7rem; margin-bottom:.25em;}
+  section > .container > p.lead{color:var(--text-dim); max-width:720px; margin-bottom:2em; font-size:1.02rem;}
+
+  .grid{display:grid; gap:16px;}
+  .grid-2{grid-template-columns:repeat(2,1fr);}
+  .grid-3{grid-template-columns:repeat(3,1fr);}
+  .grid-4{grid-template-columns:repeat(4,1fr);}
+  .grid-5{grid-template-columns:repeat(5,1fr);}
+  @media(max-width:860px){ .grid-2,.grid-3,.grid-4,.grid-5{grid-template-columns:1fr;} }
+
+  .card{background:linear-gradient(180deg, var(--card), var(--card2)); border:1px solid var(--border); border-radius:var(--radius); padding:22px 22px;}
+  .card h3{font-size:1.12rem; margin-bottom:.4em;}
+  .card h3 .num{color:var(--accent); font-family:'Fira Code',monospace; margin-left:6px;}
+  .card.tinted{border-color:#38bdf844; background:linear-gradient(180deg,#0f1a2c,#0d1524);}
+
+  .badge{display:inline-flex; align-items:center; gap:6px; font-size:.72rem; font-weight:700; font-family:'Fira Code',monospace; padding:3px 10px; border-radius:999px; letter-spacing:.03em;}
+  .b-o1{color:var(--c-o1); background:#94a3b81a; border:1px solid #94a3b855;}
+  .b-ologn{color:var(--c-ologn); background:#a78bfa1a; border:1px solid #a78bfa55;}
+  .b-on{color:var(--c-on); background:#38bdf81a; border:1px solid #38bdf855;}
+  .b-onlogn{color:var(--c-onlogn); background:#34d3991a; border:1px solid #34d39955;}
+  .b-on2{color:var(--c-on2); background:#fbbf241a; border:1px solid #fbbf2455;}
+  .b-input{color:var(--c-input); background:#38bdf81a; border:1px solid #38bdf855;}
+  .b-aux{color:var(--c-aux); background:#f871711a; border:1px solid #f8717155;}
+
+  pre{background:#080b12; border:1px solid var(--border); border-radius:10px; padding:16px 18px; overflow-x:auto; direction:ltr; text-align:left; font-family:'Fira Code',monospace; font-size:.88rem; color:#c9e6ff; margin:12px 0;}
+  .line-note{display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-top:1px dashed var(--border-soft);}
+  .line-note:first-child{border-top:none;}
+  .line-note .ln{font-family:'Fira Code',monospace; font-size:.78rem; color:var(--accent); background:#0d1524; border:1px solid var(--border); border-radius:6px; padding:2px 8px; flex:none; margin-top:2px;}
+
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:.95rem;}
+  th,td{padding:11px 12px; text-align:start; border-bottom:1px solid var(--border-soft);}
+  th{color:var(--accent); font-family:'Fira Code',monospace; font-size:.78rem; letter-spacing:.04em; border-bottom:1px solid var(--border);}
+  tr:hover td{background:#ffffff05;}
+  td .mono{color:#c9e6ff;}
+
+  .note{border-radius:10px; border:1px solid #fbbf2444; background:#fbbf240d; padding:14px 16px; font-size:.95rem; color:#f3e2b0;}
+  .note.good{border-color:#34d39944; background:#34d3990d; color:#bdf3da;}
+  .note.info{border-color:#38bdf844; background:#38bdf80d; color:#bfe6fb;}
+  .note.warn{border-color:#f8717144; background:#f871710d; color:#fbd7d7;}
+
+  .diagram-block{border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:22px; background:var(--card);}
+  .diagram-head{padding:16px 20px; border-bottom:1px solid var(--border-soft); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;}
+  .diagram-head h3{margin:0;}
+  .diagram-body{padding:20px;}
+
+  .staircase{display:flex; flex-direction:column; gap:6px; margin:14px 0; direction:ltr;}
+  .stair-row{display:flex; align-items:center; gap:12px;}
+  .stair-bar{height:34px; border-radius:8px; display:flex; align-items:center; padding:0 12px; font-family:'Fira Code',monospace; font-size:.82rem; font-weight:700; color:#04121c;}
+  .stair-label{color:var(--text-dim); font-size:.85rem;}
+
+  .venn-wrap{display:flex; align-items:center; justify-content:center; gap:0; margin:18px 0; direction:ltr;}
+  .venn-circle{width:150px; height:150px; border-radius:50%; border:3px solid; display:flex; align-items:center; justify-content:center; text-align:center; font-size:.85rem; font-weight:700; padding:10px;}
+  .venn-circle.left{border-color:var(--c-input); background:#38bdf81a; margin-inline-end:-40px;}
+  .venn-circle.right{border-color:var(--c-aux); background:#f871711a;}
+
+  .scale-wrap{display:flex; justify-content:center; gap:24px; margin:16px 0; flex-wrap:wrap;}
+  .scale-pan{border:2px solid var(--border); border-radius:16px 16px 50px 50px; padding:16px; width:220px; text-align:center; background:#0d1524;}
+  .scale-pan b{display:block; margin-bottom:8px; color:var(--accent);}
+
+  .level-tabs{display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;}
+  .level-tab{padding:9px 16px; border-radius:10px; border:1px solid var(--border); background:var(--card2); color:var(--text-dim); cursor:pointer; font-family:'Tajawal',sans-serif; font-weight:700; font-size:.9rem;}
+  .level-tab.active{background:var(--accent); color:#04121c; border-color:var(--accent);}
+  .level-panel{display:none;}
+  .level-panel.active{display:block;}
+  .quickref-list{list-style:none; padding:0; margin:0; font-family:'Fira Code',monospace; direction:ltr; text-align:left;}
+  .quickref-list li{padding:10px 14px; margin-bottom:6px; border-radius:8px; background:#0d1524; border:1px solid var(--border-soft); font-size:.86rem; color:#d7e6f7;}
+
+  .quiz-progress{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 18px; gap:14px; flex-wrap:wrap;}
+  .quiz-score{font-family:'Fira Code',monospace; font-weight:600; color:var(--accent); font-size:1.05rem;}
+  .quiz-bar{flex:1; min-width:140px; height:8px; border-radius:99px; background:#1a2336; overflow:hidden;}
+  .quiz-bar-fill{height:100%; width:0%; background:linear-gradient(90deg,#38bdf8,#34d399); transition:width .3s;}
+
+  .q-card{border:1px solid var(--border); background:var(--card); border-radius:var(--radius); padding:20px 22px; margin-bottom:16px;}
+  .q-card .q-meta{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:10px; flex-wrap:wrap;}
+  .q-type-tag{font-family:'Fira Code',monospace; font-size:.7rem; color:var(--text-faint); border:1px solid var(--border); padding:2px 9px; border-radius:999px;}
+  .q-prompt{font-weight:700; font-size:1.02rem; margin-bottom:14px;}
+  .q-prompt code{background:#0d1524; padding:1px 6px; border-radius:5px; font-size:.9em;}
+  .opt-list{display:flex; flex-direction:column; gap:8px;}
+  .opt{display:flex; align-items:center; gap:10px; padding:11px 14px; border-radius:10px; border:1px solid var(--border); background:var(--card2); cursor:pointer; transition:.15s; font-size:.95rem;}
+  .opt:hover{border-color:#38bdf866;}
+  .opt input{accent-color:var(--accent); width:16px; height:16px; flex:none;}
+  .opt.correct-flash{border-color:var(--ok); background:#34d3991a;}
+  .opt.wrong-flash{border-color:var(--bad); background:#f871711a;}
+  .fill-input{width:100%; max-width:320px; background:#0d1524; border:1px solid var(--border); border-radius:9px; padding:11px 14px; color:var(--text); font-family:'Fira Code',monospace; font-size:.95rem; direction:ltr; text-align:left;}
+  .fill-input:focus{outline:none; border-color:var(--accent);}
+  .check-btn{margin-top:14px; background:var(--accent); color:#04121c; border:none; padding:9px 20px; border-radius:9px; font-weight:700; cursor:pointer; font-family:'Tajawal',sans-serif; font-size:.9rem;}
+  .check-btn:disabled{opacity:.5; cursor:default;}
+  .check-btn:hover:not(:disabled){filter:brightness(1.1);}
+  .q-feedback{margin-top:12px; padding:12px 14px; border-radius:10px; font-size:.9rem; display:none;}
+  .q-feedback.show{display:block;}
+  .q-feedback.correct{background:#34d3991a; border:1px solid #34d39955; color:#c8f5e2;}
+  .q-feedback.incorrect{background:#f871711a; border:1px solid #f8717155; color:#fbd7d7;}
+  .final-score{text-align:center; padding:30px 20px; border-radius:var(--radius); border:1px solid var(--accent); background:linear-gradient(180deg,#0f1a2c,#0d1524); margin-top:20px; display:none;}
+  .final-score.show{display:block;}
+  .final-score .big{font-size:2.4rem; font-weight:800; color:var(--accent); font-family:'Fira Code',monospace;}
+  .reset-btn{margin-top:14px; background:transparent; border:1px solid var(--border); color:var(--text); padding:9px 20px; border-radius:9px; cursor:pointer; font-family:'Tajawal',sans-serif; font-weight:700;}
+
+  .timeline{position:relative; padding-inline-start:26px; border-inline-start:2px solid var(--border);}
+  .t-item{position:relative; padding-bottom:26px;}
+  .t-item:last-child{padding-bottom:0;}
+  .t-item::before{content:''; position:absolute; inset-inline-start:-32px; top:4px; width:12px; height:12px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 4px #38bdf822;}
+  .t-time{font-family:'Fira Code',monospace; color:var(--accent); font-size:.82rem; margin-bottom:2px;}
+  .t-title{font-weight:700; margin-bottom:3px;}
+
+  .tip-item, .mistake-item{display:flex; gap:12px; padding:14px 0; border-top:1px solid var(--border-soft);}
+  .tip-item:first-child, .mistake-item:first-child{border-top:none;}
+  .tip-icon, .mistake-icon{flex:none; font-size:1.2rem; line-height:1.4;}
+
+  footer{padding:30px 0 60px; text-align:center; color:var(--text-faint); font-size:.85rem;}
+</style>
+</head>
+<body>
+
+<div class="lang-toggle">
+  <button id="btnAr" class="active" onclick="setLang('ar')">AR · عربي</button>
+  <button id="btnEn" onclick="setLang('en')">EN</button>
+</div>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <svg class="hero-bg-curve" viewBox="0 0 1080 260" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,240 C 250,230 500,150 620,80 C 720,20 780,-20 850,-50" stroke="#fbbf24" stroke-width="2" fill="none"/>
+    <path d="M0,250 C 300,244 600,210 750,160 C 870,120 950,90 1030,50" stroke="#34d399" stroke-width="2" fill="none"/>
+    <path d="M0,256 C 350,252 650,232 800,210 C 920,192 1000,178 1080,160" stroke="#38bdf8" stroke-width="2" fill="none"/>
+    <path d="M0,259 C 400,257 750,244 900,232 C 1000,224 1050,218 1080,212" stroke="#a78bfa" stroke-width="2" fill="none"/>
+    <path d="M0,260 C 450,259 800,253 1080,248" stroke="#94a3b8" stroke-width="2" fill="none"/>
+  </svg>
+  <div class="container">
+    <span class="kicker">LECTURE 4 · REVIEW SHEET</span>
+    <h1><span class="i18n" data-en="Space Complexity &amp;">Space Complexity &amp;</span> <span class="glow i18n" data-en="Memory Analysis">Memory Analysis</span></h1>
+    <p class="sub i18n" data-en="An interactive review sheet on how algorithms use memory — Input vs. Auxiliary Space, recursion and the call stack, the Time-vs-Space trade-off, and why the fastest algorithm isn't always the right one to ship.">مرجع مراجعة تفاعلي حول كيفية استخدام الخوارزميات للذاكرة — Input Space مقابل Auxiliary Space، الاستدعاء التكراري ومكدس الاستدعاء، مقايضة الزمن مقابل المساحة، ولماذا الخوارزمية الأسرع ليست دائمًا الخيار الصحيح للنشر.</p>
+  </div>
+</header>
+
+<!-- ============ STICKY NAV ============ -->
+<div class="nav-wrap">
+  <nav class="nav-scroll" id="navScroll">
+    <a href="#overview" class="i18n" data-en="Overview">نظرة عامة</a>
+    <a href="#explain" class="i18n" data-en="Full Explanation">الشرح الكامل</a>
+    <a href="#diagrams" class="i18n" data-en="Diagrams &amp; Charts">الرسومات والمخططات</a>
+    <a href="#summary" class="i18n" data-en="Summary Table">جدول التلخيص</a>
+    <a href="#levels" class="i18n" data-en="3 Levels">3 مستويات</a>
+    <a href="#quiz" class="i18n" data-en="Interactive Quiz">الاختبار التفاعلي</a>
+    <a href="#plan" class="i18n" data-en="Study Plan">خطة المذاكرة</a>
+    <a href="#tips" class="i18n" data-en="Pro Tips">نصائح احترافية</a>
+  </nav>
+</div>
+
+<!-- ============ 1. OVERVIEW ============ -->
+<section id="overview">
+  <div class="container">
+    <span class="eyebrow">01 / OVERVIEW</span>
+    <h2 class="i18n" data-en="Lecture Overview">نظرة عامة على المحاضرة</h2>
+    <p class="lead i18n" data-en="Lecture 4 shifts the spotlight from time to memory. It formally defines Space Complexity, separates Input Space from Auxiliary Space, walks through the standard space-complexity classes, analyzes three worked examples (constant, linear, and recursive), compares five classic algorithms on both time and space, and closes with the central engineering theme of the whole lecture: the Time-vs-Space trade-off.">
+      تنقل المحاضرة الرابعة تركيزها من الزمن إلى الذاكرة. تُعرِّف تعقيد المساحة (Space Complexity) بشكل رسمي، وتفصل Input Space عن Auxiliary Space، وتستعرض فئات تعقيد المساحة القياسية، وتحلّل ثلاثة أمثلة عملية (ثابتة، خطية، وتكرارية)، وتقارن خمس خوارزميات كلاسيكية من ناحية الزمن والمساحة معًا، وتختتم بالموضوع الهندسي المحوري للمحاضرة كلها: مقايضة الزمن مقابل المساحة (Time-vs-Space Trade-off).
+    </p>
+
+    <div class="grid grid-2">
+      <div class="card tinted">
+        <h3 class="i18n" data-en="🎯 The Core Idea">🎯 الفكرة المحورية</h3>
+        <p class="i18n" data-en="Two algorithms can finish in exactly the same time yet use wildly different amounts of memory — and that difference can be the deciding factor in whether a solution even runs at all (on a phone, an embedded chip, or a memory-limited server). Speed and memory are independent resources: being fast tells you nothing about how much memory something uses.">
+          يمكن لخوارزميتين إنهاء العمل في نفس الوقت بالضبط لكنهما تستخدمان كميات مختلفة جدًا من الذاكرة — وقد يكون هذا الفرق هو العامل الحاسم في ما إذا كان الحل سيعمل أصلًا (على هاتف، أو رقاقة مُدمَجة، أو خادم محدود الذاكرة). السرعة والذاكرة موردان مستقلان: كون شيء سريعًا لا يخبرك بشيء عن كمية الذاكرة التي يستخدمها.
+        </p>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="🧠 Key Concepts in This Lecture">🧠 أهم المفاهيم في هذه المحاضرة</h3>
+        <ul style="margin:0; padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="Space Complexity as a function of input size n">تعقيد المساحة كدالة في حجم المدخل n</li>
+          <li class="i18n" data-en="Input Space vs. Auxiliary Space">Input Space مقابل Auxiliary Space</li>
+          <li class="i18n" data-en="Common space classes: O(1), O(log n), O(n), O(n log n), O(n²)">فئات المساحة الشائعة: O(1)، O(log n)، O(n)، O(n log n)، O(n²)</li>
+          <li class="i18n" data-en="Recursion and the call stack as hidden memory cost">الاستدعاء التكراري ومكدس الاستدعاء كتكلفة ذاكرة خفية</li>
+          <li class="i18n" data-en="Comparing algorithms on time AND space together">مقارنة الخوارزميات من ناحية الزمن والمساحة معًا</li>
+          <li class="i18n" data-en="The Time-vs-Space trade-off and memory optimization habits">مقايضة الزمن مقابل المساحة وعادات تحسين الذاكرة</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid grid-3" style="margin-top:16px;">
+      <div class="card">
+        <h3 class="i18n" data-en="🛠️ Skills Gained">🛠️ المهارات المكتسبة</h3>
+        <p style="color:var(--text-dim); margin:0;" class="i18n" data-en="Evaluating the auxiliary space of iterative and recursive algorithms, not just their time complexity.">تقييم Auxiliary Space للخوارزميات التكرارية (iterative) والتكرارية-ذاتية (recursive)، وليس فقط تعقيد الزمن.</p>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="⚖️ Trade-off Thinking">⚖️ التفكير بالمقايضة</h3>
+        <p style="color:var(--text-dim); margin:0;" class="i18n" data-en="Recognizing that reducing time often costs memory, and vice versa — and choosing deliberately.">إدراك أن تقليل الزمن غالبًا يكلّف ذاكرة، والعكس صحيح — والاختيار عن قصد.</p>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="🔍 Spotting Hidden Memory Costs">🔍 اكتشاف تكاليف الذاكرة الخفية</h3>
+        <p style="color:var(--text-dim); margin:0;" class="i18n" data-en="Catching recursion-stack memory that doesn't show up as an explicit array or variable.">رصد ذاكرة مكدس الاستدعاء التي لا تظهر كمصفوفة أو متغيّر صريح.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. FULL EXPLANATION ============ -->
+<section id="explain">
+  <div class="container">
+    <span class="eyebrow">02 / FULL EXPLANATION</span>
+    <h2 class="i18n" data-en="Full Explanation of Every Section">الشرح الكامل لكل قسم في المحاضرة</h2>
+    <p class="lead i18n" data-en="Each card covers one part of the lecture in order, without dropping any information from the slides.">كل بطاقة تغطي جزءًا من المحاضرة بالترتيب، دون تجاوز أي معلومة واردة في الشرائح.</p>
+
+    <!-- 4.1 -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.1</span> <span class="i18n" data-en="Learning Objectives">أهداف التعلّم</span></h3>
+      <p class="i18n" data-en="By the end of this lecture, you should be able to:">بنهاية هذه المحاضرة، يجب أن تكون قادرًا على:</p>
+      <div class="grid grid-4">
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="1. Define Space Complexity">1. تعريف Space Complexity</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Understand what it measures and how it's expressed.">فهم ما تقيسه وكيف تُعبَّر عنه.</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="2. Distinguish Input vs. Auxiliary Space">2. التمييز بين Input و Auxiliary Space</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Separate unavoidable input storage from algorithm-specific overhead.">فصل تخزين المدخل الحتمي عن العبء الإضافي الخاص بالخوارزمية.</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="3. Analyze Memory Usage">3. تحليل استخدام الذاكرة</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Evaluate the space complexity of common iterative and recursive algorithms.">تقييم تعقيد المساحة لخوارزميات تكرارية وتكرارية-ذاتية شائعة.</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="4. Compare Algorithms">4. مقارنة الخوارزميات</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Make informed trade-off decisions between time and memory efficiency.">اتخاذ قرارات مقايضة واعية بين كفاءة الزمن والذاكرة.</p></div>
+      </div>
+      <div class="note info" style="margin-top:12px;"><b class="i18n" data-en="Opening Question:">السؤال الافتتاحي:</b> <span class="i18n" data-en="Can two algorithms have the same Time Complexity but different Memory Usage?">هل يمكن لخوارزميتين أن يكون لهما نفس تعقيد الزمن لكن استخدام ذاكرة مختلف؟</span></div>
+    </div>
+
+    <!-- 4.2 why memory matters -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.2</span> <span class="i18n" data-en="Why Does Memory Matter?">لماذا تهم الذاكرة؟</span></h3>
+      <p class="i18n" data-en="Scenario: a company must process 100 million records. Two algorithms finish in the same time — but their memory footprints differ dramatically.">سيناريو: يجب على شركة معالجة 100 مليون سجل. تنتهي خوارزميتان في نفس الوقت — لكن بصمتيهما في الذاكرة تختلفان بشكل كبير.</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:16px; border-color:#38bdf844;"><b class="i18n" data-en="🟦 Algorithm A">🟦 الخوارزمية A</b><p style="color:var(--text-dim); margin-top:6px;" class="i18n" data-en="Uses 50 MB of memory. Runs comfortably on a standard laptop.">تستخدم 50 ميجابايت من الذاكرة. تعمل بارتياح على لابتوب عادي.</p></div>
+        <div class="card" style="padding:16px; border-color:#f8717144;"><b class="i18n" data-en="🟥 Algorithm B">🟥 الخوارزمية B</b><p style="color:var(--text-dim); margin-top:6px;" class="i18n" data-en="Uses 8 GB of memory. Requires a high-end server with ample RAM.">تستخدم 8 جيجابايت من الذاكرة. تحتاج خادمًا متطورًا بذاكرة وفيرة.</p></div>
+      </div>
+      <div class="note warn" style="margin-top:12px;" class="i18n" data-en="Same speed, vastly different resource costs. Which would you deploy?">نفس السرعة، لكن تكلفة موارد مختلفة جدًا. أيهما ستنشر؟</div>
+    </div>
+
+    <!-- 4.3 what is space complexity -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.3</span> <span class="i18n" data-en="What Is Space Complexity?">ما هو تعقيد المساحة؟</span></h3>
+      <p class="i18n" data-en="<b>Space Complexity</b> is the total amount of memory an algorithm requires during execution, expressed as a function of input size n."><b>تعقيد المساحة (Space Complexity)</b> هو إجمالي كمية الذاكرة التي تحتاجها خوارزمية أثناء التنفيذ، مُعبَّرًا عنها كدالة في حجم المدخل n.</p>
+      <div class="note good"><b class="i18n" data-en="Key Idea:">فكرة أساسية:</b> <span class="i18n" data-en="Space complexity measures how memory grows as input size increases — not the absolute bytes used.">تعقيد المساحة يقيس كيف تنمو الذاكرة مع تزايد حجم المدخل — وليس عدد البايتات المطلقة المُستخدَمة.</span></div>
+      <div class="grid grid-2" style="margin-top:12px;">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Input Space">Input Space</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Memory to store the input data itself.">الذاكرة لتخزين بيانات المدخل نفسها.</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Auxiliary Space">Auxiliary Space</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Extra temporary memory used by the algorithm.">الذاكرة المؤقتة الإضافية التي تستخدمها الخوارزمية.</p></div>
+      </div>
+    </div>
+
+    <!-- 4.4 input vs auxiliary comparison table -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.4</span> <span class="i18n" data-en="Input Space vs. Auxiliary Space">Input Space مقابل Auxiliary Space</span></h3>
+      <p class="i18n" data-en="Not all memory usage is created equal. Understanding this distinction is essential for fair algorithm comparison.">ليست كل استخدامات الذاكرة متساوية. فهم هذا التمييز أساسي لمقارنة عادلة بين الخوارزميات.</p>
+      <table>
+        <tr><th><span class="badge b-input">Input Space</span></th><th><span class="badge b-aux">Auxiliary Space</span></th></tr>
+        <tr><td class="i18n" data-en="Stores the original input data">تُخزِّن بيانات المدخل الأصلية</td><td class="i18n" data-en="Extra memory used by the algorithm">ذاكرة إضافية تستخدمها الخوارزمية</td></tr>
+        <tr><td class="i18n" data-en="Usually unavoidable — the data must exist">عادةً حتمية — يجب أن توجد البيانات</td><td class="i18n" data-en="Depends entirely on algorithm design">تعتمد كليًا على تصميم الخوارزمية</td></tr>
+        <tr><td class="i18n" data-en="Example: an array of n integers">مثال: مصفوفة من n عدد صحيح</td><td class="i18n" data-en="Example: a temporary copy array or recursion stack">مثال: مصفوفة نسخ مؤقتة أو مكدس استدعاء تكراري</td></tr>
+        <tr><td class="i18n" data-en="Often excluded when comparing algorithms">غالبًا تُستبعَد عند مقارنة الخوارزميات</td><td class="i18n" data-en="The primary focus of space complexity analysis">التركيز الأساسي لتحليل تعقيد المساحة</td></tr>
+      </table>
+      <div class="note" class="i18n" data-en="Remember: Auxiliary Space is a subset of total Space Complexity. When we say “O(n) space,” we typically mean auxiliary space.">تذكّر: Auxiliary Space هي جزء من إجمالي تعقيد المساحة. عندما نقول "O(n) مساحة"، نعني عادةً auxiliary space.</div>
+    </div>
+
+    <!-- 4.5 common space complexity classes -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.5</span> <span class="i18n" data-en="Common Space Complexity Classes">فئات تعقيد المساحة الشائعة</span></h3>
+      <p class="i18n" data-en="As complexity grows, larger inputs demand exponentially more memory — a critical constraint in real systems.">مع تزايد التعقيد، تتطلب المدخلات الأكبر ذاكرة أكثر بشكل أسّي — قيد حرِج في الأنظمة الحقيقية.</p>
+      <table>
+        <tr><th class="i18n" data-en="Class">الفئة</th><th class="i18n" data-en="Description">الوصف</th></tr>
+        <tr><td><span class="badge b-o1">O(1) — Constant</span></td><td class="i18n" data-en="Fixed memory, regardless of input size.">ذاكرة ثابتة، بغض النظر عن حجم المدخل.</td></tr>
+        <tr><td><span class="badge b-ologn">O(log n) — Logarithmic</span></td><td class="i18n" data-en="Typical in divide-and-conquer recursion.">شائعة في الاستدعاء التكراري لتقنية فرّق تسد.</td></tr>
+        <tr><td><span class="badge b-on">O(n) — Linear</span></td><td class="i18n" data-en="Memory grows proportionally with input.">تنمو الذاكرة تناسبيًا مع المدخل.</td></tr>
+        <tr><td><span class="badge b-onlogn">O(n log n) — Linearithmic</span></td><td class="i18n" data-en="A step above linear — appears in some divide-and-conquer algorithms.">درجة أعلى من الخطي — تظهر في بعض خوارزميات فرّق تسد.</td></tr>
+        <tr><td><span class="badge b-on2">O(n²) — Quadratic</span></td><td class="i18n" data-en="Memory explodes for large inputs — often impractical.">تنفجر الذاكرة عند المدخلات الكبيرة — غالبًا غير عملية.</td></tr>
+      </table>
+    </div>
+
+    <!-- 4.6 example 1 -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.6</span> <span class="i18n" data-en="Example 1 — Constant Space O(1)">مثال 1 — مساحة ثابتة O(1)</span></h3>
+      <pre>sum = 0
+for i = 1 to n
+    sum = sum + A[i]</pre>
+      <p class="i18n" data-en="This is an in-place algorithm — it processes data without allocating proportional extra memory. Only one extra variable (sum) is allocated, regardless of n.">هذه خوارزمية في المكان (in-place) — تعالج البيانات دون تخصيص ذاكرة إضافية متناسبة. يُخصَّص متغيّر إضافي واحد فقط (sum)، بغض النظر عن n.</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Time Complexity">Time Complexity</b><p style="margin-top:8px;"><span class="badge b-on">O(n)</span> <span class="i18n" data-en="— iterates through all elements">— يتكرر عبر كل العناصر</span></p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Auxiliary Space">Auxiliary Space</b><p style="margin-top:8px;"><span class="badge b-o1">O(1)</span> <span class="i18n" data-en="— one fixed variable, no growth">— متغيّر ثابت واحد، بلا نمو</span></p></div>
+      </div>
+    </div>
+
+    <!-- 4.7 example 2 -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.7</span> <span class="i18n" data-en="Example 2 — Linear Auxiliary Space O(n)">مثال 2 — مساحة إضافية خطية O(n)</span></h3>
+      <pre>B = new array of size n
+for i = 1 to n
+    B[i] = A[i] × 2</pre>
+      <p class="i18n" data-en="A new array B of size n is allocated — memory grows linearly with input.">تُخصَّص مصفوفة جديدة B بحجم n — تنمو الذاكرة خطيًا مع المدخل.</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Time Complexity">Time Complexity</b><p style="margin-top:8px;"><span class="badge b-on">O(n)</span> <span class="i18n" data-en="— single pass through the array">— مرور واحد عبر المصفوفة</span></p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Auxiliary Space">Auxiliary Space</b><p style="margin-top:8px;"><span class="badge b-on">O(n)</span> <span class="i18n" data-en="— new array proportional to input">— مصفوفة جديدة تتناسب مع المدخل</span></p></div>
+      </div>
+      <div class="note warn" style="margin-top:12px;" class="i18n" data-en="Same time as Example 1, but 100 million records now requires ~800 MB extra — the trade-off in action.">نفس زمن المثال 1، لكن 100 مليون سجل الآن تتطلب ~800 ميجابايت إضافية — المقايضة في الفعل.</div>
+    </div>
+
+    <!-- 4.8 example 3 recursion -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.8</span> <span class="i18n" data-en="Example 3 — Recursive Algorithms &amp; the Call Stack">مثال 3 — الخوارزميات التكرارية-ذاتية ومكدس الاستدعاء</span></h3>
+      <pre>factorial(n):
+    if n == 0
+        return 1
+    return n × factorial(n−1)</pre>
+      <p class="i18n" data-en="Each recursive call pushes a stack frame onto the call stack — consuming memory.">كل استدعاء تكراري-ذاتي يدفع إطار مكدس (stack frame) إلى مكدس الاستدعاء — مستهلكًا ذاكرة.</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Time Complexity">Time Complexity</b><p style="margin-top:8px;"><span class="badge b-on">O(n)</span> <span class="i18n" data-en="— n recursive calls made">— n استدعاء تكراري-ذاتي</span></p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Auxiliary Space">Auxiliary Space</b><p style="margin-top:8px;"><span class="badge b-on">O(n)</span> <span class="i18n" data-en="— n stack frames stored simultaneously">— n إطار مكدس مُخزَّن في آن واحد</span></p></div>
+      </div>
+      <div class="note warn" style="margin-top:12px;"><b class="i18n" data-en="Key Insight:">رؤية أساسية:</b> <span class="i18n" data-en="Recursion uses memory implicitly. Deep recursion on large n can cause stack overflow.">الاستدعاء التكراري-ذاتي يستخدم الذاكرة ضمنيًا. الاستدعاء العميق عند n كبيرة قد يسبب فيضان المكدس (stack overflow).</span></div>
+    </div>
+
+    <!-- 4.9 comparing algorithms table -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.9</span> <span class="i18n" data-en="Comparing Algorithms — Time and Space Together">مقارنة الخوارزميات — الزمن والمساحة معًا</span></h3>
+      <p class="i18n" data-en="Not all algorithms are created equal. Understanding how time and space complexity interact helps engineers make informed design decisions.">ليست كل الخوارزميات متساوية. فهم كيف يتفاعل تعقيد الزمن والمساحة يساعد المهندسين على اتخاذ قرارات تصميم واعية.</p>
+      <table>
+        <tr><th class="i18n" data-en="Algorithm">الخوارزمية</th><th class="i18n" data-en="Time Complexity">Time Complexity</th><th class="i18n" data-en="Auxiliary Space">Auxiliary Space</th></tr>
+        <tr><td class="i18n" data-en="Linear Search">البحث الخطي</td><td><span class="badge b-on">O(n)</span></td><td><span class="badge b-o1">O(1)</span></td></tr>
+        <tr><td class="i18n" data-en="Binary Search (Iterative)">البحث الثنائي (تكراري)</td><td><span class="badge b-ologn">O(log n)</span></td><td><span class="badge b-o1">O(1)</span></td></tr>
+        <tr><td>Merge Sort</td><td><span class="badge b-onlogn">O(n log n)</span></td><td><span class="badge b-on">O(n)</span></td></tr>
+        <tr><td>Quick Sort</td><td><span class="badge b-onlogn">O(n log n) <span class="i18n" data-en="Average">متوسط</span></span></td><td><span class="badge b-ologn">O(log n) <span class="i18n" data-en="Average*">متوسط*</span></span></td></tr>
+      </table>
+      <div class="note good" style="margin-top:6px;"><b class="i18n" data-en="Engineering Insight:">رؤية هندسية:</b> <span class="i18n" data-en="The fastest algorithm is not always the most memory-efficient. Trade-offs are inevitable.">الخوارزمية الأسرع ليست دائمًا الأكثر كفاءة في الذاكرة. المقايضات حتمية.</span></div>
+    </div>
+
+    <!-- 4.10 memory optimization -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.10</span> <span class="i18n" data-en="Memory Optimization — Three Questions to Ask">تحسين الذاكرة — ثلاثة أسئلة يجب طرحها</span></h3>
+      <p class="i18n" data-en="Good programmers write code. Great engineers optimize resources.">المبرمجون الجيدون يكتبون كودًا. المهندسون العظماء يُحسِّنون الموارد.</p>
+      <div class="grid grid-3">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Can I reduce memory usage?">هل يمكنني تقليل استخدام الذاكرة؟</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="Audit every allocation — temporary arrays, buffers, and caches.">دقّق في كل عملية تخصيص — المصفوفات المؤقتة، المخازن المؤقتة، والذاكرة المخبّئة.</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Can I reuse existing variables?">هل يمكنني إعادة استخدام متغيرات موجودة؟</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="In-place operations eliminate redundant memory allocation.">العمليات في المكان (in-place) تُزيل تخصيص الذاكرة الزائد.</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Is an extra array really necessary?">هل المصفوفة الإضافية ضرورية حقًا؟</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="Challenge every auxiliary structure before committing to it.">تحدَّ كل بنية إضافية قبل الالتزام بها.</p></div>
+      </div>
+      <div class="note good" style="margin-top:12px;"><b class="i18n" data-en="Key Idea:">فكرة أساسية:</b> <span class="i18n" data-en="Efficient memory usage leads to scalable software.">الاستخدام الفعّال للذاكرة يؤدي إلى برمجيات قابلة للتوسع.</span></div>
+    </div>
+
+    <!-- 4.11 time vs space tradeoff -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.11</span> <span class="i18n" data-en="Time vs. Space Trade-off">مقايضة الزمن مقابل المساحة</span></h3>
+      <p class="i18n" data-en="Every optimization decision carries a cost. Reducing execution time often demands more memory, while minimizing memory usage can increase computational complexity.">كل قرار تحسين يحمل تكلفة. تقليل زمن التنفيذ غالبًا يتطلب ذاكرة أكثر، بينما تقليل استخدام الذاكرة قد يزيد التعقيد الحسابي.</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Reduce Time →">تقليل الزمن ←</b><p style="color:var(--text-dim); margin-top:6px;" class="i18n" data-en="Use more memory">استخدم ذاكرة أكثر</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Reduce Memory →">تقليل الذاكرة ←</b><p style="color:var(--text-dim); margin-top:6px;" class="i18n" data-en="Increase time">زِد الزمن</p></div>
+      </div>
+      <div class="note good" style="margin-top:12px;"><b class="i18n" data-en="Engineering Principle:">مبدأ هندسي:</b> <span class="i18n" data-en="There is no perfect algorithm — only the one that best fits the problem.">لا توجد خوارزمية مثالية — فقط تلك التي تناسب المسألة بشكل أفضل.</span></div>
+    </div>
+
+    <!-- 4.12 three pitfalls -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.12</span> <span class="i18n" data-en="Think Like an Algorithm Analyst — Three Pitfalls to Avoid">فكّر كمحلّل خوارزميات — ثلاثة أخطاء يجب تجنّبها</span></h3>
+      <div class="mistake-item"><span class="mistake-icon">1️⃣</span><div><b class="i18n" data-en="Counting input data as Auxiliary Space">عدّ بيانات المدخل كـ Auxiliary Space</b><p style="margin-top:4px; color:var(--text-dim);" class="i18n" data-en="Auxiliary space measures only the extra memory allocated by the algorithm — not the input itself.">Auxiliary space تقيس فقط الذاكرة الإضافية التي تُخصِّصها الخوارزمية — وليس المدخل نفسه.</p></div></div>
+      <div class="mistake-item"><span class="mistake-icon">2️⃣</span><div><b class="i18n" data-en="Ignoring the recursion stack">تجاهل مكدس الاستدعاء التكراري-ذاتي</b><p style="margin-top:4px; color:var(--text-dim);" class="i18n" data-en="Recursive algorithms consume stack memory on every call, even without creating new arrays.">الخوارزميات التكرارية-ذاتية تستهلك ذاكرة المكدس في كل استدعاء، حتى بدون إنشاء مصفوفات جديدة.</p></div></div>
+      <div class="mistake-item"><span class="mistake-icon">3️⃣</span><div><b class="i18n" data-en="Assuming faster = less memory">افتراض أن الأسرع = ذاكرة أقل</b><p style="margin-top:4px; color:var(--text-dim);" class="i18n" data-en="Time and memory are independent resources. Speed does not imply efficiency in space.">الزمن والذاكرة موردان مستقلان. السرعة لا تعني الكفاءة في المساحة.</p></div></div>
+    </div>
+
+    <!-- 4.13 mini case study -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.13</span> <span class="i18n" data-en="Mini Case Study: Mobile Photo Editor">دراسة حالة مصغّرة: محرِّر صور للجوال</span></h3>
+      <p class="i18n" data-en="A photo-editing app runs on consumer smartphones. Two algorithms produce identical results — but with very different resource profiles.">تطبيق تحرير صور يعمل على هواتف المستهلكين الذكية. تنتج خوارزميتان نتائج متطابقة — لكن بملفات موارد مختلفة جدًا.</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:16px;"><b class="i18n" data-en="Algorithm A">الخوارزمية A</b><p style="color:var(--text-dim); margin-top:6px; font-size:.9rem;">✔ <span class="i18n" data-en="Faster execution">تنفيذ أسرع</span><br>❌ <span class="i18n" data-en="Uses 2 GB RAM">تستخدم 2 جيجابايت رام</span></p></div>
+        <div class="card" style="padding:16px;"><b class="i18n" data-en="Algorithm B">الخوارزمية B</b><p style="color:var(--text-dim); margin-top:6px; font-size:.9rem;">✔ <span class="i18n" data-en="Slightly slower">أبطأ قليلًا</span><br>✔ <span class="i18n" data-en="Uses only 200 MB RAM">تستخدم 200 ميجابايت رام فقط</span></p></div>
+      </div>
+      <div class="note info" style="margin-top:12px;" class="i18n" data-en="Which algorithm would you choose — and why does the context matter?">أي خوارزمية ستختار — ولماذا يهم السياق؟</div>
+    </div>
+
+    <!-- 4.14 interview challenge -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.14</span> <span class="i18n" data-en="Interview Challenge: Why Choose O(n log n) Over a Faster Algorithm?">تحدي مقابلة: لماذا نختار O(n log n) بدل خوارزمية أسرع؟</span></h3>
+      <p class="i18n" data-en="Why do some applications prefer an algorithm with O(n log n) time complexity instead of a theoretically faster algorithm that requires significantly more memory?">لماذا تُفضِّل بعض التطبيقات خوارزمية بتعقيد زمني O(n log n) بدلًا من خوارزمية أسرع نظريًا لكنها تتطلب ذاكرة أكبر بكثير؟</p>
+      <div class="grid grid-3">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Memory is a hard constraint">الذاكرة قيد صارم</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="RAM limits on mobile, embedded, and cloud systems can make a “faster” algorithm unusable.">قيود الرام على الجوال والأنظمة المُدمَجة والسحابية قد تجعل الخوارزمية "الأسرع" غير قابلة للاستخدام.</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Predictability matters">القابلية للتنبؤ مهمة</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="O(n log n) algorithms like Merge Sort offer consistent performance, unlike Quick Sort's worst-case O(n²).">خوارزميات O(n log n) مثل Merge Sort تقدّم أداءً ثابتًا، على عكس أسوأ حالة لـ Quick Sort وهي O(n²).</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Scalability under load">القابلية للتوسع تحت الحمل</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="Low-memory algorithms scale better as data grows, avoiding out-of-memory crashes in production.">الخوارزميات منخفضة الذاكرة تتوسع بشكل أفضل مع تزايد البيانات، متجنّبةً انهيار نفاد الذاكرة في الإنتاج.</p></div>
+      </div>
+    </div>
+
+    <!-- 4.15 research corner -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.15</span> <span class="i18n" data-en="Research Corner: Memory Efficiency in Modern Computing">ركن البحث: كفاءة الذاكرة في الحوسبة الحديثة</span></h3>
+      <p class="i18n" data-en="Memory optimization is not an academic exercise — it drives real-world system design across every domain.">تحسين الذاكرة ليس تمرينًا أكاديميًا — إنه يقود تصميم الأنظمة الحقيقية عبر كل مجال.</p>
+      <div class="grid grid-5">
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Cloud Computing">الحوسبة السحابية</b><p style="color:var(--text-dim); font-size:.82rem; margin-top:4px;" class="i18n" data-en="Reduced memory footprint lowers infrastructure costs at scale.">تقليل بصمة الذاكرة يخفّض تكاليف البنية التحتية على نطاق واسع.</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Mobile Applications">تطبيقات الجوال</b><p style="color:var(--text-dim); font-size:.82rem; margin-top:4px;" class="i18n" data-en="Efficient algorithms extend battery life and prevent crashes on constrained devices.">الخوارزميات الفعّالة تُطيل عمر البطارية وتمنع الانهيار على الأجهزة المحدودة.</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Artificial Intelligence">الذكاء الاصطناعي</b><p style="color:var(--text-dim); font-size:.82rem; margin-top:4px;" class="i18n" data-en="Model inference on edge devices demands aggressive memory optimization.">استدلال النماذج على الأجهزة الطرفية يتطلب تحسين ذاكرة عدواني.</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Game Development">تطوير الألعاب</b><p style="color:var(--text-dim); font-size:.82rem; margin-top:4px;" class="i18n" data-en="Real-time rendering pipelines require strict memory budgets per frame.">خطوط أنابيب العرض الفوري تتطلب ميزانيات ذاكرة صارمة لكل إطار.</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Embedded Systems">الأنظمة المُدمَجة</b><p style="color:var(--text-dim); font-size:.82rem; margin-top:4px;" class="i18n" data-en="Kilobytes matter when deploying to microcontrollers with limited RAM.">الكيلوبايتات مهمة عند النشر على متحكمات دقيقة بذاكرة رام محدودة.</p></div>
+      </div>
+    </div>
+
+    <!-- 4.16 key takeaways -->
+    <div class="card" style="margin-bottom:0;">
+      <h3><span class="num">4.16</span> <span class="i18n" data-en="Key Takeaways">أهم الاستنتاجات</span></h3>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="01. Space Complexity measures memory growth">01. تعقيد المساحة يقيس نمو الذاكرة</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="It describes how memory usage scales as input size increases.">يصف كيف يتوسع استخدام الذاكرة مع تزايد حجم المدخل.</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="02. Auxiliary Space is often more important than Input Space">02. Auxiliary Space غالبًا أهم من Input Space</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="Focus on the extra memory your algorithm allocates beyond the input.">ركّز على الذاكرة الإضافية التي تُخصِّصها خوارزميتك بعيدًا عن المدخل.</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="03. Recursive algorithms consume stack memory">03. الخوارزميات التكرارية-ذاتية تستهلك ذاكرة المكدس</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="Every recursive call adds a stack frame — account for it in your analysis.">كل استدعاء تكراري-ذاتي يضيف إطار مكدس — احسبه في تحليلك.</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="04. Efficient algorithms balance both time and memory">04. الخوارزميات الفعّالة توازن بين الزمن والذاكرة</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="Optimization is about choosing the best trade-off for your specific constraints.">التحسين يتعلق باختيار أفضل مقايضة لقيودك المحدَّدة.</p></div>
+      </div>
+      <div class="note good" style="margin-top:12px;"><b class="i18n" data-en="Take-Home Message:">الرسالة الجوهرية:</b> <span class="i18n" data-en="“A great algorithm is not the one that uses the least time or the least memory. It is the one that achieves the best balance between both.”">"الخوارزمية العظيمة ليست تلك التي تستخدم أقل زمن أو أقل ذاكرة. إنها تلك التي تحقق أفضل توازن بينهما."</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 3. DIAGRAMS ============ -->
+<section id="diagrams">
+  <div class="container">
+    <span class="eyebrow">03 / DIAGRAMS &amp; CHARTS</span>
+    <h2 class="i18n" data-en="Explaining the Diagrams and Charts">شرح الرسومات والمخططات</h2>
+    <p class="lead i18n" data-en="A precise description of every diagram in the lecture, tied back to the theory behind it.">وصف دقيق لكل رسم ورد في المحاضرة، مرتبط بالمفهوم النظري خلفه.</p>
+
+    <!-- diagram 1: venn overlapping circles input/aux -->
+    <div class="diagram-block">
+      <div class="diagram-head">
+        <h3 class="i18n" data-en="⭕ Diagram 1 — Visualizing Memory Usage (Two Overlapping Circles)">⭕ مخطط 1 — تصوّر استخدام الذاكرة (دائرتان متداخلتان)</h3>
+        <span class="badge b-input">Two-Circle Diagram</span>
+      </div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="Two large circles overlap slightly in the middle, like a two-set Venn diagram, connected by their overlapping edge. The left circle contains a small database/cylinder icon and is labeled “Input Data” beneath it. The right circle contains a small brain/processing icon and is labeled “Auxiliary Space” beneath it.">
+          دائرتان كبيرتان تتداخلان قليلًا في المنتصف، مثل مخطط فين (Venn) بمجموعتين، متصلتان عبر حافتهما المتداخلة. الدائرة اليسرى تحتوي أيقونة صغيرة لقاعدة بيانات/أسطوانة وموسومة أسفلها بـ "Input Data". الدائرة اليمنى تحتوي أيقونة صغيرة لدماغ/معالجة وموسومة أسفلها بـ "Auxiliary Space".
+        </p>
+        <div class="venn-wrap">
+          <div class="venn-circle left">🗄️<br>Input Data</div>
+          <div class="venn-circle right">🧠<br>Auxiliary Space</div>
+        </div>
+        <p class="i18n" data-en="The overlap itself is the visual point: the two circles touch but remain distinct — input memory and auxiliary memory are related (both count toward total space) but conceptually separate categories, exactly as the accompanying text explains: “the input data always occupies memory — but the auxiliary space varies by algorithm design.”">التداخل نفسه هو النقطة البصرية: الدائرتان تلامسان لكن تبقيان متمايزتين — ذاكرة المدخل والذاكرة الإضافية مرتبطتان (كلاهما يُحسَب ضمن إجمالي المساحة) لكنهما فئتان منفصلتان مفاهيميًا، تمامًا كما يشرح النص المرافق: "بيانات المدخل تشغل الذاكرة دائمًا — لكن المساحة الإضافية تتفاوت حسب تصميم الخوارزمية."</p>
+      </div>
+    </div>
+
+    <!-- diagram 2: staircase space complexity classes -->
+    <div class="diagram-block">
+      <div class="diagram-head">
+        <h3 class="i18n" data-en="🪜 Diagram 2 — Common Space Complexity Classes (Staircase)">🪜 مخطط 2 — فئات تعقيد المساحة الشائعة (سلّم متدرّج)</h3>
+        <span class="badge b-on2">Staircase Diagram</span>
+      </div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="A staircase of five nested, rounded rectangular “steps” stacked from smallest (top) to largest (bottom), each connected by a small circular node on its left edge, with an arrow shooting upward out of the top step to suggest the scale continues beyond O(1).">
+          سلّم من خمس "درجات" مستطيلة متداخلة بزوايا دائرية، مصفوفة من الأصغر (الأعلى) إلى الأكبر (الأسفل)، متصلة كل واحدة بعُقدة دائرية صغيرة على حافتها اليسرى، مع سهم يخرج للأعلى من الدرجة العليا ليوحي بأن المقياس يستمر بعد O(1).
+        </p>
+        <div class="staircase">
+          <div class="stair-row"><div class="stair-bar" style="width:30%; background:var(--c-o1);">O(1)</div><span class="stair-label i18n" data-en="Constant (best)">ثابت (الأفضل)</span></div>
+          <div class="stair-row"><div class="stair-bar" style="width:45%; background:var(--c-ologn);">O(log n)</div><span class="stair-label i18n" data-en="Logarithmic">لوغاريتمي</span></div>
+          <div class="stair-row"><div class="stair-bar" style="width:60%; background:var(--c-on);">O(n)</div><span class="stair-label i18n" data-en="Linear">خطي</span></div>
+          <div class="stair-row"><div class="stair-bar" style="width:75%; background:var(--c-onlogn);">O(n log n)</div><span class="stair-label i18n" data-en="Linearithmic">لوغاريتمي-خطي</span></div>
+          <div class="stair-row"><div class="stair-bar" style="width:90%; background:var(--c-on2); color:#3a1400;">O(n²)</div><span class="stair-label i18n" data-en="Quadratic (worst)">تربيعي (الأسوأ)</span></div>
+        </div>
+        <p class="i18n" data-en="Reading the shape: each step is wider than the one above it — a direct visual metaphor for “more memory”. Climbing down the staircase (O(1) → O(n²)) means descending into worse and worse memory efficiency, with O(1) explicitly labeled “best” at the top and O(n²) explicitly labeled “worst” at the bottom.">قراءة الشكل: كل درجة أعرض من التي فوقها — استعارة بصرية مباشرة لـ "ذاكرة أكثر". النزول في السلّم (من O(1) إلى O(n²)) يعني الانحدار إلى كفاءة ذاكرة أسوأ فأسوأ، مع تسمية O(1) صراحةً بـ "الأفضل" في الأعلى وO(n²) بـ "الأسوأ" في الأسفل.</p>
+      </div>
+    </div>
+
+    <!-- diagram 3: scale/balance merge sort vs in-place -->
+    <div class="diagram-block">
+      <div class="diagram-head">
+        <h3 class="i18n" data-en="⚖️ Diagram 3 — Time vs. Space Trade-off (Balance Scale)">⚖️ مخطط 3 — مقايضة الزمن مقابل المساحة (ميزان)</h3>
+        <span class="badge b-aux">Balance Scale Diagram</span>
+      </div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="A classic two-pan balance scale, drawn with a central vertical post and a horizontal beam, with one rounded “pan” hanging on each side. The left pan is outlined in blue and labeled “Merge Sort”; the right pan is outlined in yellow/gold and labeled “In-place Algorithms”. Both pans contain a small wave/curve icon (representing a data structure), and a dotted line runs down from each pan to a small callout box beneath it.">
+          ميزان كلاسيكي بكفّتين، مرسوم بعمود مركزي رأسي وذراع أفقي، مع "كفّة" دائرية معلَّقة على كل جانب. الكفّة اليسرى محاطة بإطار أزرق وموسومة "Merge Sort"؛ الكفّة اليمنى محاطة بإطار أصفر/ذهبي وموسومة "In-place Algorithms". تحتوي كلتا الكفّتين أيقونة موجة/منحنى صغيرة (تمثّل بنية بيانات)، وخط منقّط ينزل من كل كفّة إلى مربع تعليق صغير أسفلها.
+        </p>
+        <div class="scale-wrap">
+          <div class="scale-pan" style="border-color:var(--c-on);">
+            <b>Merge Sort</b>
+            <p style="color:var(--text-dim); font-size:.85rem;" class="i18n" data-en="Fast execution, requires extra O(n) memory">تنفيذ سريع، يتطلب ذاكرة إضافية O(n)</p>
+          </div>
+          <div class="scale-pan" style="border-color:var(--c-on2);">
+            <b class="i18n" data-en="In-place Algorithms">خوارزميات في المكان</b>
+            <p style="color:var(--text-dim); font-size:.85rem;" class="i18n" data-en="Minimal memory usage, may require more complex processing">استخدام ذاكرة أدنى، قد تتطلب معالجة أكثر تعقيدًا</p>
+          </div>
+        </div>
+        <p class="i18n" data-en="Below the two pans, where the beam's central post meets the ground, a third callout box sits at the fulcrum itself, labeled “Central trade-off: improving one resource affects the other” — visually placing the trade-off principle at the exact pivot point of the whole scale, the single idea that both pans balance around.">أسفل الكفّتين، حيث يلتقي العمود المركزي بالأرض، يجلس مربع تعليق ثالث عند نقطة الارتكاز نفسها، موسوم "المقايضة المركزية: تحسين مورد واحد يؤثر على الآخر" — واضعًا بصريًا مبدأ المقايضة عند نقطة الارتكاز بالضبط لكل الميزان، الفكرة الواحدة التي تتوازن حولها كلتا الكفّتين.</p>
+        <div class="note info" style="margin-top:10px;" class="i18n" data-en="This single image encodes the entire lecture's thesis: Merge Sort sits on the “fast but memory-hungry” side, in-place algorithms sit on the “memory-light but potentially slower/more complex” side, and neither side can rise without the other falling.">هذه الصورة الواحدة تُرمِّز أطروحة المحاضرة كلها: Merge Sort يجلس في جانب "سريع لكن شره للذاكرة"، والخوارزميات في المكان تجلس في جانب "خفيف الذاكرة لكن قد يكون أبطأ/أكثر تعقيدًا"، ولا يستطيع أي جانب الارتفاع دون أن ينخفض الآخر.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. SUMMARY TABLE ============ -->
+<section id="summary">
+  <div class="container">
+    <span class="eyebrow">04 / SUMMARY</span>
+    <h2 class="i18n" data-en="Comprehensive Summary — Key Concepts and Definitions">تلخيص شامل — المفاهيم والتعريفات الجوهرية</h2>
+    <table>
+      <tr><th class="i18n" data-en="Term">المصطلح</th><th class="i18n" data-en="Definition">التعريف</th></tr>
+      <tr><td class="mono">Space Complexity</td><td class="i18n" data-en="Total memory an algorithm requires during execution, as a function of input size n.">إجمالي الذاكرة التي تحتاجها خوارزمية أثناء التنفيذ، كدالة في حجم المدخل n.</td></tr>
+      <tr><td class="mono">Input Space</td><td class="i18n" data-en="Memory to store the input data itself — usually unavoidable, often excluded from comparisons.">الذاكرة لتخزين بيانات المدخل نفسها — عادةً حتمية، غالبًا مُستبعَدة من المقارنات.</td></tr>
+      <tr><td class="mono">Auxiliary Space</td><td class="i18n" data-en="Extra temporary memory the algorithm allocates — the primary focus of space complexity analysis.">الذاكرة المؤقتة الإضافية التي تُخصِّصها الخوارزمية — التركيز الأساسي لتحليل تعقيد المساحة.</td></tr>
+      <tr><td class="mono">O(1) Space</td><td class="i18n" data-en="Constant — fixed memory regardless of n (e.g. one extra variable).">ثابتة — ذاكرة ثابتة بغض النظر عن n (مثل متغيّر إضافي واحد).</td></tr>
+      <tr><td class="mono">O(log n) Space</td><td class="i18n" data-en="Logarithmic — typical in divide-and-conquer recursion.">لوغاريتمية — شائعة في الاستدعاء التكراري لفرّق تسد.</td></tr>
+      <tr><td class="mono">O(n) Space</td><td class="i18n" data-en="Linear — grows proportionally with input (e.g. a new array of size n, or n recursive stack frames).">خطية — تنمو تناسبيًا مع المدخل (مثل مصفوفة جديدة بحجم n، أو n إطار مكدس تكراري).</td></tr>
+      <tr><td class="mono">O(n²) Space</td><td class="i18n" data-en="Quadratic — memory explodes for large inputs, often impractical.">تربيعية — تنفجر الذاكرة عند المدخلات الكبيرة، غالبًا غير عملية.</td></tr>
+      <tr><td><b class="i18n" data-en="Call Stack / Stack Frame">مكدس الاستدعاء / إطار المكدس</b></td><td class="i18n" data-en="Each recursive call pushes a stack frame, consuming memory implicitly; deep recursion risks stack overflow.">كل استدعاء تكراري-ذاتي يدفع إطار مكدس، مستهلكًا ذاكرة ضمنيًا؛ الاستدعاء العميق يُخاطر بفيضان المكدس.</td></tr>
+      <tr><td><b class="i18n" data-en="Time-vs-Space Trade-off">مقايضة الزمن مقابل المساحة</b></td><td class="i18n" data-en="Reducing time often costs memory, and reducing memory often costs time — no perfect algorithm exists.">تقليل الزمن غالبًا يكلّف ذاكرة، وتقليل الذاكرة غالبًا يكلّف زمنًا — لا توجد خوارزمية مثالية.</td></tr>
+      <tr><td><b>Linear Search</b></td><td class="i18n" data-en="Time O(n), Auxiliary Space O(1).">الزمن O(n)، المساحة الإضافية O(1).</td></tr>
+      <tr><td><b>Binary Search (Iterative)</b></td><td class="i18n" data-en="Time O(log n), Auxiliary Space O(1).">الزمن O(log n)، المساحة الإضافية O(1).</td></tr>
+      <tr><td><b>Merge Sort</b></td><td class="i18n" data-en="Time O(n log n), Auxiliary Space O(n).">الزمن O(n log n)، المساحة الإضافية O(n).</td></tr>
+      <tr><td><b>Quick Sort</b></td><td class="i18n" data-en="Time O(n log n) average, Auxiliary Space O(log n) average.">الزمن O(n log n) متوسط، المساحة الإضافية O(log n) متوسط.</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 5. THREE LEVELS ============ -->
+<section id="levels">
+  <div class="container">
+    <span class="eyebrow">05 / THREE LEVELS</span>
+    <h2 class="i18n" data-en="Simplified at 3 Levels">تبسيط على 3 مستويات</h2>
+    <div class="level-tabs">
+      <button class="level-tab active" data-level="beginner"><span class="i18n" data-en="🌱 Beginner">🌱 للمبتدئين</span></button>
+      <button class="level-tab" data-level="intermediate"><span class="i18n" data-en="🎓 University Level">🎓 مستوى جامعي</span></button>
+      <button class="level-tab" data-level="quick"><span class="i18n" data-en="⚡ Quick Review">⚡ مراجعة سريعة</span></button>
+    </div>
+
+    <div class="level-panel active" id="panel-beginner">
+      <div class="card">
+        <p class="i18n" data-en="Think of packing for a trip:">تخيّل التحضير لرحلة:</p>
+        <ul style="padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="<b>Input Space</b> is your actual luggage — clothes and essentials you must bring; you can't avoid packing them."><b>Input Space</b> هي أمتعتك الفعلية — الملابس والأساسيات التي يجب أن تحضرها؛ لا يمكنك تجنب حزمها.</li>
+          <li class="i18n" data-en="<b>Auxiliary Space</b> is the extra empty suitcase you bring “just in case” — some trips need it, some don't; it's entirely your choice/design."><b>Auxiliary Space</b> هي الحقيبة الفارغة الإضافية التي تحضرها "احتياطًا" — بعض الرحلات تحتاجها، وبعضها لا؛ إنه اختيارك/تصميمك بالكامل.</li>
+          <li class="i18n" data-en="<b>O(1) space</b> is bringing one small wallet no matter how long the trip is. <b>O(n) space</b> is bringing one suitcase per day of the trip — the longer the trip (bigger n), the more suitcases you need."><b>مساحة O(1)</b> هي إحضار محفظة صغيرة واحدة بغض النظر عن طول الرحلة. <b>مساحة O(n)</b> هي إحضار حقيبة واحدة لكل يوم من الرحلة — كلما طالت الرحلة (n أكبر)، احتجت حقائب أكثر.</li>
+          <li class="i18n" data-en="<b>Recursion's call stack</b> is like a to-do list where every unfinished task gets written on a new sticky note stuck on top of the previous one — the deeper you go before finishing anything, the taller (and heavier) that stack of notes gets."><b>مكدس الاستدعاء التكراري-ذاتي</b> مثل قائمة مهام حيث تُكتب كل مهمة غير منتهية على ملاحظة لاصقة جديدة فوق السابقة — كلما تعمّقت أكثر قبل إنهاء أي شيء، أصبح كومة الملاحظات أطول (وأثقل).</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="level-panel" id="panel-intermediate">
+      <div class="card i18n" data-en="<p>Space complexity formalizes memory usage the same way time complexity formalizes step-counting: both are expressed as functions of input size n, and both discard constant factors to focus on growth rate. The critical analytical move introduced this lecture is separating Input Space (memory that must exist simply because the problem's data exists — generally O(n) and excluded from “fair” comparisons) from Auxiliary Space (memory the algorithm itself chooses to allocate — the actual object of study).</p><p>Recursive algorithms introduce a subtle trap: an algorithm can look like it allocates “nothing extra” (no explicit array, no explicit buffer) and still have O(n) auxiliary space, because every unreturned recursive call keeps a stack frame alive on the call stack. This is why factorial(n) — despite having no visible data structure in its code — has the same O(n) auxiliary space as an algorithm that explicitly allocates an array of size n. The lesson generalizes: always ask “how many stack frames can be alive simultaneously?” for any recursive algorithm, not just “does this code contain new/malloc/array literals?”</p><p>Finally, the Time-vs-Space trade-off is not a vague intuition but an engineering constraint with concrete decision criteria: hard memory ceilings (mobile/embedded/cloud budgets), the need for predictable worst-case behavior (Merge Sort's guaranteed O(n log n) vs. Quick Sort's O(n²) worst case), and scalability under growing load. A senior engineer's job is rarely to find “the fastest” algorithm in isolation — it's to find the algorithm whose time/space profile fits the deployment context.</p>">
+        <p>
+          يُشكِّل تعقيد المساحة استخدام الذاكرة بنفس الطريقة التي يُشكِّل بها تعقيد الزمن عدّ الخطوات: كلاهما يُعبَّر عنه كدالة في حجم المدخل n، وكلاهما يتجاهل العوامل الثابتة للتركيز على معدل النمو. الخطوة التحليلية الحاسمة التي تُقدِّمها هذه المحاضرة هي فصل Input Space (الذاكرة التي يجب أن توجد لمجرد وجود بيانات المسألة — عادةً O(n) ومُستبعَدة من المقارنات "العادلة") عن Auxiliary Space (الذاكرة التي تختار الخوارزمية نفسها تخصيصها — الموضوع الفعلي للدراسة).
+        </p>
+        <p>
+          الخوارزميات التكرارية-ذاتية تُقدِّم فخًّا دقيقًا: قد تبدو الخوارزمية وكأنها لا تُخصِّص "شيئًا إضافيًا" (لا مصفوفة صريحة، لا مخزن مؤقت صريح) لكن يكون لها مع ذلك Auxiliary Space يساوي O(n)، لأن كل استدعاء تكراري-ذاتي لم يعد بعد يُبقي إطار مكدس حيًا على مكدس الاستدعاء. لهذا السبب factorial(n) — رغم عدم وجود بنية بيانات مرئية في كودها — لها نفس Auxiliary Space المساوي لـ O(n) مثل خوارزمية تُخصِّص صراحةً مصفوفة بحجم n. الدرس يُعمَّم: اسأل دائمًا "كم إطار مكدس يمكن أن يكون حيًا في آن واحد؟" لأي خوارزمية تكرارية-ذاتية، لا فقط "هل يحتوي هذا الكود على new/malloc/تعريفات مصفوفة؟"
+        </p>
+        <p>
+          أخيرًا، مقايضة الزمن مقابل المساحة ليست حدسًا غامضًا بل قيدًا هندسيًا بمعايير قرار ملموسة: أسقف ذاكرة صارمة (ميزانيات الجوال/المُدمَج/السحابة)، الحاجة لسلوك أسوأ حالة قابل للتنبؤ (ضمان O(n log n) لـ Merge Sort مقابل أسوأ حالة O(n²) لـ Quick Sort)، والقابلية للتوسع تحت الحمل المتزايد. مهمة المهندس الأول نادرًا ما تكون إيجاد "الأسرع" بمعزل — بل إيجاد الخوارزمية التي يناسب ملفها الزمني/المكاني سياق النشر.
+        </p>
+      </div>
+    </div>
+
+    <div class="level-panel" id="panel-quick">
+      <div class="card">
+        <ul class="quickref-list">
+          <li>Space Complexity = total memory as a function of n.</li>
+          <li>Input Space: stores the input, usually unavoidable, often excluded from comparisons.</li>
+          <li>Auxiliary Space: extra memory the algorithm allocates — the real focus of analysis.</li>
+          <li>"O(n) space" usually means auxiliary space.</li>
+          <li>Classes (best→worst): O(1) < O(log n) < O(n) < O(n log n) < O(n²).</li>
+          <li>In-place algorithm (sum loop): time O(n), auxiliary space O(1).</li>
+          <li>New array of size n: time O(n), auxiliary space O(n).</li>
+          <li>Recursive factorial(n): time O(n), auxiliary space O(n) — n stack frames.</li>
+          <li>Linear Search: O(n) time, O(1) space. Binary Search (iter.): O(log n) time, O(1) space.</li>
+          <li>Merge Sort: O(n log n) time, O(n) space. Quick Sort: O(n log n) avg time, O(log n) avg space.</li>
+          <li>Reduce time → usually costs more memory. Reduce memory → usually costs more time.</li>
+          <li>3 pitfalls: counting input as auxiliary; ignoring recursion stack; assuming faster = less memory.</li>
+          <li>Prefer predictable O(n log n) over a faster-but-memory-hungry or worst-case-risky algorithm when memory is constrained.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. QUIZ ============ -->
+<section id="quiz">
+  <div class="container">
+    <span class="eyebrow">06 / INTERACTIVE QUIZ</span>
+    <h2 class="i18n" data-en="Interactive Quiz">اختبار تفاعلي</h2>
+    <p class="lead i18n" data-en="Answer the questions, then press “Check Answer” for each — your final score appears at the bottom.">أجب عن الأسئلة ثم اضغط "تحقق من الإجابة" لكل سؤال — النتيجة النهائية تظهر أسفل الصفحة.</p>
+
+    <div class="quiz-progress">
+      <div class="quiz-score"><span class="i18n" data-en="Score:">النتيجة:</span> <span id="scoreNow">0</span> / <span id="scoreTotal">0</span></div>
+      <div class="quiz-bar"><div class="quiz-bar-fill" id="quizBarFill"></div></div>
+    </div>
+
+    <div id="quizContainer"></div>
+
+    <div class="final-score" id="finalScore">
+      <div class="big" id="finalScoreText">0 / 0</div>
+      <p id="finalScoreMsg" style="margin-top:8px; color:var(--text-dim);"></p>
+      <button class="reset-btn" onclick="resetQuiz()"><span class="i18n" data-en="🔄 Try Again">🔄 إعادة المحاولة</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. STUDY PLAN ============ -->
+<section id="plan">
+  <div class="container">
+    <span class="eyebrow">07 / STUDY PLAN</span>
+    <h2 class="i18n" data-en="One-Day Study Plan">خطة مذاكرة ليوم واحد</h2>
+    <p class="lead i18n" data-en="A suggested schedule for reviewing this lecture in one study day before the exam.">جدول زمني مقترح لمراجعة هذه المحاضرة خلال يوم دراسي واحد قبل الامتحان.</p>
+    <div class="timeline">
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Hour 1">الساعة 1</div>
+        <div class="t-title i18n" data-en="Definitions: Space Complexity, Input vs. Auxiliary Space">التعريفات: تعقيد المساحة، Input مقابل Auxiliary Space</div>
+        <p style="color:var(--text-dim);" class="i18n" data-en="Memorize the exact distinction in the comparison table, and why “O(n) space” usually means auxiliary space specifically.">احفظ التمييز الدقيق في جدول المقارنة، ولماذا "O(n) مساحة" تعني عادةً auxiliary space تحديدًا.</p>
+      </div>
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Hour 2">الساعة 2</div>
+        <div class="t-title i18n" data-en="The 5 space classes + the 3 worked examples">فئات المساحة الخمس + الأمثلة الثلاثة المحلولة</div>
+        <p style="color:var(--text-dim);" class="i18n" data-en="Re-derive Example 1 (O(1)), Example 2 (O(n)), and Example 3 (recursion, O(n)) by hand from the code, not from memory of the answer.">أعد اشتقاق المثال 1 (O(1))، والمثال 2 (O(n))، والمثال 3 (الاستدعاء التكراري-ذاتي، O(n)) يدويًا من الكود، لا من حفظ الإجابة.</p>
+      </div>
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Hour 3">الساعة 3</div>
+        <div class="t-title i18n" data-en="The comparison table + the balance-scale trade-off">جدول المقارنة + مقايضة الميزان</div>
+        <p style="color:var(--text-dim);" class="i18n" data-en="Memorize the time/space pair for Linear Search, Binary Search, Merge Sort, and Quick Sort, then explain the balance-scale diagram in your own words.">احفظ زوج الزمن/المساحة لكل من البحث الخطي، البحث الثنائي، Merge Sort، و Quick Sort، ثم اشرح مخطط الميزان بكلماتك الخاصة.</p>
+      </div>
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Hour 4">الساعة 4</div>
+        <div class="t-title i18n" data-en="The 3 pitfalls + the interactive quiz">الأخطاء الثلاثة + الاختبار التفاعلي</div>
+        <p style="color:var(--text-dim);" class="i18n" data-en="Review the three common pitfalls, then take the full interactive quiz and revisit any section related to a question you missed.">راجع الأخطاء الشائعة الثلاثة، ثم حل الاختبار التفاعلي كاملًا وارجع لأي قسم مرتبط بسؤال أخطأت فيه.</p>
+      </div>
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Right before the exam (last 20 minutes)">قبل الامتحان مباشرة (آخر 20 دقيقة)</div>
+        <div class="t-title i18n" data-en="Final focused review of only:">مراجعة أخيرة مركّزة فقط على:</div>
+        <ul style="color:var(--text-dim); padding-inline-start:20px; margin-top:6px;">
+          <li class="i18n" data-en="The whole “Comprehensive Summary” table">جدول "التلخيص الشامل" كاملًا</li>
+          <li class="i18n" data-en="The 3 pitfalls (input as auxiliary; ignoring recursion stack; faster ≠ less memory)">الأخطاء الثلاثة (المدخل كـ auxiliary؛ تجاهل مكدس الاستدعاء؛ الأسرع ≠ ذاكرة أقل)</li>
+          <li class="i18n" data-en="Recursion → call stack → O(n) auxiliary space for n unreturned calls">الاستدعاء التكراري-ذاتي ← مكدس الاستدعاء ← O(n) مساحة إضافية لـ n استدعاء لم يعد بعد</li>
+          <li class="i18n" data-en="Reduce time → more memory; reduce memory → more time">تقليل الزمن ← ذاكرة أكثر؛ تقليل الذاكرة ← زمن أكثر</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8. PRO TIPS ============ -->
+<section id="tips">
+  <div class="container">
+    <span class="eyebrow">08 / PRO TIPS</span>
+    <h2 class="i18n" data-en="Pro Tips">نصائح احترافية</h2>
+
+    <div class="grid grid-2" style="align-items:start;">
+      <div class="card">
+        <h3 class="i18n" data-en="💡 How to Understand Instead of Memorize">💡 كيف تفهم بدلًا من الحفظ</h3>
+        <div class="tip-item"><span class="tip-icon">🔍</span><div class="i18n" data-en="For any algorithm, explicitly ask: “what new memory does this allocate that isn't the input?” If the answer is “nothing beyond a few variables,” it's O(1) auxiliary space — no matter how long or complex the code looks.">لأي خوارزمية، اسأل صراحةً: "ما الذاكرة الجديدة التي تُخصِّصها هذه الخوارزمية وليست المدخل؟" إذا كانت الإجابة "لا شيء سوى بضعة متغيرات"، فهي O(1) مساحة إضافية — بغض النظر عن طول الكود أو تعقيده الظاهري.</div></div>
+        <div class="tip-item"><span class="tip-icon">✍️</span><div class="i18n" data-en="For recursive code, count stack frames the same way you'd count loop iterations for time: how many calls are “open” (haven't returned yet) at the deepest point?">للكود التكراري-ذاتي، عُدّ إطارات المكدس بنفس طريقة عدّ تكرارات الحلقة للزمن: كم استدعاء "مفتوح" (لم يعد بعد) عند أعمق نقطة؟</div></div>
+        <div class="tip-item"><span class="tip-icon">📐</span><div class="i18n" data-en="Anchor the 5 space classes to the staircase image: wider step = more memory. This turns an abstract ordering into a physical, visual one.">اربط فئات المساحة الخمس بصورة السلّم: درجة أعرض = ذاكرة أكثر. هذا يحوّل ترتيبًا مجردًا إلى ترتيب بصري ملموس.</div></div>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="🏋️ Suggested Hands-On Practice">🏋️ تدريب عملي مقترح</h3>
+        <div class="tip-item"><span class="tip-icon">1️⃣</span><div class="i18n" data-en="Rewrite Example 2 (the doubling loop) to modify array A in place instead of creating B — verify the auxiliary space drops from O(n) to O(1).">أعد كتابة المثال 2 (حلقة المضاعفة) لتعديل المصفوفة A في مكانها بدلًا من إنشاء B — تحقق من أن Auxiliary Space تنخفض من O(n) إلى O(1).</div></div>
+        <div class="tip-item"><span class="tip-icon">2️⃣</span><div class="i18n" data-en="Trace factorial(5) by hand on paper, drawing a new stack frame box for each call before any returns happen — count the maximum simultaneous boxes.">تتبّع factorial(5) يدويًا على ورقة، وارسم مربع إطار مكدس جديد لكل استدعاء قبل حدوث أي إرجاع — عُدّ أقصى عدد من المربعات في آن واحد.</div></div>
+        <div class="tip-item"><span class="tip-icon">3️⃣</span><div class="i18n" data-en="Pick any 2 algorithms from the comparison table and write one sentence each explaining a real scenario (mobile app, server, embedded device) where you'd deliberately pick the “slower” one for its memory profile.">اختر أي خوارزميتين من جدول المقارنة واكتب جملة لكل منهما تشرح سيناريو حقيقيًا (تطبيق جوال، خادم، جهاز مُدمَج) تختار فيه عمدًا "الأبطأ" بسبب ملفها في الذاكرة.</div></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h3 class="i18n" data-en="⚠️ Common Mistakes Students Make on This Exact Topic">⚠️ أخطاء شائعة يقع فيها الطلاب في هذا الموضوع تحديدًا</h3>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Counting the input array as part of auxiliary space:</b> if a function receives an array of size n and only reads it, that array is Input Space, not Auxiliary Space — even though it technically occupies O(n) memory."><b>عدّ مصفوفة المدخل كجزء من Auxiliary Space:</b> إذا استقبلت دالة مصفوفة بحجم n وقرأتها فقط، فهذه المصفوفة Input Space، وليست Auxiliary Space — حتى لو كانت تقنيًا تشغل O(n) من الذاكرة.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Forgetting recursion has a memory cost when there's no explicit array:</b> a recursive function with zero explicit data structures can still be O(n) auxiliary space purely from stack frames — always check recursion depth."><b>نسيان أن للاستدعاء التكراري-ذاتي تكلفة ذاكرة حتى بلا مصفوفة صريحة:</b> دالة تكرارية-ذاتية بلا أي بنية بيانات صريحة قد تكون مع ذلك O(n) مساحة إضافية فقط من إطارات المكدس — تحقق دائمًا من عمق الاستدعاء.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Assuming the algorithm with better time complexity is automatically the better choice:</b> Quick Sort's average O(log n) space is often great, but its worst-case O(n²) time can be worse than Merge Sort's guaranteed O(n log n) — “better on average” isn't “always better”."><b>افتراض أن الخوارزمية بتعقيد زمني أفضل هي الخيار الأفضل تلقائيًا:</b> متوسط مساحة Quick Sort البالغ O(log n) رائع غالبًا، لكن أسوأ حالة زمنية له O(n²) قد تكون أسوأ من ضمان O(n log n) لـ Merge Sort — "أفضل في المتوسط" ليست "أفضل دائمًا".</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Treating the Time-vs-Space trade-off as always 1-to-1:</b> reducing time doesn't always require proportionally more memory (or vice versa) — the relationship depends entirely on the specific algorithm, not a universal law."><b>معاملة مقايضة الزمن مقابل المساحة كأنها دائمًا 1 مقابل 1:</b> تقليل الزمن لا يتطلب دائمًا ذاكرة أكثر بشكل متناسب (أو العكس) — العلاقة تعتمد كليًا على الخوارزمية المحدَّدة، وليست قانونًا عالميًا.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="i18n" data-en="Interactive review sheet — Lecture 4: Space Complexity &amp; Memory Analysis">
+  مرجع مراجعة تفاعلي — Lecture 4: Space Complexity &amp; Memory Analysis
+</footer>
+
+<script>
+/* ===== LANGUAGE TOGGLE ===== */
+let currentLang = 'ar';
+function setLang(lang){
+  currentLang = lang;
+  document.getElementById('htmlRoot').setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  document.getElementById('htmlRoot').setAttribute('lang', lang);
+  document.getElementById('btnAr').classList.toggle('active', lang === 'ar');
+  document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+
+  document.querySelectorAll('.i18n').forEach(el => {
+    if(!el.hasAttribute('data-ar-cache')){
+      el.setAttribute('data-ar-cache', el.innerHTML);
+    }
+    const ar = el.getAttribute('data-ar-cache');
+    const en = el.getAttribute('data-en');
+    el.innerHTML = (lang === 'en' && en) ? en : ar;
+  });
+
+  QUIZ_LANG = lang;
+  renderQuiz(true);
+}
+
+/* ===== sticky nav active-state on scroll ===== */
+(function(){
+  const links = document.querySelectorAll('.nav-scroll a');
+  const sections = Array.from(links).map(a => document.querySelector(a.getAttribute('href')));
+  function onScroll(){
+    let idx = 0;
+    const y = window.scrollY + 120;
+    sections.forEach((s,i) => { if(s && s.offsetTop <= y) idx = i; });
+    links.forEach((l,i) => l.classList.toggle('active', i===idx));
+    const active = links[idx];
+    if(active){
+      const wrap = document.getElementById('navScroll');
+      const target = active.offsetLeft - wrap.clientWidth/2 + active.clientWidth/2;
+      wrap.scrollTo({left: target, behavior:'smooth'});
+    }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+
+/* ===== level tabs ===== */
+document.querySelectorAll('.level-tab').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.level-tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.level-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.level).classList.add('active');
+  });
+});
+
+/* ===== QUIZ DATA (bilingual) ===== */
+let QUIZ_LANG = 'ar';
+const QUIZ = [
+  {
+    type:'mcq',
+    prompt:'ما هو تعقيد المساحة (Space Complexity)؟',
+    promptEn:'What is Space Complexity?',
+    options:['عدد الخطوط في الكود','إجمالي كمية الذاكرة التي تحتاجها خوارزمية أثناء التنفيذ، كدالة في n','سرعة تنفيذ الخوارزمية بالثواني','عدد المتغيرات المُعرَّفة في البرنامج'],
+    optionsEn:['The number of lines of code','The total amount of memory an algorithm requires during execution, as a function of n','The execution speed of the algorithm in seconds','The number of variables declared in the program'],
+    correct:1,
+    explain:'تعقيد المساحة هو إجمالي كمية الذاكرة التي تحتاجها الخوارزمية أثناء التنفيذ، مُعبَّرًا عنها كدالة في حجم المدخل n — وليس عدد البايتات المطلقة.',
+    explainEn:'Space Complexity is the total memory an algorithm requires during execution, expressed as a function of input size n — not the absolute bytes used.'
+  },
+  {
+    type:'tf',
+    prompt:'يُستبعَد Input Space غالبًا عند مقارنة الخوارزميات، بينما Auxiliary Space هو التركيز الأساسي لتحليل تعقيد المساحة.',
+    promptEn:'Input Space is often excluded when comparing algorithms, while Auxiliary Space is the primary focus of space complexity analysis.',
+    correct:true,
+    explain:'صحيح. Input Space حتمي عادةً (يجب أن توجد البيانات)، بينما Auxiliary Space يعتمد على تصميم الخوارزمية وهو ما نقارن عليه فعليًا.',
+    explainEn:'True. Input Space is usually unavoidable (the data must exist), while Auxiliary Space depends on algorithm design and is what we actually compare.'
+  },
+  {
+    type:'mcq',
+    prompt:'الكود التالي: sum=0; for i=1 to n: sum=sum+A[i] — ما Auxiliary Space الخاص به؟',
+    promptEn:'The code: sum=0; for i=1 to n: sum=sum+A[i] — what is its Auxiliary Space?',
+    options:['O(1)','O(log n)','O(n)','O(n²)'],
+    optionsEn:['O(1)','O(log n)','O(n)','O(n²)'],
+    correct:0,
+    explain:'يُخصَّص متغيّر إضافي واحد فقط (sum) بغض النظر عن n — هذه خوارزمية في المكان (in-place) بمساحة إضافية ثابتة O(1).',
+    explainEn:'Only one extra variable (sum) is allocated regardless of n — this is an in-place algorithm with constant O(1) auxiliary space.'
+  },
+  {
+    type:'mcq',
+    prompt:'الكود التالي: B = new array of size n; for i=1 to n: B[i] = A[i] × 2 — ما Auxiliary Space الخاص به؟',
+    promptEn:'The code: B = new array of size n; for i=1 to n: B[i] = A[i] × 2 — what is its Auxiliary Space?',
+    options:['O(1)','O(n)','O(n²)','O(log n)'],
+    optionsEn:['O(1)','O(n)','O(n²)','O(log n)'],
+    correct:1,
+    explain:'تُخصَّص مصفوفة جديدة B بحجم n، فتنمو الذاكرة الإضافية خطيًا مع المدخل ← O(n).',
+    explainEn:'A new array B of size n is allocated, so auxiliary memory grows linearly with the input → O(n).'
+  },
+  {
+    type:'fill',
+    prompt:'أكمل: خوارزمية factorial(n) التكرارية-ذاتية لها Auxiliary Space يساوي O(______) بسبب إطارات المكدس.',
+    promptEn:'Fill in: the recursive factorial(n) algorithm has Auxiliary Space equal to O(______) due to stack frames.',
+    accept:['n'],
+    explain:'الإجابة: n. كل استدعاء تكراري-ذاتي يدفع إطار مكدس، وتُخزَّن n إطار في آن واحد قبل بدء الإرجاع، فـ Auxiliary Space = O(n).',
+    explainEn:'Answer: n. Each recursive call pushes a stack frame, and n frames are stored simultaneously before returns begin, so Auxiliary Space = O(n).'
+  },
+  {
+    type:'multi',
+    prompt:'أي مما يلي من الأخطاء الثلاثة الشائعة في تحليل تعقيد المساحة؟ (اختر كل ما ينطبق)',
+    promptEn:'Which of the following are among the three common pitfalls in space complexity analysis? (select all that apply)',
+    options:['عدّ بيانات المدخل كـ Auxiliary Space','تجاهل مكدس الاستدعاء التكراري-ذاتي','افتراض أن الأسرع = ذاكرة أقل','حساب عدد التكرارات في حلقة for'],
+    optionsEn:['Counting input data as Auxiliary Space','Ignoring the recursion stack','Assuming faster = less memory','Counting iterations in a for loop'],
+    correctSet:[0,1,2],
+    explain:'الأخطاء الثلاثة الشائعة هي: عدّ المدخل كـ Auxiliary Space، تجاهل مكدس الاستدعاء، وافتراض أن الأسرع = ذاكرة أقل. حساب تكرارات الحلقة هو جزء طبيعي وصحيح من تحليل الزمن، وليس خطأً.',
+    explainEn:'The three common pitfalls are: counting input as auxiliary space, ignoring the recursion stack, and assuming faster = less memory. Counting loop iterations is a normal, correct part of time analysis, not a mistake.'
+  },
+  {
+    type:'mcq',
+    prompt:'ما Auxiliary Space لخوارزمية Merge Sort؟',
+    promptEn:'What is the Auxiliary Space of Merge Sort?',
+    options:['O(1)','O(log n)','O(n)','O(n²)'],
+    optionsEn:['O(1)','O(log n)','O(n)','O(n²)'],
+    correct:2,
+    explain:'Merge Sort يحتاج مصفوفات مؤقتة إضافية أثناء عملية الدمج، فـ Auxiliary Space = O(n)، رغم أن Time Complexity هو O(n log n).',
+    explainEn:'Merge Sort needs extra temporary arrays during the merge step, so Auxiliary Space = O(n), even though Time Complexity is O(n log n).'
+  },
+  {
+    type:'mcq',
+    prompt:'ما Auxiliary Space المتوسط لخوارزمية Quick Sort؟',
+    promptEn:'What is the average Auxiliary Space of Quick Sort?',
+    options:['O(1)','O(log n)','O(n)','O(n log n)'],
+    optionsEn:['O(1)','O(log n)','O(n)','O(n log n)'],
+    correct:1,
+    explain:'Quick Sort يستخدم مكدس استدعاء ناتج عن التقسيم التكراري-ذاتي بعمق O(log n) في المتوسط.',
+    explainEn:'Quick Sort uses a call stack from recursive partitioning with average depth O(log n).'
+  },
+  {
+    type:'tf',
+    prompt:'الخوارزمية الأسرع من ناحية الزمن هي دائمًا الأكثر كفاءة من ناحية الذاكرة.',
+    promptEn:'The algorithm that is faster in time is always the more memory-efficient one.',
+    correct:false,
+    explain:'خاطئ. الزمن والذاكرة موردان مستقلان — السرعة لا تعني الكفاءة في المساحة. مثال: Merge Sort سريع لكنه يحتاج O(n) مساحة إضافية، بينما خوارزميات في المكان قد تكون أبطأ لكنها تحتاج O(1) فقط.',
+    explainEn:'False. Time and memory are independent resources — speed doesn\'t imply space efficiency. Example: Merge Sort is fast but needs O(n) auxiliary space, while in-place algorithms may be slower but need only O(1).'
+  },
+  {
+    type:'mcq',
+    prompt:'وفقًا لمقايضة الزمن مقابل المساحة، ماذا يحدث عادةً عند محاولة تقليل زمن التنفيذ؟',
+    promptEn:'Per the time-vs-space trade-off, what typically happens when you try to reduce execution time?',
+    options:['تقل الذاكرة المستخدمة أيضًا','تزيد الذاكرة المستخدمة عادةً','لا علاقة بين الزمن والذاكرة إطلاقًا','يصبح الكود أقصر دائمًا'],
+    optionsEn:['Memory usage also decreases','Memory usage typically increases','There is no relationship between time and memory at all','The code always becomes shorter'],
+    correct:1,
+    explain:'وفقًا للمقايضة، تقليل الزمن غالبًا يتطلب استخدام ذاكرة أكثر (مثل تخزين نتائج مؤقتة لتجنب إعادة الحساب)، والعكس صحيح أيضًا.',
+    explainEn:'Per the trade-off, reducing time often requires using more memory (e.g. caching intermediate results to avoid recomputation), and vice versa.'
+  },
+  {
+    type:'mcq',
+    prompt:'لماذا قد تُفضِّل بعض التطبيقات خوارزمية O(n log n) بدلًا من خوارزمية أسرع نظريًا؟',
+    promptEn:'Why might some applications prefer an O(n log n) algorithm over a theoretically faster one?',
+    options:['لأن O(n log n) دائمًا أسرع فعليًا','بسبب قيود الذاكرة الصارمة، والقابلية للتنبؤ، والتوسع تحت الحمل','لأنها أسهل في الكتابة','لا يوجد سبب منطقي لذلك'],
+    optionsEn:['Because O(n log n) is always actually faster','Due to hard memory constraints, predictability, and scalability under load','Because it\'s easier to write','There is no logical reason for this'],
+    correct:1,
+    explain:'الأسباب الثلاثة هي: الذاكرة قيد صارم (خاصة على الجوال/المُدمَج/السحابة)، القابلية للتنبؤ (Merge Sort يضمن O(n log n) دائمًا)، والتوسع تحت الحمل المتزايد.',
+    explainEn:'The three reasons are: memory as a hard constraint (especially mobile/embedded/cloud), predictability (Merge Sort always guarantees O(n log n)), and scalability under growing load.'
+  },
+  {
+    type:'mcq',
+    prompt:'دالة تستقبل مصفوفة من n عنصر وتقرأها فقط دون تخصيص أي ذاكرة إضافية. كيف تُصنَّف مصفوفة المدخل هذه؟',
+    promptEn:'A function receives an array of n elements and only reads it, without allocating any extra memory. How is this input array classified?',
+    options:['Auxiliary Space','Input Space','لا تُحسَب في تعقيد المساحة إطلاقًا','O(1) space'],
+    optionsEn:['Auxiliary Space','Input Space','It is not counted in space complexity at all','O(1) space'],
+    correct:1,
+    explain:'مصفوفة المدخل هي Input Space، وليست Auxiliary Space — حتى لو كانت تشغل تقنيًا O(n) من الذاكرة، لأنها ليست ذاكرة إضافية خصَّصتها الخوارزمية.',
+    explainEn:'The input array is Input Space, not Auxiliary Space — even though it technically occupies O(n) memory, because it isn\'t extra memory the algorithm allocated.'
+  },
+  {
+    type:'mcq',
+    prompt:'في مخطط الميزان (Time vs. Space Trade-off)، ماذا يمثّل نص "Central trade-off" عند نقطة الارتكاز؟',
+    promptEn:'In the balance-scale diagram (Time vs. Space Trade-off), what does the “Central trade-off” text at the fulcrum represent?',
+    options:['أن Merge Sort دائمًا أفضل من الخوارزميات في المكان','أن تحسين مورد واحد (الزمن أو الذاكرة) يؤثر على المورد الآخر','أن الميزان دائمًا متوازن تمامًا','لا معنى له، مجرد زخرفة بصرية'],
+    optionsEn:['That Merge Sort is always better than in-place algorithms','That improving one resource (time or memory) affects the other','That the scale is always perfectly balanced','It has no meaning, just visual decoration'],
+    correct:1,
+    explain:'نص "Central trade-off" يوضّح أن تحسين مورد واحد (تقليل الزمن أو تقليل الذاكرة) يؤثر على المورد الآخر — وهي الفكرة الجوهرية التي يتمحور حولها الميزان كله.',
+    explainEn:'The "Central trade-off" text explains that improving one resource (reducing time or reducing memory) affects the other — the core idea the whole scale pivots around.'
+  }
+];
+
+let userAnswers = new Array(QUIZ.length).fill(null);
+let checked = new Array(QUIZ.length).fill(false);
+let score = 0;
+
+const TYPE_LABELS = {
+  ar: {mcq:'اختيار من متعدد', tf:'صح / خطأ', multi:'اختيار متعدد الإجابات', fill:'إكمال الفراغ'},
+  en: {mcq:'Multiple Choice', tf:'True / False', multi:'Multiple Select', fill:'Fill in the Blank'}
+};
+
+function renderQuiz(preserveState){
+  const c = document.getElementById('quizContainer');
+  c.innerHTML = '';
+  document.getElementById('scoreTotal').textContent = QUIZ.length;
+
+  QUIZ.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'q-'+qi;
+
+    const typeLabel = TYPE_LABELS[QUIZ_LANG][q.type];
+    const prompt = (QUIZ_LANG === 'en' && q.promptEn) ? q.promptEn : q.prompt;
+    const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+
+    let optsHtml = '';
+    if(q.type === 'mcq'){
+      optsHtml = '<div class="opt-list">' + options.map((opt,oi)=>
+        `<label class="opt" id="opt-${qi}-${oi}">
+          <input type="radio" name="q${qi}" value="${oi}" onchange="selectAnswer(${qi}, ${oi})">
+          <span>${opt}</span>
+        </label>`).join('') + '</div>';
+    } else if(q.type === 'tf'){
+      const trueLabel = QUIZ_LANG === 'en' ? '✅ True' : '✅ صح (True)';
+      const falseLabel = QUIZ_LANG === 'en' ? '❌ False' : '❌ خطأ (False)';
+      optsHtml = `<div class="opt-list">
+        <label class="opt" id="opt-${qi}-1"><input type="radio" name="q${qi}" value="true" onchange="selectAnswer(${qi}, true)"><span>${trueLabel}</span></label>
+        <label class="opt" id="opt-${qi}-0"><input type="radio" name="q${qi}" value="false" onchange="selectAnswer(${qi}, false)"><span>${falseLabel}</span></label>
+      </div>`;
+    } else if(q.type === 'multi'){
+      optsHtml = '<div class="opt-list">' + options.map((opt,oi)=>
+        `<label class="opt" id="opt-${qi}-${oi}">
+          <input type="checkbox" name="q${qi}" value="${oi}" onchange="toggleMulti(${qi}, ${oi})">
+          <span>${opt}</span>
+        </label>`).join('') + '</div>';
+    } else if(q.type === 'fill'){
+      const placeholder = QUIZ_LANG === 'en' ? 'Type your answer here…' : 'اكتب إجابتك هنا (English)…';
+      optsHtml = `<input type="text" class="fill-input" id="fill-${qi}" placeholder="${placeholder}" oninput="userAnswers[${qi}] = this.value; document.getElementById('checkbtn-${qi}').disabled = !this.value.trim();">`;
+    }
+
+    const checkLabel = QUIZ_LANG === 'en' ? 'Check Answer' : 'تحقق من الإجابة';
+    const qLabel = QUIZ_LANG === 'en' ? 'Question' : 'سؤال';
+
+    card.innerHTML = `
+      <div class="q-meta">
+        <span class="q-type-tag">${qLabel} ${qi+1} · ${typeLabel}</span>
+      </div>
+      <div class="q-prompt">${prompt.replace(/\n/g,'<br>')}</div>
+      ${optsHtml}
+      <button class="check-btn" id="checkbtn-${qi}" onclick="checkAnswer(${qi})" ${q.type==='fill' ? 'disabled':''}>${checkLabel}</button>
+      <div class="q-feedback" id="feedback-${qi}"></div>
+    `;
+    c.appendChild(card);
+  });
+
+  if(!preserveState){
+    userAnswers = new Array(QUIZ.length).fill(null);
+    checked = new Array(QUIZ.length).fill(false);
+    score = 0;
+  }
+  updateScoreBar();
+  document.getElementById('finalScore').classList.remove('show');
+}
+
+function selectAnswer(qi, val){ userAnswers[qi] = val; }
+function toggleMulti(qi, oi){
+  if(!Array.isArray(userAnswers[qi])) userAnswers[qi] = [];
+  const idx = userAnswers[qi].indexOf(oi);
+  if(idx === -1) userAnswers[qi].push(oi); else userAnswers[qi].splice(idx,1);
+}
+
+function checkAnswer(qi){
+  if(checked[qi]) return;
+  const q = QUIZ[qi];
+  let isCorrect = false;
+  const fb = document.getElementById('feedback-'+qi);
+  const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+  const explain = (QUIZ_LANG === 'en' && q.explainEn) ? q.explainEn : q.explain;
+
+  if(q.type === 'mcq'){
+    if(userAnswers[qi] === null){ alert(QUIZ_LANG==='en' ? 'Please choose an answer first' : 'من فضلك اختر إجابة أولًا'); return; }
+    isCorrect = Number(userAnswers[qi]) === q.correct;
+    for(let i=0;i<options.length;i++){
+      const el = document.getElementById(`opt-${qi}-${i}`);
+      if(i === q.correct) el.classList.add('correct-flash');
+      else if(i === Number(userAnswers[qi])) el.classList.add('wrong-flash');
+    }
+  } else if(q.type === 'tf'){
+    if(userAnswers[qi] === null){ alert(QUIZ_LANG==='en' ? 'Please choose an answer first' : 'من فضلك اختر إجابة أولًا'); return; }
+    const chosen = (userAnswers[qi] === true || userAnswers[qi] === 'true');
+    isCorrect = chosen === q.correct;
+    const correctId = q.correct ? `opt-${qi}-1` : `opt-${qi}-0`;
+    const wrongId = q.correct ? `opt-${qi}-0` : `opt-${qi}-1`;
+    document.getElementById(correctId).classList.add('correct-flash');
+    if(!isCorrect) document.getElementById(wrongId).classList.add('wrong-flash');
+  } else if(q.type === 'multi'){
+    const chosen = Array.isArray(userAnswers[qi]) ? userAnswers[qi].slice().sort() : [];
+    const correctSet = q.correctSet.slice().sort();
+    isCorrect = chosen.length === correctSet.length && chosen.every((v,i)=>v===correctSet[i]);
+    for(let i=0;i<options.length;i++){
+      const el = document.getElementById(`opt-${qi}-${i}`);
+      const shouldBeCorrect = q.correctSet.includes(i);
+      const wasChosen = chosen.includes(i);
+      if(shouldBeCorrect) el.classList.add('correct-flash');
+      else if(wasChosen) el.classList.add('wrong-flash');
+    }
+  } else if(q.type === 'fill'){
+    const val = (userAnswers[qi] || '').trim().toLowerCase();
+    isCorrect = q.accept.some(a => a.toLowerCase() === val || val.includes(a.toLowerCase()));
+    const input = document.getElementById('fill-'+qi);
+    input.style.borderColor = isCorrect ? 'var(--ok)' : 'var(--bad)';
+  }
+
+  checked[qi] = true;
+  if(isCorrect) score++;
+  fb.className = 'q-feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+  const correctTag = QUIZ_LANG==='en' ? '✅ <b>Correct!</b> ' : '✅ <b>إجابة صحيحة!</b> ';
+  const wrongTag = QUIZ_LANG==='en' ? '❌ <b>Not quite.</b> ' : '❌ <b>إجابة غير صحيحة.</b> ';
+  fb.innerHTML = (isCorrect ? correctTag : wrongTag) + explain;
+  document.getElementById('checkbtn-'+qi).disabled = true;
+  document.querySelectorAll(`#q-${qi} input`).forEach(inp => inp.disabled = true);
+
+  updateScoreBar();
+  if(checked.every(Boolean)) showFinalScore();
+}
+
+function updateScoreBar(){
+  document.getElementById('scoreNow').textContent = score;
+  const answered = checked.filter(Boolean).length;
+  const pct = QUIZ.length ? (answered / QUIZ.length) * 100 : 0;
+  document.getElementById('quizBarFill').style.width = pct + '%';
+}
+
+function showFinalScore(){
+  const el = document.getElementById('finalScore');
+  const pct = Math.round((score/QUIZ.length)*100);
+  document.getElementById('finalScoreText').textContent = `${score} / ${QUIZ.length} (${pct}%)`;
+  let msg = '';
+  if(QUIZ_LANG === 'en'){
+    if(pct >= 85) msg = 'Excellent! You\'re fully ready for Space Complexity & Memory Analysis. 🎉';
+    else if(pct >= 60) msg = 'Good! Review the questions you missed via the “Full Explanation” section.';
+    else msg = 'It\'s recommended to revisit the “Full Explanation” and “3 Levels” sections before trying again.';
+  } else {
+    if(pct >= 85) msg = 'ممتاز! أنت جاهز تمامًا لموضوع Space Complexity & Memory Analysis. 🎉';
+    else if(pct >= 60) msg = 'جيد! راجع الأسئلة التي أخطأت فيها من خلال قسم "الشرح الكامل".';
+    else msg = 'يُنصح بمراجعة قسم "الشرح الكامل" و"3 مستويات" مرة أخرى قبل إعادة المحاولة.';
+  }
+  document.getElementById('finalScoreMsg').textContent = msg;
+  el.classList.add('show');
+}
+
+function resetQuiz(){
+  userAnswers = new Array(QUIZ.length).fill(null);
+  checked = new Array(QUIZ.length).fill(false);
+  score = 0;
+  document.getElementById('finalScore').classList.remove('show');
+  renderQuiz(true);
+  document.getElementById('quiz').scrollIntoView({behavior:'smooth'});
+}
+
+renderQuiz(false);
+</script>
+
+</body>
+</html>

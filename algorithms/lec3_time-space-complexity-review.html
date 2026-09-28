@@ -1,0 +1,1217 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مرجع المراجعة | Time &amp; Space Complexity Analysis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e16;
+    --bg-alt:#0d1220;
+    --card:#121a2b;
+    --card2:#0f1524;
+    --border:#212b40;
+    --border-soft:#1a2336;
+    --text:#e7ecf5;
+    --text-dim:#93a1bd;
+    --text-faint:#5c6a89;
+    --accent:#38bdf8;
+    --accent-soft:#38bdf822;
+
+    --c-o1:#94a3b8;
+    --c-ologn:#a78bfa;
+    --c-on:#38bdf8;
+    --c-onlogn:#34d399;
+    --c-on2:#fbbf24;
+    --c-on3:#fb923c;
+    --c-o2n:#f87171;
+
+    --ok:#34d399;
+    --bad:#f87171;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, #12203a55, transparent 60%),
+      radial-gradient(900px 500px at -10% 20%, #1a123655, transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Tajawal', sans-serif;
+    line-height:1.75;
+  }
+  html[dir="ltr"] body{font-family:'Fira Code','Tajawal',sans-serif;}
+  code, .mono, .eq, .term-en{
+    font-family:'Fira Code', monospace;
+    direction:ltr;
+    unicode-bidi:isolate;
+  }
+  a{color:var(--accent);}
+  h1,h2,h3,h4{font-weight:800; margin:0 0 .5em;}
+  p{margin:0 0 1em; color:var(--text);}
+  .container{max-width:1080px; margin:0 auto; padding:0 20px;}
+
+  .lang-toggle{
+    position:fixed; top:16px; z-index:200;
+    inset-inline-end:16px;
+    display:flex; background:#0d1524ee; border:1px solid var(--border);
+    border-radius:999px; padding:4px; backdrop-filter:blur(8px);
+    box-shadow:0 4px 18px #00000055;
+  }
+  .lang-toggle button{
+    border:none; background:transparent; color:var(--text-dim); font-family:'Fira Code',monospace;
+    font-weight:600; font-size:.78rem; padding:7px 14px; border-radius:999px; cursor:pointer; transition:.2s;
+  }
+  .lang-toggle button.active{background:var(--accent); color:#04121c;}
+
+  .hero{position:relative; padding:70px 0 50px; overflow:hidden; border-bottom:1px solid var(--border-soft);}
+  .hero-bg-curve{position:absolute; inset:0; opacity:.35; pointer-events:none;}
+  .hero .kicker{
+    display:inline-block; font-family:'Fira Code',monospace; font-size:.78rem;
+    letter-spacing:.12em; color:var(--accent); background:var(--accent-soft);
+    border:1px solid #38bdf844; padding:5px 12px; border-radius:999px; margin-bottom:18px;
+  }
+  .hero h1{font-size:2.4rem; line-height:1.25; max-width:780px;}
+  .hero h1 .glow{color:var(--accent); text-shadow:0 0 30px #38bdf866;}
+  .hero p.sub{font-size:1.08rem; color:var(--text-dim); max-width:640px;}
+  @media(max-width:640px){ .hero h1{font-size:1.7rem;} .lang-toggle{top:10px;} }
+
+  .nav-wrap{position:sticky; top:0; z-index:50; background:#0a0e16dd; backdrop-filter:blur(10px); border-bottom:1px solid var(--border-soft);}
+  .nav-scroll{display:flex; gap:6px; overflow-x:auto; padding:10px 20px; max-width:1080px; margin:0 auto; scrollbar-width:none;}
+  .nav-scroll::-webkit-scrollbar{display:none;}
+  .nav-scroll a{
+    flex:none; white-space:nowrap; font-size:.86rem; font-weight:500;
+    color:var(--text-dim); text-decoration:none; padding:8px 14px; border-radius:999px; border:1px solid transparent; transition:.2s;
+  }
+  .nav-scroll a:hover{color:var(--text); border-color:var(--border);}
+  .nav-scroll a.active{color:#04121c; background:var(--accent); font-weight:700;}
+
+  section{padding:56px 0; border-bottom:1px solid var(--border-soft);}
+  section:last-of-type{border-bottom:none;}
+  .eyebrow{font-family:'Fira Code',monospace; font-size:.75rem; color:var(--accent); letter-spacing:.1em; margin-bottom:8px; display:block;}
+  section > .container > h2{font-size:1.7rem; margin-bottom:.25em;}
+  section > .container > p.lead{color:var(--text-dim); max-width:720px; margin-bottom:2em; font-size:1.02rem;}
+
+  .grid{display:grid; gap:16px;}
+  .grid-2{grid-template-columns:repeat(2,1fr);}
+  .grid-3{grid-template-columns:repeat(3,1fr);}
+  .grid-4{grid-template-columns:repeat(4,1fr);}
+  .grid-5{grid-template-columns:repeat(5,1fr);}
+  @media(max-width:860px){ .grid-2,.grid-3,.grid-4,.grid-5{grid-template-columns:1fr;} }
+
+  .card{background:linear-gradient(180deg, var(--card), var(--card2)); border:1px solid var(--border); border-radius:var(--radius); padding:22px 22px;}
+  .card h3{font-size:1.12rem; margin-bottom:.4em;}
+  .card h3 .num{color:var(--accent); font-family:'Fira Code',monospace; margin-left:6px;}
+  .card.tinted{border-color:#38bdf844; background:linear-gradient(180deg,#0f1a2c,#0d1524);}
+
+  .badge{display:inline-flex; align-items:center; gap:6px; font-size:.72rem; font-weight:700; font-family:'Fira Code',monospace; padding:3px 10px; border-radius:999px; letter-spacing:.03em;}
+  .b-o1{color:var(--c-o1); background:#94a3b81a; border:1px solid #94a3b855;}
+  .b-ologn{color:var(--c-ologn); background:#a78bfa1a; border:1px solid #a78bfa55;}
+  .b-on{color:var(--c-on); background:#38bdf81a; border:1px solid #38bdf855;}
+  .b-onlogn{color:var(--c-onlogn); background:#34d3991a; border:1px solid #34d39955;}
+  .b-on2{color:var(--c-on2); background:#fbbf241a; border:1px solid #fbbf2455;}
+  .b-on3{color:var(--c-on3); background:#fb923c1a; border:1px solid #fb923c55;}
+  .b-o2n{color:var(--c-o2n); background:#f871711a; border:1px solid #f8717155;}
+
+  pre{background:#080b12; border:1px solid var(--border); border-radius:10px; padding:16px 18px; overflow-x:auto; direction:ltr; text-align:left; font-family:'Fira Code',monospace; font-size:.88rem; color:#c9e6ff; margin:12px 0;}
+  .line-note{display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-top:1px dashed var(--border-soft);}
+  .line-note:first-child{border-top:none;}
+  .line-note .ln{font-family:'Fira Code',monospace; font-size:.78rem; color:var(--accent); background:#0d1524; border:1px solid var(--border); border-radius:6px; padding:2px 8px; flex:none; margin-top:2px;}
+
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:.95rem;}
+  th,td{padding:11px 12px; text-align:start; border-bottom:1px solid var(--border-soft);}
+  th{color:var(--accent); font-family:'Fira Code',monospace; font-size:.78rem; letter-spacing:.04em; border-bottom:1px solid var(--border);}
+  tr:hover td{background:#ffffff05;}
+  td .mono{color:#c9e6ff;}
+
+  .note{border-radius:10px; border:1px solid #fbbf2444; background:#fbbf240d; padding:14px 16px; font-size:.95rem; color:#f3e2b0;}
+  .note.good{border-color:#34d39944; background:#34d3990d; color:#bdf3da;}
+  .note.info{border-color:#38bdf844; background:#38bdf80d; color:#bfe6fb;}
+  .note.warn{border-color:#f8717144; background:#f871710d; color:#fbd7d7;}
+
+  .diagram-block{border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:22px; background:var(--card);}
+  .diagram-head{padding:16px 20px; border-bottom:1px solid var(--border-soft); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;}
+  .diagram-head h3{margin:0;}
+  .diagram-body{padding:20px;}
+  .curve-legend{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0;}
+  .curve-row{display:flex; align-items:center; gap:10px; padding:6px 0;}
+  .curve-swatch{width:26px; height:4px; border-radius:3px; flex:none;}
+
+  .visual-diagram{background:#080b12; border:1px solid var(--border); border-radius:10px; padding:18px; margin:14px 0; overflow-x:auto;}
+  .row-track{display:flex; align-items:center; gap:6px; margin:8px 0; font-family:'Fira Code',monospace; font-size:.8rem; direction:ltr;}
+  .row-track .row-label{width:52px; flex:none; color:var(--accent);}
+  .row-track .box{width:18px; height:18px; border-radius:4px; background:#38bdf8; flex:none;}
+  .row-track .dots{color:var(--text-faint); flex:none;}
+  .row-track .row-note{color:var(--text-dim); margin-inline-start:10px; white-space:nowrap;}
+
+  .level-tabs{display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;}
+  .level-tab{padding:9px 16px; border-radius:10px; border:1px solid var(--border); background:var(--card2); color:var(--text-dim); cursor:pointer; font-family:'Tajawal',sans-serif; font-weight:700; font-size:.9rem;}
+  .level-tab.active{background:var(--accent); color:#04121c; border-color:var(--accent);}
+  .level-panel{display:none;}
+  .level-panel.active{display:block;}
+  .quickref-list{list-style:none; padding:0; margin:0; font-family:'Fira Code',monospace; direction:ltr; text-align:left;}
+  .quickref-list li{padding:10px 14px; margin-bottom:6px; border-radius:8px; background:#0d1524; border:1px solid var(--border-soft); font-size:.86rem; color:#d7e6f7;}
+
+  .quiz-progress{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 18px; gap:14px; flex-wrap:wrap;}
+  .quiz-score{font-family:'Fira Code',monospace; font-weight:600; color:var(--accent); font-size:1.05rem;}
+  .quiz-bar{flex:1; min-width:140px; height:8px; border-radius:99px; background:#1a2336; overflow:hidden;}
+  .quiz-bar-fill{height:100%; width:0%; background:linear-gradient(90deg,#38bdf8,#34d399); transition:width .3s;}
+
+  .q-card{border:1px solid var(--border); background:var(--card); border-radius:var(--radius); padding:20px 22px; margin-bottom:16px;}
+  .q-card .q-meta{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:10px; flex-wrap:wrap;}
+  .q-type-tag{font-family:'Fira Code',monospace; font-size:.7rem; color:var(--text-faint); border:1px solid var(--border); padding:2px 9px; border-radius:999px;}
+  .q-prompt{font-weight:700; font-size:1.02rem; margin-bottom:14px;}
+  .q-prompt code{background:#0d1524; padding:1px 6px; border-radius:5px; font-size:.9em;}
+  .opt-list{display:flex; flex-direction:column; gap:8px;}
+  .opt{display:flex; align-items:center; gap:10px; padding:11px 14px; border-radius:10px; border:1px solid var(--border); background:var(--card2); cursor:pointer; transition:.15s; font-size:.95rem;}
+  .opt:hover{border-color:#38bdf866;}
+  .opt input{accent-color:var(--accent); width:16px; height:16px; flex:none;}
+  .opt.correct-flash{border-color:var(--ok); background:#34d3991a;}
+  .opt.wrong-flash{border-color:var(--bad); background:#f871711a;}
+  .fill-input{width:100%; max-width:320px; background:#0d1524; border:1px solid var(--border); border-radius:9px; padding:11px 14px; color:var(--text); font-family:'Fira Code',monospace; font-size:.95rem; direction:ltr; text-align:left;}
+  .fill-input:focus{outline:none; border-color:var(--accent);}
+  .check-btn{margin-top:14px; background:var(--accent); color:#04121c; border:none; padding:9px 20px; border-radius:9px; font-weight:700; cursor:pointer; font-family:'Tajawal',sans-serif; font-size:.9rem;}
+  .check-btn:disabled{opacity:.5; cursor:default;}
+  .check-btn:hover:not(:disabled){filter:brightness(1.1);}
+  .q-feedback{margin-top:12px; padding:12px 14px; border-radius:10px; font-size:.9rem; display:none;}
+  .q-feedback.show{display:block;}
+  .q-feedback.correct{background:#34d3991a; border:1px solid #34d39955; color:#c8f5e2;}
+  .q-feedback.incorrect{background:#f871711a; border:1px solid #f8717155; color:#fbd7d7;}
+  .final-score{text-align:center; padding:30px 20px; border-radius:var(--radius); border:1px solid var(--accent); background:linear-gradient(180deg,#0f1a2c,#0d1524); margin-top:20px; display:none;}
+  .final-score.show{display:block;}
+  .final-score .big{font-size:2.4rem; font-weight:800; color:var(--accent); font-family:'Fira Code',monospace;}
+  .reset-btn{margin-top:14px; background:transparent; border:1px solid var(--border); color:var(--text); padding:9px 20px; border-radius:9px; cursor:pointer; font-family:'Tajawal',sans-serif; font-weight:700;}
+
+  .timeline{position:relative; padding-inline-start:26px; border-inline-start:2px solid var(--border);}
+  .t-item{position:relative; padding-bottom:26px;}
+  .t-item:last-child{padding-bottom:0;}
+  .t-item::before{content:''; position:absolute; inset-inline-start:-32px; top:4px; width:12px; height:12px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 4px #38bdf822;}
+  .t-time{font-family:'Fira Code',monospace; color:var(--accent); font-size:.82rem; margin-bottom:2px;}
+  .t-title{font-weight:700; margin-bottom:3px;}
+
+  .tip-item, .mistake-item{display:flex; gap:12px; padding:14px 0; border-top:1px solid var(--border-soft);}
+  .tip-item:first-child, .mistake-item:first-child{border-top:none;}
+  .tip-icon, .mistake-icon{flex:none; font-size:1.2rem; line-height:1.4;}
+
+  footer{padding:30px 0 60px; text-align:center; color:var(--text-faint); font-size:.85rem;}
+</style>
+</head>
+<body>
+
+<div class="lang-toggle">
+  <button id="btnAr" class="active" onclick="setLang('ar')">AR · عربي</button>
+  <button id="btnEn" onclick="setLang('en')">EN</button>
+</div>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <svg class="hero-bg-curve" viewBox="0 0 1080 260" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,255 C 250,250 500,180 620,90 C 720,20 780,-30 850,-60" stroke="#f87171" stroke-width="2" fill="none"/>
+    <path d="M0,257 C 300,253 600,220 720,150 C 820,90 900,40 980,-10" stroke="#fb923c" stroke-width="2" fill="none"/>
+    <path d="M0,258 C 350,255 650,230 780,190 C 900,150 980,120 1080,80" stroke="#fbbf24" stroke-width="2" fill="none"/>
+    <path d="M0,259 C 400,256 700,240 850,220 C 950,205 1020,195 1080,185" stroke="#34d399" stroke-width="2" fill="none"/>
+    <path d="M0,260 C 400,258 750,248 900,240 C 1000,235 1050,232 1080,229" stroke="#38bdf8" stroke-width="2" fill="none"/>
+    <path d="M0,260 C 450,259 800,254 1080,251" stroke="#a78bfa" stroke-width="2" fill="none"/>
+  </svg>
+  <div class="container">
+    <span class="kicker">LECTURE 3 · REVIEW SHEET</span>
+    <h1><span class="i18n" data-en="Time &amp; Space">Time &amp; Space</span> <span class="glow i18n" data-en="Complexity Analysis">Complexity Analysis</span></h1>
+    <p class="sub i18n" data-en="An interactive review sheet — how loop structure determines Big O, plus best/average/worst case, classic sorting case studies, and the memory side of the story: space complexity.">مرجع مراجعة تفاعلي — كيف تحدّد بنية الحلقات قيمة Big O، بالإضافة إلى أفضل/متوسط/أسوأ الحالات، ودراسات حالة لخوارزميات ترتيب كلاسيكية، والوجه الآخر للقصة: تعقيد المساحة (Space Complexity).</p>
+  </div>
+</header>
+
+<!-- ============ STICKY NAV ============ -->
+<div class="nav-wrap">
+  <nav class="nav-scroll" id="navScroll">
+    <a href="#overview" class="i18n" data-en="Overview">نظرة عامة</a>
+    <a href="#explain" class="i18n" data-en="Full Explanation">الشرح الكامل</a>
+    <a href="#diagrams" class="i18n" data-en="Diagrams &amp; Charts">الرسومات والمخططات</a>
+    <a href="#summary" class="i18n" data-en="Summary Table">جدول التلخيص</a>
+    <a href="#levels" class="i18n" data-en="3 Levels">3 مستويات</a>
+    <a href="#quiz" class="i18n" data-en="Interactive Quiz">الاختبار التفاعلي</a>
+    <a href="#plan" class="i18n" data-en="Study Plan">خطة المذاكرة</a>
+    <a href="#tips" class="i18n" data-en="Pro Tips">نصائح احترافية</a>
+  </nav>
+</div>
+
+<!-- ============ 1. OVERVIEW ============ -->
+<section id="overview">
+  <div class="container">
+    <span class="eyebrow">01 / OVERVIEW</span>
+    <h2 class="i18n" data-en="Lecture Overview">نظرة عامة على المحاضرة</h2>
+    <p class="lead i18n" data-en="Lecture 3 builds directly on Big O from Lecture 2. It goes deeper into how different loop structures (sequential, nested, dependent, logarithmic, mixed) produce different growth rates, introduces best/average/worst-case analysis, applies all of this to five real algorithm case studies, then opens a new dimension: Space Complexity — how much memory an algorithm needs, not just how much time.">
+      المحاضرة الثالثة تبني مباشرة على مفهوم Big O من المحاضرة الثانية. تتعمّق في كيفية إنتاج بنيات الحلقات المختلفة (متتالية، متداخلة، معتمدة، لوغاريتمية، مختلطة) لمعدلات نمو مختلفة، وتقدّم تحليل أفضل/متوسط/أسوأ الحالات، ثم تطبّق كل ذلك على خمس دراسات حالة لخوارزميات حقيقية، وأخيرًا تفتح بُعدًا جديدًا: تعقيد المساحة (Space Complexity) — كمية الذاكرة التي تحتاجها الخوارزمية، وليس فقط الزمن.
+    </p>
+
+    <div class="grid grid-2">
+      <div class="card tinted">
+        <h3 class="i18n" data-en="🎯 The Core Idea">🎯 الفكرة المحورية</h3>
+        <p class="i18n" data-en="Not every input is created equal. The same algorithm can behave very differently depending on the input it receives — that's why we distinguish Best, Average, and Worst case. And beyond time, every algorithm also has a memory footprint — Space Complexity — that must be measured with the same rigor as time.">
+          ليست كل المدخلات متساوية. نفس الخوارزمية قد تتصرف بشكل مختلف تمامًا حسب المدخل الذي تستقبله — لهذا نميّز بين أفضل حالة ومتوسط حالة وأسوأ حالة. وبعيدًا عن الزمن، لكل خوارزمية أيضًا بصمة ذاكرة — تعقيد المساحة (Space Complexity) — يجب قياسها بنفس الدقة التي نقيس بها الزمن.
+        </p>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="🧠 Key Concepts in This Lecture">🧠 أهم المفاهيم في هذه المحاضرة</h3>
+        <ul style="margin:0; padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="Best / Average / Worst case analysis">تحليل أفضل / متوسط / أسوأ حالة</li>
+          <li class="i18n" data-en="Dependent, reverse-dependent, and multi-variable nested loops">الحلقات المتداخلة المعتمدة والعكسية ومتعددة المتغيرات</li>
+          <li class="i18n" data-en="Logarithmic loops, triple nested loops, and mixed patterns O(n log n)">الحلقات اللوغاريتمية والحلقات الثلاثية المتداخلة والأنماط المختلطة O(n log n)</li>
+          <li class="i18n" data-en="Five case studies: Bubble Sort, Merge Sort, Quick Sort, BST, Graph Traversal">خمس دراسات حالة: Bubble Sort، Merge Sort، Quick Sort، BST، اجتياز الرسوم البيانية</li>
+          <li class="i18n" data-en="Common mistakes in time-complexity analysis">أخطاء شائعة في تحليل تعقيد الزمن</li>
+          <li class="i18n" data-en="Space Complexity: Input Space, Auxiliary Space, Total Space">تعقيد المساحة: Input Space، Auxiliary Space، Total Space</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid grid-3" style="margin-top:16px;">
+      <div class="card">
+        <h3 class="i18n" data-en="🛠️ Skills Gained">🛠️ المهارات المكتسبة</h3>
+        <p style="color:var(--text-dim); margin:0;" class="i18n" data-en="Analyzing more complex loop structures (dependent, logarithmic, mixed) beyond the simple loops of Lecture 2.">تحليل بنيات حلقات أكثر تعقيدًا (معتمدة، لوغاريتمية، مختلطة) بعد الحلقات البسيطة في المحاضرة الثانية.</p>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="⚖️ Case-by-Case Thinking">⚖️ تفكير حسب الحالة</h3>
+        <p style="color:var(--text-dim); margin:0;" class="i18n" data-en="Recognizing that best/average/worst case can differ for the same algorithm (like Quick Sort or Bubble Sort).">إدراك أن أفضل/متوسط/أسوأ حالة قد تختلف لنفس الخوارزمية (مثل Quick Sort أو Bubble Sort).</p>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="💾 Thinking About Memory">💾 التفكير في الذاكرة</h3>
+        <p style="color:var(--text-dim); margin:0;" class="i18n" data-en="Evaluating an algorithm on two axes at once: time AND space.">تقييم الخوارزمية على محورين في آن واحد: الزمن والمساحة معًا.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. FULL EXPLANATION ============ -->
+<section id="explain">
+  <div class="container">
+    <span class="eyebrow">02 / FULL EXPLANATION</span>
+    <h2 class="i18n" data-en="Full Explanation of Every Section">الشرح الكامل لكل قسم في المحاضرة</h2>
+    <p class="lead i18n" data-en="Each card covers one part of the lecture in order, without dropping any information from the slides.">كل بطاقة تغطي جزءًا من المحاضرة بالترتيب، دون تجاوز أي معلومة واردة في الشرائح.</p>
+
+    <!-- 2.1 challenge 1 solution -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.1</span> <span class="i18n" data-en="Recap: Solution to Challenge 1 — Analyzing a Simple Loop">مراجعة: حل التحدي 1 — تحليل حلقة بسيطة</span></h3>
+      <p class="i18n" data-en="The lecture opens by revisiting the challenge from Lecture 2, applying the four-step process:">تفتتح المحاضرة بمراجعة تحدي المحاضرة الثانية، مطبّقة عليه خطوات التحليل الأربع:</p>
+      <pre>for (i = 1; i <= n; i++) {
+    print(i);
+}</pre>
+      <div class="grid grid-4">
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Basic Operation">Basic Operation</b><p style="color:var(--text-dim); margin-top:4px; font-size:.88rem;"><code>print(i)</code></p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Executions">Executions</b><p style="color:var(--text-dim); margin-top:4px; font-size:.88rem;" class="i18n" data-en="n times">n مرة</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Running Time">Running Time</b><p style="color:var(--text-dim); margin-top:4px; font-size:.88rem;"><span class="eq">T(n) = n</span></p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Time Complexity">Time Complexity</b><p style="color:var(--text-dim); margin-top:4px; font-size:.88rem;"><span class="badge b-on">O(n)</span> <span class="i18n" data-en="— Linear">— خطي</span></p></div>
+      </div>
+      <p style="color:var(--text-dim); font-size:.92rem; margin-top:10px;" class="i18n" data-en="The loop body executes once per value of i, producing linear growth.">جسم الحلقة يُنفَّذ مرة واحدة لكل قيمة من i، مما ينتج نموًا خطيًا.</p>
+    </div>
+
+    <!-- 3.2 best average worst -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.2</span> <span class="i18n" data-en="Best, Average &amp; Worst Case Analysis">تحليل أفضل ومتوسط وأسوأ الحالات</span></h3>
+      <p class="i18n" data-en="The exact same algorithm can require a different number of operations depending on which specific input it receives — so we describe performance across three scenarios:">نفس الخوارزمية بالضبط قد تحتاج عددًا مختلفًا من العمليات حسب المدخل المحدد الذي تستقبله — لذلك نصف الأداء عبر ثلاثة سيناريوهات:</p>
+      <table>
+        <tr><th class="i18n" data-en="Case">الحالة</th><th class="i18n" data-en="Meaning">المعنى</th></tr>
+        <tr><td><b>Best Case</b></td><td class="i18n" data-en="The minimum number of operations required — the most favorable input.">الحد الأدنى من العمليات المطلوبة — أفضل مدخل ممكن.</td></tr>
+        <tr><td><b>Average Case</b></td><td class="i18n" data-en="The expected number of operations across typical, random inputs.">العدد المتوقع من العمليات عبر مدخلات عشوائية نموذجية.</td></tr>
+        <tr><td><b>Worst Case</b></td><td class="i18n" data-en="The maximum number of operations — the most demanding input. This is the standard focus of algorithm analysis.">الحد الأقصى من العمليات — أكثر مدخل إرهاقًا. هذا هو التركيز القياسي في تحليل الخوارزميات.</td></tr>
+      </table>
+    </div>
+
+    <!-- 3.3 dependent nested loops -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.3</span> <span class="i18n" data-en="Dependent Nested Loops">الحلقات المتداخلة المعتمدة (Dependent Nested Loops)</span></h3>
+      <p class="i18n" data-en="Sometimes the inner loop's range depends on the outer loop's current variable, not on n directly:">أحيانًا يعتمد مدى الحلقة الداخلية على متغيّر الحلقة الخارجية الحالي، وليس على n مباشرة:</p>
+      <pre>for i = 1 to n
+    for j = 1 to i
+        operation</pre>
+      <div class="line-note"><span class="ln i18n" data-en="Key">مفتاح</span><div class="i18n" data-en="The inner loop's iterations depend on the value of i — when i=1 the inner loop runs once, when i=2 it runs twice, and so on up to i=n running n times.">تكرارات الحلقة الداخلية تعتمد على قيمة i — عندما i=1 تعمل الحلقة الداخلية مرة واحدة، وعندما i=2 تعمل مرتين، وهكذا حتى i=n تعمل n مرة.</div></div>
+      <div class="grid grid-2" style="margin-top:12px;">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Number of Operations">Number of Operations</b><p class="eq" style="margin-top:8px; color:#c9e6ff;">1 + 2 + 3 + ... + n = n(n+1) / 2</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Time Complexity">Time Complexity</b><p style="margin-top:8px;"><span class="badge b-on2">O(n²)</span></p></div>
+      </div>
+      <div class="note info" style="margin-top:12px;" class="i18n" data-en="Numeric example (n=4): the inner loop runs 1+2+3+4 = 10 times total — matching n(n+1)/2 = 4×5/2 = 10.">مثال رقمي (n=4): تعمل الحلقة الداخلية 1+2+3+4 = 10 مرات إجمالًا — وهو ما يطابق n(n+1)/2 = 4×5/2 = 10.</div>
+    </div>
+
+    <!-- 3.4 reverse dependent -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.4</span> <span class="i18n" data-en="Reverse Dependent Nested Loops">الحلقات المتداخلة المعتمدة العكسية (Reverse Dependent)</span></h3>
+      <pre>for (i = 1; i <= n; i++)
+    for (j = i; j <= n; j++)
+        operation;</pre>
+      <p class="i18n" data-en="Here the inner loop runs n, n-1, n-2, …, 1 times — the reverse order compared to the previous example, but the same total.">هنا تعمل الحلقة الداخلية n، n-1، n-2، …، 1 مرة — الترتيب معكوس مقارنة بالمثال السابق، لكن المجموع الكلي نفسه.</p>
+      <div class="note good" style="margin-top:6px;"><span class="eq">n + (n-1) + ... + 1 = n(n+1)/2 = O(n²)</span></div>
+      <p style="color:var(--text-dim); font-size:.92rem; margin-top:10px;" class="i18n" data-en="Key takeaway: different loop structures can produce the exact same asymptotic complexity — the direction of counting doesn't change the growth order.">الخلاصة المهمة: بنيات حلقات مختلفة يمكن أن تنتج نفس التعقيد المقارب تمامًا — اتجاه العدّ لا يغيّر رتبة النمو.</p>
+    </div>
+
+    <!-- 3.5 multi variable -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.5</span> <span class="i18n" data-en="Complexity with Two Variables (Multi-Variable Analysis)">التعقيد بمتغيّرين (تحليل متعدد المتغيرات)</span></h3>
+      <pre>for (i = 1; i <= n; i++)
+    for (j = 1; j <= m; j++)
+        operation;</pre>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Operations">Operations</b><p style="margin-top:8px;" class="eq">n * m</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Complexity">Complexity</b><p style="margin-top:8px;"><span class="badge b-on2">O(nm)</span></p></div>
+      </div>
+      <div class="note warn" style="margin-top:12px;"><b class="i18n" data-en="Key Rule:">قاعدة أساسية:</b> <span class="i18n" data-en="n and m are independent input sizes. Never automatically replace m with n — they may represent completely different quantities (e.g. rows and columns of two different matrices).">n و m هما حجما مدخل مستقلان. لا تستبدل m بـ n تلقائيًا أبدًا — فقد يمثّلان كميتين مختلفتين تمامًا (مثل صفوف وأعمدة مصفوفتين مختلفتين).</span></div>
+    </div>
+
+    <!-- 3.6 logarithmic loops -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.6</span> <span class="i18n" data-en="Logarithmic Loops">الحلقات اللوغاريتمية (Logarithmic Loops)</span></h3>
+      <pre>while (n > 1) {
+    n = n / 2;
+}</pre>
+      <p class="i18n" data-en="Repeatedly reducing the problem by a constant factor (here, dividing by 2 each time) produces logarithmic growth — because the number of times you can halve n before reaching 1 is log₂(n).">تقليص المسألة بشكل متكرر بعامل ثابت (هنا القسمة على 2 كل مرة) ينتج نموًا لوغاريتميًا — لأن عدد المرات التي يمكن فيها تنصيف n قبل الوصول إلى 1 هو log₂(n).</p>
+      <div class="note info" class="i18n" data-en="Numeric example: starting at n=16 → 8 → 4 → 2 → 1 takes exactly 4 steps = log₂(16). Doubling n to 32 only adds one more step (5 steps) — this is what makes logarithmic algorithms so efficient at scale.">مثال رقمي: البدء من n=16 → 8 → 4 → 2 → 1 يستغرق بالضبط 4 خطوات = log₂(16). مضاعفة n إلى 32 تضيف خطوة واحدة فقط (5 خطوات) — وهذا ما يجعل الخوارزميات اللوغاريتمية فعّالة جدًا عند النطاق الكبير.</div>
+      <p style="margin-top:10px;"><span class="badge b-ologn">O(log n)</span></p>
+    </div>
+
+    <!-- 3.7 triple nested -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.7</span> <span class="i18n" data-en="Triple Nested Loops">الحلقات الثلاثية المتداخلة (Triple Nested Loops)</span></h3>
+      <pre>for (i = 1; i <= n; i++)
+    for (j = 1; j <= n; j++)
+        for (k = 1; k <= n; k++)
+            operation;</pre>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Operation Count">Operation Count</b><p class="eq" style="margin-top:8px; color:#c9e6ff;">n × n × n = n³</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Time Complexity">Time Complexity</b><p style="margin-top:8px;"><span class="badge b-on3">O(n³) — Cubic</span></p></div>
+      </div>
+      <div class="note" style="margin-top:12px;"><b class="i18n" data-en="Key Principle:">مبدأ أساسي:</b> <span class="i18n" data-en="Nested loops multiply their execution counts — with three levels of nesting, we multiply three times.">الحلقات المتداخلة تضرب عدد مرات تنفيذها — مع ثلاثة مستويات من التداخل، نضرب ثلاث مرات.</span></div>
+    </div>
+
+    <!-- 3.8 mixed patterns -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.8</span> <span class="i18n" data-en="Mixed Loop Analysis — O(n log n)">تحليل الحلقات المختلطة — O(n log n)</span></h3>
+      <pre>for i = 1 to n
+    j = 1
+    while j < n
+        operation
+        j = j × 2</pre>
+      <div class="grid grid-3">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Outer Loop">Outer Loop</b><p style="color:var(--text-dim); margin-top:4px; font-size:.88rem;" class="i18n" data-en="Runs n times → O(n)">تعمل n مرة ← O(n)</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Inner Loop">Inner Loop</b><p style="color:var(--text-dim); margin-top:4px; font-size:.88rem;" class="i18n" data-en="j doubles each time → O(log n)">j تتضاعف كل مرة ← O(log n)</p></div>
+        <div class="card" style="padding:14px; border-color:#34d39944;"><b class="i18n" data-en="Combined">مجتمعة</b><p style="color:var(--text-dim); margin-top:4px; font-size:.88rem;"><span class="eq">n × log n = O(n log n)</span></p></div>
+      </div>
+      <p style="color:var(--text-dim); font-size:.92rem; margin-top:10px;" class="i18n" data-en="A linear outer loop paired with a logarithmic inner loop is a very common pattern — remember: nested → multiply, so O(n) × O(log n) = O(n log n).">حلقة خارجية خطية مقترنة بحلقة داخلية لوغاريتمية نمط شائع جدًا — تذكّر: متداخلة ← اضرب، فـ O(n) × O(log n) = O(n log n).</p>
+    </div>
+
+    <!-- 3.9 pattern recognition table -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.9</span> <span class="i18n" data-en="Recognizing Complexity Patterns">التعرّف على أنماط التعقيد</span></h3>
+      <table>
+        <tr><th class="i18n" data-en="Code Pattern">نمط الكود</th><th class="i18n" data-en="Complexity">التعقيد</th></tr>
+        <tr><td class="i18n" data-en="One statement">جملة واحدة</td><td><span class="badge b-o1">O(1)</span></td></tr>
+        <tr><td class="i18n" data-en="One loop">حلقة واحدة</td><td><span class="badge b-on">O(n)</span></td></tr>
+        <tr><td class="i18n" data-en="Two nested loops">حلقتان متداخلتان</td><td><span class="badge b-on2">O(n²)</span></td></tr>
+        <tr><td class="i18n" data-en="Three nested loops">ثلاث حلقات متداخلة</td><td><span class="badge b-on3">O(n³)</span></td></tr>
+        <tr><td class="i18n" data-en="Divide by 2 each iteration">القسمة على 2 كل تكرار</td><td><span class="badge b-ologn">O(log n)</span></td></tr>
+        <tr><td class="i18n" data-en="Linear + logarithmic loop">حلقة خطية + لوغاريتمية</td><td><span class="badge b-onlogn">O(n log n)</span></td></tr>
+      </table>
+      <div class="note warn" style="margin-top:6px;" class="i18n" data-en="Remember: always count executions before assigning complexity. These patterns are guides, not substitutes for analysis.">تذكّر: احسب دائمًا عدد التنفيذات قبل تحديد التعقيد. هذه الأنماط أدلة إرشادية، وليست بديلًا عن التحليل الفعلي.</div>
+    </div>
+
+    <!-- 3.10 case study 1 bubble sort -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.10</span> <span class="i18n" data-en="Case Study 1 — Bubble Sort Analysis">دراسة حالة 1 — تحليل Bubble Sort</span></h3>
+      <p class="i18n" data-en="In each pass, adjacent elements are compared repeatedly. The total comparison count forms an arithmetic series:">في كل تمريرة، تُقارن العناصر المتجاورة بشكل متكرر. إجمالي عدد المقارنات يشكّل متسلسلة حسابية:</p>
+      <div class="note info"><span class="eq">(n-1) + (n-2) + ... + 2 + 1 = n(n-1)/2 = O(n²)</span></div>
+      <table style="margin-top:10px;">
+        <tr><th class="i18n" data-en="Case">الحالة</th><th class="i18n" data-en="Complexity">التعقيد</th></tr>
+        <tr><td>Best*</td><td><span class="badge b-on">O(n)</span></td></tr>
+        <tr><td class="i18n" data-en="Average">متوسط</td><td><span class="badge b-on2">O(n²)</span></td></tr>
+        <tr><td class="i18n" data-en="Worst">أسوأ</td><td><span class="badge b-on2">O(n²)</span></td></tr>
+      </table>
+      <p style="color:var(--text-faint); font-size:.85rem;" class="i18n" data-en="* With optimization (early termination on an already-sorted array).">* مع التحسين (الإيقاف المبكر عند مصفوفة مرتبة أصلًا).</p>
+    </div>
+
+    <!-- 3.11 case study 2 merge sort -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.11</span> <span class="i18n" data-en="Case Study 2 — Merge Sort Analysis">دراسة حالة 2 — تحليل Merge Sort</span></h3>
+      <p class="i18n" data-en="Merge Sort uses divide and conquer: split the array in half, solve each half recursively, then merge the sorted halves.">يستخدم Merge Sort مبدأ فرّق تسد (divide and conquer): قسّم المصفوفة إلى نصفين، حلّ كل نصف بشكل تكراري (recursive)، ثم ادمج النصفين المرتبين.</p>
+      <div class="grid grid-3" style="margin:14px 0;">
+        <div class="card" style="padding:12px; text-align:center;"><b class="i18n" data-en="Divide">Divide</b></div>
+        <div class="card" style="padding:12px; text-align:center;"><b class="i18n" data-en="Conquer">Conquer</b></div>
+        <div class="card" style="padding:12px; text-align:center;"><b class="i18n" data-en="Merge">Merge</b></div>
+      </div>
+      <div class="grid grid-2">
+        <div>
+          <b class="i18n" data-en="Recurrence Relation">علاقة التكرار (Recurrence Relation)</b>
+          <p class="eq" style="margin-top:8px;">T(n) = 2T(n/2) + n</p>
+          <p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Work per level: n · Number of levels: log₂ n">العمل لكل مستوى: n · عدد المستويات: log₂ n</p>
+          <p class="eq" style="margin-top:6px;">n × log n = O(n log n)</p>
+        </div>
+        <div>
+          <table>
+            <tr><th class="i18n" data-en="Case">الحالة</th><th class="i18n" data-en="Complexity">التعقيد</th></tr>
+            <tr><td class="i18n" data-en="Best">أفضل</td><td><span class="badge b-onlogn">O(n log n)</span></td></tr>
+            <tr><td class="i18n" data-en="Average">متوسط</td><td><span class="badge b-onlogn">O(n log n)</span></td></tr>
+            <tr><td class="i18n" data-en="Worst">أسوأ</td><td><span class="badge b-onlogn">O(n log n)</span></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3.12 case study 3 quick sort -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.12</span> <span class="i18n" data-en="Case Study 3 — Quick Sort Analysis">دراسة حالة 3 — تحليل Quick Sort</span></h3>
+      <table>
+        <tr><th class="i18n" data-en="Case">الحالة</th><th class="i18n" data-en="Complexity">التعقيد</th><th class="i18n" data-en="Why">لماذا</th></tr>
+        <tr><td class="i18n" data-en="Best">أفضل</td><td><span class="badge b-onlogn">O(n log n)</span></td><td class="i18n" data-en="Balanced partitions at every level">تقسيمات متوازنة عند كل مستوى</td></tr>
+        <tr><td class="i18n" data-en="Average">متوسط</td><td><span class="badge b-onlogn">O(n log n)</span></td><td class="i18n" data-en="Random pivots yield balanced splits">المحاور العشوائية تعطي تقسيمات متوازنة</td></tr>
+        <tr><td class="i18n" data-en="Worst">أسوأ</td><td><span class="badge b-on2">O(n²)</span></td><td class="i18n" data-en="Highly unbalanced partitions (e.g. sorted input)">تقسيمات غير متوازنة بشدة (مثل مدخل مرتب مسبقًا)</td></tr>
+      </table>
+      <div class="note" style="margin-top:6px;"><b class="i18n" data-en="Key Idea:">فكرة أساسية:</b> <span class="i18n" data-en="Partition quality directly determines performance. A bad pivot choice collapses Quick Sort to quadratic time.">جودة التقسيم تحدد الأداء مباشرة. اختيار محور (pivot) سيء يُسقط Quick Sort إلى زمن تربيعي.</span></div>
+    </div>
+
+    <!-- 3.13 case study 4 BST -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.13</span> <span class="i18n" data-en="Case Study 4 — Binary Search Tree (Search Complexity by Tree Type)">دراسة حالة 4 — شجرة البحث الثنائية (تعقيد البحث حسب نوع الشجرة)</span></h3>
+      <table>
+        <tr><th class="i18n" data-en="Tree Type">نوع الشجرة</th><th class="i18n" data-en="Complexity">التعقيد</th></tr>
+        <tr><td class="i18n" data-en="Balanced BST">شجرة متوازنة</td><td><span class="badge b-ologn">O(log n)</span></td></tr>
+        <tr><td class="i18n" data-en="Unbalanced BST">شجرة غير متوازنة</td><td><span class="badge b-on">O(n)</span></td></tr>
+      </table>
+      <p style="color:var(--text-dim);" class="i18n" data-en="A balanced BST halves the search space at each step (just like binary search on a sorted array). A severely unbalanced BST degenerates into what's effectively a linked list — structure is everything.">الشجرة المتوازنة تُنصّف مساحة البحث في كل خطوة (تمامًا مثل البحث الثنائي في مصفوفة مرتبة). أما الشجرة غير المتوازنة بشدة فتتحول فعليًا إلى ما يشبه القائمة المترابطة (linked list) — البنية هي كل شيء.</p>
+    </div>
+
+    <!-- 3.14 case study 5 graph traversal -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.14</span> <span class="i18n" data-en="Case Study 5 — Graph Traversal">دراسة حالة 5 — اجتياز الرسوم البيانية (Graph Traversal)</span></h3>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px;"><b>Breadth-First Search (BFS)</b><p style="margin-top:6px;"><span class="badge b-on">O(V + E)</span></p><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Explores all neighbors at each depth before going deeper.">يستكشف كل الجيران عند كل عمق قبل التعمّق أكثر.</p></div>
+        <div class="card" style="padding:14px;"><b>Depth-First Search (DFS)</b><p style="margin-top:6px;"><span class="badge b-on">O(V + E)</span></p><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Follows each branch to its end before backtracking.">يتبع كل فرع حتى نهايته قبل التراجع (backtracking).</p></div>
+      </div>
+      <div class="note info" style="margin-top:12px;" class="i18n" data-en="V = number of vertices, E = number of edges. Complexity here depends on two input parameters — not just a single n.">V = عدد الرؤوس (vertices)، E = عدد الأضلاع (edges). التعقيد هنا يعتمد على معاملين للمدخل — وليس فقط n واحدة.</div>
+    </div>
+
+    <!-- 3.15 common mistakes -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.15</span> <span class="i18n" data-en="Common Mistakes in Time Complexity">أخطاء شائعة في تحليل تعقيد الزمن</span></h3>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div><b class="i18n" data-en="Mistake 1 — Two Loops ≠ O(n²)">الخطأ 1 — حلقتان لا تعني بالضرورة O(n²)</b><p style="margin-top:4px; color:var(--text-dim);"><span class="i18n" data-en="Sequential loops → O(n)">حلقات متتالية ← O(n)</span> &nbsp;|&nbsp; <span class="i18n" data-en="Nested loops → O(n²)">حلقات متداخلة ← O(n²)</span></p></div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div><b class="i18n" data-en="Mistake 2 — Ignoring Logarithmic Behavior">الخطأ 2 — تجاهل السلوك اللوغاريتمي</b><p style="margin-top:4px; color:var(--text-dim);"><span class="i18n" data-en="Treating repeated halving as linear (wrong)">معاملة التنصيف المتكرر كأنه خطي (خطأ)</span> &nbsp;|&nbsp; <span class="i18n" data-en="Division/multiplication by a constant → O(log n) (correct)">القسمة/الضرب في ثابت ← O(log n) (صحيح)</span></p></div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div><b class="i18n" data-en="Mistake 3 — Confusing O(n+m) with O(nm)">الخطأ 3 — الخلط بين O(n+m) و O(nm)</b><p style="margin-top:4px; color:var(--text-dim);"><span class="i18n" data-en="O(n+m) = additive (sequential)">O(n+m) = جمعي (متتالي)</span> &nbsp;|&nbsp; <span class="i18n" data-en="O(nm) = nested / multiplicative">O(nm) = متداخل / ضربي</span></p></div></div>
+    </div>
+
+    <!-- 3.16 checklist -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.16</span> <span class="i18n" data-en="Algorithm Analysis Checklist (Methodology)">قائمة تحقق لتحليل الخوارزميات (المنهجية)</span></h3>
+      <p class="i18n" data-en="Before writing your final Big O, work through these five questions in order:">قبل كتابة Big O النهائي، اعمل على هذه الأسئلة الخمسة بالترتيب:</p>
+      <table>
+        <tr><th>#</th><th class="i18n" data-en="Step">الخطوة</th><th class="i18n" data-en="Guiding Question">السؤال الموجّه</th></tr>
+        <tr><td>01</td><td><b class="i18n" data-en="Identify the basic operation">حدّد العملية الأساسية</b></td><td class="i18n" data-en="What is the fundamental step being counted?">ما هي الخطوة الجوهرية التي يتم عدّها؟</td></tr>
+        <tr><td>02</td><td><b class="i18n" data-en="Count executions">عدّ التنفيذات</b></td><td class="i18n" data-en="How many times does it run as a function of input size?">كم مرة تُنفَّذ كدالة في حجم المدخل؟</td></tr>
+        <tr><td>03</td><td><b class="i18n" data-en="Express as T(n)">عبّر عنها كـ T(n)</b></td><td class="i18n" data-en="Write the execution count as a mathematical expression.">اكتب عدد التنفيذات كتعبير رياضي.</td></tr>
+        <tr><td>04</td><td><b class="i18n" data-en="Find the dominant term">أوجد الحد المهيمن</b></td><td class="i18n" data-en="Which term grows fastest as n → ∞?">أي حد ينمو أسرع عندما n → ∞؟</td></tr>
+        <tr><td>05</td><td><b class="i18n" data-en="Simplify and write Big O">بسّط واكتب Big O</b></td><td class="i18n" data-en="Drop constants and lower-order terms.">أسقط الثوابت والحدود الأقل رتبة.</td></tr>
+      </table>
+      <div class="note good" style="margin-top:6px;"><b class="i18n" data-en="Exam Strategy:">استراتيجية الامتحان:</b> <span class="i18n" data-en="Count first. Simplify second. Never guess Big O from code appearance alone.">عُدّ أولًا. بسّط ثانيًا. لا تخمّن Big O من مظهر الكود فقط أبدًا.</span></div>
+    </div>
+
+    <!-- 3.17 challenge + hint -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.17</span> <span class="i18n" data-en="Quick Challenge + How to Work Through It">تحدٍ سريع + كيفية حلّه</span></h3>
+      <p class="i18n" data-en="Determine the time complexity of this nested loop structure:">حدّد تعقيد الزمن لبنية الحلقات المتداخلة التالية:</p>
+      <pre>for (i = 1; i <= n; i++) {
+    j = 1;
+    while (j <= n) {
+        operation;
+        j = j * 2;
+    }
+}</pre>
+      <p class="i18n" data-en="Suggested four-step framework to solve it yourself before reading the answer:">إطار مقترح من 4 خطوات لحلّه بنفسك قبل قراءة الإجابة:</p>
+      <ol style="color:var(--text-dim); padding-inline-start:20px;">
+        <li><b class="i18n" data-en="Analyze the outer loop">حلّل الحلقة الخارجية</b> — <span class="i18n" data-en="how many iterations does i perform?">كم تكرارًا تنفّذ i؟</span></li>
+        <li><b class="i18n" data-en="Analyze the inner loop">حلّل الحلقة الداخلية</b> — <span class="i18n" data-en="how does j change each iteration?">كيف تتغيّر j في كل تكرار؟</span></li>
+        <li><b class="i18n" data-en="Determine loop behavior">حدّد سلوك الحلقة</b> — <span class="i18n" data-en="is it linear, logarithmic, or something else?">هل هي خطية أم لوغاريتمية أم شيء آخر؟</span></li>
+        <li><b class="i18n" data-en="Combine the results">ادمج النتائج</b> — <span class="i18n" data-en="multiply nested counts; add sequential ones.">اضرب الحلقات المتداخلة؛ اجمع المتتالية.</span></li>
+      </ol>
+      <div class="grid grid-3" style="margin-top:10px;">
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Outer Loop">Outer Loop</b><p style="color:var(--text-dim); font-size:.88rem; margin-top:4px;" class="i18n" data-en="Runs n times — linear iteration">تعمل n مرة — تكرار خطي</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Inner Loop">Inner Loop</b><p style="color:var(--text-dim); font-size:.88rem; margin-top:4px;" class="i18n" data-en="j doubles each step — logarithmic">j تتضاعف كل خطوة — لوغاريتمي</p></div>
+        <div class="card" style="padding:12px; border-color:#34d39944;"><b class="i18n" data-en="Combined">مجتمعة</b><p style="color:var(--text-dim); font-size:.88rem; margin-top:4px;"><span class="eq">n × log n</span></p></div>
+      </div>
+      <div class="note good" style="margin-top:12px;" class="i18n" data-en="Answer: O(n log n) — the outer loop runs n times, and the inner loop runs log₂ n times per outer iteration. This pattern (linear outer + logarithmic inner) appears frequently in complexity problems.">الإجابة: O(n log n) — الحلقة الخارجية تعمل n مرة، والحلقة الداخلية تعمل log₂ n مرة لكل تكرار خارجي. هذا النمط (خارجية خطية + داخلية لوغاريتمية) يظهر بكثرة في مسائل التعقيد.</div>
+    </div>
+
+    <!-- 3.18 intro to space complexity -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.18</span> <span class="i18n" data-en="Introduction to Space Complexity">مقدمة في تعقيد المساحة (Space Complexity)</span></h3>
+      <p class="i18n" data-en="Algorithm efficiency has two dimensions — both matter in practice:">لكفاءة الخوارزمية بُعدان — كلاهما مهم عمليًا:</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:16px;"><b class="i18n" data-en="⏱️ Time Complexity">⏱️ تعقيد الزمن</b><p style="color:var(--text-dim); margin-top:6px;" class="i18n" data-en="How much computational work does the algorithm perform?">كم من العمل الحسابي تؤديه الخوارزمية؟</p></div>
+        <div class="card" style="padding:16px;"><b class="i18n" data-en="💾 Space Complexity">💾 تعقيد المساحة</b><p style="color:var(--text-dim); margin-top:6px;" class="i18n" data-en="How much memory does the algorithm require during execution?">كم من الذاكرة تحتاجها الخوارزمية أثناء التنفيذ؟</p></div>
+      </div>
+      <p style="color:var(--text-dim); margin-top:12px;" class="i18n" data-en="Space complexity accounts for input storage and any auxiliary memory allocated at runtime. Efficient algorithms must balance both time and memory.">تعقيد المساحة يأخذ بعين الاعتبار تخزين المدخل وأي ذاكرة إضافية تُخصَّص أثناء التشغيل. الخوارزميات الفعّالة يجب أن توازن بين الزمن والذاكرة معًا.</p>
+    </div>
+
+    <!-- 3.19 three types of space -->
+    <div class="card" style="margin-bottom:0;">
+      <h3><span class="num">3.19</span> <span class="i18n" data-en="Three Types of Space">ثلاثة أنواع من المساحة</span></h3>
+      <p class="i18n" data-en="When analyzing algorithms, we must account for memory usage — not just time. Three distinct concepts define this measurement:">عند تحليل الخوارزميات، يجب أخذ استخدام الذاكرة بعين الاعتبار — وليس فقط الزمن. ثلاثة مفاهيم متمايزة تحدد هذا القياس:</p>
+      <div class="grid grid-3">
+        <div class="card" style="padding:16px;">
+          <b class="i18n" data-en="Input Space">Input Space</b>
+          <p style="color:var(--text-dim); margin-top:6px; font-size:.92rem;" class="i18n" data-en="Memory required to store the input data.">الذاكرة المطلوبة لتخزين بيانات المدخل.</p>
+          <p style="margin-top:8px;"><span class="badge b-on">O(n)</span></p>
+          <p style="color:var(--text-faint); font-size:.85rem; margin-top:4px;" class="i18n" data-en="for an array of n elements">لمصفوفة من n عنصر</p>
+        </div>
+        <div class="card" style="padding:16px;">
+          <b class="i18n" data-en="Auxiliary Space">Auxiliary Space</b>
+          <p style="color:var(--text-dim); margin-top:6px; font-size:.92rem;" class="i18n" data-en="Additional memory used during execution.">الذاكرة الإضافية المستخدمة أثناء التنفيذ.</p>
+          <p style="margin-top:8px;"><span class="badge b-o1">O(1)</span></p>
+          <p style="color:var(--text-faint); font-size:.85rem; margin-top:4px;" class="i18n" data-en="when only a few extra variables are used">عند استخدام بضعة متغيرات إضافية فقط</p>
+        </div>
+        <div class="card" style="padding:16px;">
+          <b class="i18n" data-en="Total Space">Total Space</b>
+          <p style="color:var(--text-dim); margin-top:6px; font-size:.92rem;" class="i18n" data-en="Input Space + Auxiliary Space">Input Space + Auxiliary Space</p>
+          <p style="margin-top:8px;"><span class="badge b-on">O(n)</span></p>
+          <p style="color:var(--text-faint); font-size:.85rem; margin-top:4px;" class="i18n" data-en="in the array example above">في مثال المصفوفة أعلاه</p>
+        </div>
+      </div>
+      <div class="note good" style="margin-top:12px;"><b class="i18n" data-en="Key Idea:">فكرة أساسية:</b> <span class="i18n" data-en="When comparing algorithms, always distinguish between input storage and additional (auxiliary) memory — two algorithms with the same input space can have very different auxiliary space.">عند مقارنة الخوارزميات، ميّز دائمًا بين تخزين المدخل والذاكرة الإضافية (auxiliary) — خوارزميتان بنفس Input Space قد يكون لهما Auxiliary Space مختلف جدًا.</span></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 3. DIAGRAMS ============ -->
+<section id="diagrams">
+  <div class="container">
+    <span class="eyebrow">03 / DIAGRAMS &amp; CHARTS</span>
+    <h2 class="i18n" data-en="Explaining the Diagrams and Charts">شرح الرسومات والمخططات</h2>
+    <p class="lead i18n" data-en="A precise description of every diagram in the lecture, tied back to the theory behind it.">وصف دقيق لكل رسم ورد في المحاضرة، مرتبط بالمفهوم النظري خلفه.</p>
+
+    <!-- diagram 1: reverse dependent nested loop -->
+    <div class="diagram-block">
+      <div class="diagram-head">
+        <h3 class="i18n" data-en="🔁 Diagram 1 — Reverse Dependent Nested Loops">🔁 مخطط 1 — الحلقات المتداخلة المعتمدة العكسية</h3>
+        <span class="badge b-on2">Row Diagram</span>
+      </div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="This diagram visualizes the code <code>for i=1..n: for j=i..n</code> as a stack of horizontal rows, one per value of i, each made of small connected boxes (□ — □ — □ ...) representing the inner loop's iterations:">يُصوّر هذا المخطط الكود <code>for i=1..n: for j=i..n</code> كسلسلة من الصفوف الأفقية، صف واحد لكل قيمة من i، كل صف مكوّن من مربعات صغيرة متصلة (□ — □ — □ ...) تمثّل تكرارات الحلقة الداخلية:</p>
+        <div class="visual-diagram">
+          <div class="row-track"><span class="row-label">i = 1</span><span class="box"></span><span class="box"></span><span class="box"></span><span class="dots">···</span><span class="box"></span><span class="row-note i18n" data-en="(n boxes — the longest row)">(n مربع — أطول صف)</span></div>
+          <div class="row-track"><span class="row-label">i = 2</span><span class="box"></span><span class="box"></span><span class="dots">···</span><span class="box"></span><span class="row-note i18n" data-en="(n-1 boxes)">(n-1 مربع)</span></div>
+          <div class="row-track"><span class="row-label">i = 3</span><span class="box"></span><span class="dots">···</span><span class="box"></span><span class="row-note i18n" data-en="(n-2 boxes)">(n-2 مربع)</span></div>
+          <div class="row-track"><span class="row-label">⋮</span><span class="dots">⋮</span></div>
+          <div class="row-track"><span class="row-label">i = n</span><span class="box"></span><span class="row-note i18n" data-en="(1 box — the shortest row)">(مربع واحد — أقصر صف)</span></div>
+        </div>
+        <p class="i18n" data-en="Each row is labeled with an arrow noting what it represents: the top row (i=1) is annotated “outer loop i from 1 to n”, the rows below are annotated “inner loop j from i to n”, and the shrinking pattern is annotated “inner iterations decrease n, n-1, …, 1”. A final label under the last row states the total: n(n+1)/2 = O(n²) — exactly matching the formula derived from the code.">كل صف موسوم بسهم يوضّح ما يمثّله: الصف العلوي (i=1) موسوم بـ "الحلقة الخارجية i من 1 إلى n"، والصفوف التالية موسومة بـ "الحلقة الداخلية j من i إلى n"، ونمط التقلّص موسوم بـ "تكرارات الحلقة الداخلية تتناقص n، n-1، …، 1". وفي الأسفل توضيح للمجموع الكلي: n(n+1)/2 = O(n²) — وهو يطابق تمامًا الصيغة المُشتقة من الكود.</p>
+        <div class="note info" class="i18n" data-en="Reading the shape: the rows form a shrinking staircase/triangle — wide at the top (i=1, n boxes) and narrow at the bottom (i=n, 1 box). This triangular shape is a visual signature of O(n²): summing 1+2+...+n (or n+(n-1)+...+1, same total) always gives a triangular-number pattern.">قراءة الشكل: الصفوف تشكّل درجًا/مثلثًا متقلّصًا — عريض من الأعلى (i=1، n مربع) وضيق من الأسفل (i=n، مربع واحد). هذا الشكل المثلثي هو "بصمة بصرية" لـ O(n²): جمع 1+2+...+n (أو n+(n-1)+...+1، نفس المجموع) يعطي دائمًا نمط "الأعداد المثلثية".</div>
+      </div>
+    </div>
+
+    <!-- diagram 2: triple nested cube -->
+    <div class="diagram-block">
+      <div class="diagram-head">
+        <h3 class="i18n" data-en="🧊 Diagram 2 (Conceptual) — Triple Nested Loops as a Cube">🧊 مخطط 2 (مفاهيمي) — الحلقات الثلاثية المتداخلة كمكعب</h3>
+        <span class="badge b-on3">3D Grid</span>
+      </div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="The slide illustrates triple nesting with an artistic 3D cube made of a grid of glowing nodes connected along all three dimensions. Conceptually: a single loop is a line of n points, a double nested loop is a flat grid of n×n points (a square), and a triple nested loop extends this into a cube of n×n×n points — one point for every combination of (i, j, k). Counting every node in that cube gives exactly n³ operations, visually explaining why three levels of nesting produce cubic growth.">توضّح الشريحة التداخل الثلاثي بمكعب فني ثلاثي الأبعاد مكوّن من شبكة عُقد متوهجة متصلة عبر الأبعاد الثلاثة. من الناحية المفاهيمية: الحلقة الواحدة هي خط من n نقطة، والحلقتان المتداخلتان شبكة مستوية من n×n نقطة (مربع)، والحلقات الثلاث المتداخلة تمدّد هذا إلى مكعب من n×n×n نقطة — نقطة واحدة لكل تركيبة من (i, j, k). عدّ كل عقدة في هذا المكعب يعطي بالضبط n³ عملية، مما يفسّر بصريًا لماذا تنتج ثلاثة مستويات من التداخل نموًا تكعيبيًا.</p>
+      </div>
+    </div>
+
+    <!-- diagram 3: merge sort divide conquer merge -->
+    <div class="diagram-block">
+      <div class="diagram-head">
+        <h3 class="i18n" data-en="🔀 Diagram 3 — Merge Sort: Divide → Conquer → Merge">🔀 مخطط 3 — Merge Sort: تقسيم ← حل ← دمج</h3>
+        <span class="badge b-onlogn">Process Flow</span>
+      </div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="Three overlapping circular icons connected in a horizontal chain represent the three phases of Merge Sort in order:">ثلاث أيقونات دائرية متداخلة ومتصلة في سلسلة أفقية تمثّل مراحل Merge Sort الثلاث بالترتيب:</p>
+        <div class="grid grid-3" style="margin:14px 0;">
+          <div class="card" style="padding:16px; text-align:center;">
+            <div style="font-size:1.8rem;">↝</div>
+            <b class="i18n" data-en="1. Divide">1. تقسيم (Divide)</b>
+            <p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="Icon: a branching split arrow — the array splits into two halves.">الأيقونة: سهم متفرّع — المصفوفة تنقسم إلى نصفين.</p>
+          </div>
+          <div class="card" style="padding:16px; text-align:center;">
+            <div style="font-size:1.8rem;">↻</div>
+            <b class="i18n" data-en="2. Conquer">2. حل (Conquer)</b>
+            <p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="Icon: a recursive loop arrow — each half is solved recursively (the same process repeats on smaller pieces).">الأيقونة: سهم دائري تكراري — كل نصف يُحل بشكل تكراري (نفس العملية تتكرر على أجزاء أصغر).</p>
+          </div>
+          <div class="card" style="padding:16px; text-align:center;">
+            <div style="font-size:1.8rem;">⤞</div>
+            <b class="i18n" data-en="3. Merge">3. دمج (Merge)</b>
+            <p style="color:var(--text-dim); font-size:.85rem; margin-top:6px;" class="i18n" data-en="Icon: converging arrows — the sorted halves are merged back into one sorted array.">الأيقونة: أسهم متقاربة — النصفان المرتبان يُدمجان مرة أخرى في مصفوفة واحدة مرتبة.</p>
+          </div>
+        </div>
+        <p class="i18n" data-en="Below the three icons, the slide places the recurrence relation T(n) = 2T(n/2) + n side by side with a small table showing Best/Average/Worst all equal to O(n log n) — visually reinforcing that Merge Sort's performance doesn't depend on the input's initial order, unlike Bubble Sort or Quick Sort.">أسفل الأيقونات الثلاث، تضع الشريحة علاقة التكرار T(n) = 2T(n/2) + n جنبًا إلى جنب مع جدول صغير يوضّح أن أفضل/متوسط/أسوأ الحالات كلها تساوي O(n log n) — مما يعزّز بصريًا أن أداء Merge Sort لا يعتمد على الترتيب الأولي للمدخل، على عكس Bubble Sort أو Quick Sort.</p>
+      </div>
+    </div>
+
+    <!-- diagram 4: multi-variable grid -->
+    <div class="diagram-block">
+      <div class="diagram-head">
+        <h3 class="i18n" data-en="📐 Diagram 4 (Conceptual) — Two Independent Dimensions n and m">📐 مخطط 4 (مفاهيمي) — بُعدان مستقلان n و m</h3>
+        <span class="badge b-on2">Two Grids</span>
+      </div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="The slide shows two overlapping hand-drawn grid sheets of different sizes, one labeled along an edge with n and the other with m, tilted at different angles to emphasize that they are two separate, independent grids rather than one square grid. This visually reinforces the “Key Rule” text next to it: n and m are independent input sizes that happen to both appear in the same nested loop, and must never be assumed equal or automatically substituted for one another.">تعرض الشريحة ورقتي شبكة مرسومتين يدويًا بحجمين مختلفين ومتداخلتين جزئيًا، إحداهما موسومة على حافتها بـ n والأخرى بـ m، ومائلتان بزوايا مختلفة للتأكيد على أنهما شبكتان منفصلتان ومستقلتان وليستا شبكة مربعة واحدة. هذا يعزّز بصريًا نص "القاعدة الأساسية" المجاور: n و m حجما مدخل مستقلان يظهران معًا في نفس الحلقة المتداخلة، ويجب ألا يُفترض تساويهما أو يُستبدل أحدهما بالآخر تلقائيًا.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. SUMMARY TABLE ============ -->
+<section id="summary">
+  <div class="container">
+    <span class="eyebrow">04 / SUMMARY</span>
+    <h2 class="i18n" data-en="Comprehensive Summary — Key Concepts and Definitions">تلخيص شامل — المفاهيم والتعريفات الجوهرية</h2>
+    <table>
+      <tr><th class="i18n" data-en="Term">المصطلح</th><th class="i18n" data-en="Definition">التعريف</th></tr>
+      <tr><td class="mono">Best Case</td><td class="i18n" data-en="Minimum operations — the most favorable input.">الحد الأدنى من العمليات — أفضل مدخل ممكن.</td></tr>
+      <tr><td class="mono">Average Case</td><td class="i18n" data-en="Expected operations across typical, random inputs.">العدد المتوقع من العمليات عبر مدخلات عشوائية نموذجية.</td></tr>
+      <tr><td class="mono">Worst Case</td><td class="i18n" data-en="Maximum operations — the standard focus of analysis.">الحد الأقصى من العمليات — التركيز القياسي في التحليل.</td></tr>
+      <tr><td><b>Dependent Nested Loops</b></td><td class="i18n" data-en="Inner loop's range depends on the outer variable (e.g. j=1 to i) → O(n²).">مدى الحلقة الداخلية يعتمد على المتغيّر الخارجي (مثل j=1 إلى i) ← O(n²).</td></tr>
+      <tr><td><b>Reverse Dependent Nested Loops</b></td><td class="i18n" data-en="Same total as dependent loops, counted in reverse (n, n-1, ..., 1) → O(n²).">نفس المجموع الكلي للحلقات المعتمدة، لكن معدودة عكسيًا (n، n-1، ...، 1) ← O(n²).</td></tr>
+      <tr><td class="mono">O(nm)</td><td class="i18n" data-en="Complexity with two independent input variables n and m.">التعقيد بمتغيّري مدخل مستقلّين n و m.</td></tr>
+      <tr><td class="mono">O(log n)</td><td class="i18n" data-en="Produced by repeatedly reducing the problem by a constant factor (e.g. n = n/2).">ناتج عن تقليص المسألة بشكل متكرر بعامل ثابت (مثل n = n/2).</td></tr>
+      <tr><td class="mono">O(n³)</td><td class="i18n" data-en="Triple nested loops — three levels multiply: n × n × n.">حلقات ثلاثية متداخلة — ثلاثة مستويات تُضرب: n × n × n.</td></tr>
+      <tr><td class="mono">O(n log n)</td><td class="i18n" data-en="A linear loop combined with a logarithmic loop (multiplied, since nested).">حلقة خطية مقترنة بحلقة لوغاريتمية (مضروبتان، لأنهما متداخلتان).</td></tr>
+      <tr><td><b>Bubble Sort</b></td><td class="i18n" data-en="Best O(n)* / Average O(n²) / Worst O(n²). *with early-termination optimization.">أفضل O(n)* / متوسط O(n²) / أسوأ O(n²). *مع تحسين الإيقاف المبكر.</td></tr>
+      <tr><td><b>Merge Sort</b></td><td class="i18n" data-en="Best = Average = Worst = O(n log n). Recurrence: T(n) = 2T(n/2) + n.">أفضل = متوسط = أسوأ = O(n log n). علاقة التكرار: T(n) = 2T(n/2) + n.</td></tr>
+      <tr><td><b>Quick Sort</b></td><td class="i18n" data-en="Best/Average O(n log n); Worst O(n²) with a bad pivot.">أفضل/متوسط O(n log n)؛ أسوأ O(n²) مع محور سيء.</td></tr>
+      <tr><td><b>Balanced vs Unbalanced BST</b></td><td class="i18n" data-en="Balanced O(log n) vs Unbalanced O(n) (degenerates toward a linked list).">متوازنة O(log n) مقابل غير متوازنة O(n) (تتحول إلى ما يشبه القائمة المترابطة).</td></tr>
+      <tr><td><b>BFS / DFS</b></td><td class="i18n" data-en="Both O(V + E) — depends on vertices V and edges E, not a single n.">كلاهما O(V + E) — يعتمد على الرؤوس V والأضلاع E، وليس n واحدة.</td></tr>
+      <tr><td class="mono">Input Space</td><td class="i18n" data-en="Memory to store the input — O(n) for an array of n elements.">الذاكرة لتخزين المدخل — O(n) لمصفوفة من n عنصر.</td></tr>
+      <tr><td class="mono">Auxiliary Space</td><td class="i18n" data-en="Extra memory used during execution — O(1) with only a few extra variables.">الذاكرة الإضافية أثناء التنفيذ — O(1) عند استخدام بضعة متغيرات إضافية فقط.</td></tr>
+      <tr><td class="mono">Total Space</td><td class="i18n" data-en="Input Space + Auxiliary Space.">Input Space + Auxiliary Space.</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 5. THREE LEVELS ============ -->
+<section id="levels">
+  <div class="container">
+    <span class="eyebrow">05 / THREE LEVELS</span>
+    <h2 class="i18n" data-en="Simplified at 3 Levels">تبسيط على 3 مستويات</h2>
+    <div class="level-tabs">
+      <button class="level-tab active" data-level="beginner"><span class="i18n" data-en="🌱 Beginner">🌱 للمبتدئين</span></button>
+      <button class="level-tab" data-level="intermediate"><span class="i18n" data-en="🎓 University Level">🎓 مستوى جامعي</span></button>
+      <button class="level-tab" data-level="quick"><span class="i18n" data-en="⚡ Quick Review">⚡ مراجعة سريعة</span></button>
+    </div>
+
+    <div class="level-panel active" id="panel-beginner">
+      <div class="card">
+        <p class="i18n" data-en="Think of sorting a deck of playing cards:">تخيّل ترتيب مجموعة أوراق لعب (deck of cards):</p>
+        <ul style="padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="<b>Best/Average/Worst case</b> is like asking: how long does it take to find a specific card? If the deck is already sorted, it's instant (best case). If it's shuffled randomly, it takes a typical amount of effort (average case). If it's sorted backwards — the worst possible arrangement for your method — it takes the longest (worst case)."><b>أفضل/متوسط/أسوأ حالة</b> مثل أن تسأل: كم يستغرق إيجاد ورقة معينة؟ لو الأوراق مرتبة مسبقًا، الأمر فوري (أفضل حالة). لو مخلوطة عشوائيًا، يستغرق مجهودًا نموذجيًا (متوسط حالة). لو مرتبة بالعكس تمامًا — أسوأ ترتيب ممكن لطريقتك — يستغرق أطول وقت (أسوأ حالة).</li>
+          <li class="i18n" data-en="<b>Dependent nested loops</b> are like comparing every card to every card that comes before it — the first card has nothing to compare to, the second compares to 1, the third to 2, and so on — the total workload still ends up quadratic."><b>الحلقات المتداخلة المعتمدة</b> مثل مقارنة كل ورقة بكل الأوراق التي تسبقها — الورقة الأولى لا تقارن بشيء، الثانية تقارن بواحدة، الثالثة باثنتين، وهكذا — والعبء الكلي ينتهي به الأمر تربيعيًا.</li>
+          <li class="i18n" data-en="<b>Logarithmic loops</b> are like guessing a number between 1 and 1000 by always splitting the range in half — you find it in about 10 guesses, not 1000."><b>الحلقات اللوغاريتمية</b> مثل تخمين رقم بين 1 و1000 عن طريق تنصيف المدى دائمًا — تجده خلال حوالي 10 محاولات، وليس 1000.</li>
+          <li class="i18n" data-en="<b>Space complexity</b> is simply: how big a table do you need to spread your cards out on? A bigger deck (input) needs a bigger table (input space); needing an extra small pile to help you sort is auxiliary space."><b>تعقيد المساحة</b> ببساطة: كم يجب أن تكون الطاولة كبيرة لتفرد عليها أوراقك؟ مجموعة أوراق أكبر (المدخل) تحتاج طاولة أكبر (Input Space)؛ احتياجك لكومة صغيرة إضافية تساعدك في الترتيب هو Auxiliary Space.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="level-panel" id="panel-intermediate">
+      <div class="card i18n" data-en="<p>This lecture extends the four-step analysis method from Lecture 2 to more complex loop structures. Two key operational skills matter most:</p>
+        <ul style='padding-inline-start:20px; color:var(--text-dim);'>
+          <li>When an inner loop's bound depends on the outer variable (e.g. <code>j = 1 to i</code>), you cannot simply multiply n × n. Instead you must sum the actual sequence of inner-loop lengths (1 + 2 + ... + n), which resolves to the arithmetic series formula n(n+1)/2 — still O(n²), but derived rather than assumed.</li>
+          <li>Best/Average/Worst case analysis matters because a single Big O expression can hide very different behaviors: Quick Sort is O(n log n) on average but degrades to O(n²) in the worst case if pivot selection is poor, while Merge Sort guarantees O(n log n) in every case because its divide step is always balanced regardless of input.</li>
+        </ul>
+        <p>Space complexity is analyzed with the same rigor as time: Input Space accounts for the memory needed to hold the input itself (typically O(n)), while Auxiliary Space accounts for any extra memory the algorithm allocates beyond the input — recursive call stacks, temporary arrays, or extra pointers. An algorithm that sorts in place using only a constant number of extra variables has O(1) auxiliary space, even though its time complexity might be O(n²) or O(n log n); the two dimensions are measured independently.</p>">
+        <p>
+          تُوسّع هذه المحاضرة منهجية التحليل بأربع خطوات من المحاضرة الثانية لتشمل بنيات حلقات أكثر تعقيدًا. مهارتان تشغيليتان أساسيتان تهمّان أكثر من غيرهما:
+        </p>
+        <ul style="padding-inline-start:20px; color:var(--text-dim);">
+          <li>عندما يعتمد حد الحلقة الداخلية على المتغيّر الخارجي (مثل <code>j = 1 to i</code>)، لا يمكنك ببساطة ضرب n × n. بدلًا من ذلك يجب جمع التسلسل الفعلي لأطوال الحلقة الداخلية (1 + 2 + ... + n)، والذي يؤول إلى صيغة المتسلسلة الحسابية n(n+1)/2 — تبقى O(n²)، لكن مُشتقّة وليست مفترضة.</li>
+          <li>تحليل أفضل/متوسط/أسوأ حالة مهم لأن تعبير Big O واحد قد يخفي سلوكيات مختلفة جدًا: Quick Sort هو O(n log n) في المتوسط لكنه يتدهور إلى O(n²) في أسوأ الحالات إذا كان اختيار المحور (pivot) سيئًا، بينما Merge Sort يضمن O(n log n) في كل الحالات لأن خطوة التقسيم فيه متوازنة دائمًا بغض النظر عن المدخل.</li>
+        </ul>
+        <p>
+          تعقيد المساحة يُحلَّل بنفس الدقة التي يُحلَّل بها الزمن: Input Space يأخذ بعين الاعتبار الذاكرة اللازمة لحمل المدخل نفسه (عادة O(n))، بينما Auxiliary Space يأخذ بعين الاعتبار أي ذاكرة إضافية تُخصّصها الخوارزمية بعيدًا عن المدخل — مكدسات الاستدعاء التكراري (recursive call stacks)، أو مصفوفات مؤقتة، أو مؤشرات إضافية. خوارزمية ترتب في المكان (in place) باستخدام عدد ثابت فقط من المتغيرات الإضافية لها Auxiliary Space يساوي O(1)، حتى لو كان تعقيد زمنها O(n²) أو O(n log n)؛ يُقاس البُعدان بشكل مستقل.
+        </p>
+      </div>
+    </div>
+
+    <div class="level-panel" id="panel-quick">
+      <div class="card">
+        <ul class="quickref-list">
+          <li>Best case = min ops. Average = expected ops. Worst = max ops (standard focus).</li>
+          <li>Dependent nested: j=1..i → 1+2+...+n = n(n+1)/2 → O(n²).</li>
+          <li>Reverse dependent: j=i..n → n+(n-1)+...+1 = same total → O(n²).</li>
+          <li>Two variables: for i..n, for j..m → operations = n*m → O(nm). Never assume n=m.</li>
+          <li>Logarithmic: n = n/2 repeatedly → O(log n).</li>
+          <li>Triple nested loop → n × n × n = n³ → O(n³).</li>
+          <li>Linear outer + logarithmic inner (nested → multiply) → O(n) × O(log n) = O(n log n).</li>
+          <li>Bubble Sort: Best O(n)* / Avg O(n²) / Worst O(n²).</li>
+          <li>Merge Sort: Best = Avg = Worst = O(n log n). T(n) = 2T(n/2) + n.</li>
+          <li>Quick Sort: Best/Avg O(n log n); Worst O(n²) (bad pivot).</li>
+          <li>Balanced BST O(log n); Unbalanced BST O(n).</li>
+          <li>BFS = DFS = O(V + E).</li>
+          <li>Mistake check: sequential loops ADD (O(n+m)); nested loops MULTIPLY (O(nm)).</li>
+          <li>5-step checklist: Identify → Count → Express T(n) → Find dominant term → Simplify.</li>
+          <li>Space: Input Space O(n) + Auxiliary Space (often O(1)) = Total Space.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. QUIZ ============ -->
+<section id="quiz">
+  <div class="container">
+    <span class="eyebrow">06 / INTERACTIVE QUIZ</span>
+    <h2 class="i18n" data-en="Interactive Quiz">اختبار تفاعلي</h2>
+    <p class="lead i18n" data-en="Answer the questions, then press “Check Answer” for each — your final score appears at the bottom.">أجب عن الأسئلة ثم اضغط "تحقق من الإجابة" لكل سؤال — النتيجة النهائية تظهر أسفل الصفحة.</p>
+
+    <div class="quiz-progress">
+      <div class="quiz-score"><span class="i18n" data-en="Score:">النتيجة:</span> <span id="scoreNow">0</span> / <span id="scoreTotal">0</span></div>
+      <div class="quiz-bar"><div class="quiz-bar-fill" id="quizBarFill"></div></div>
+    </div>
+
+    <div id="quizContainer"></div>
+
+    <div class="final-score" id="finalScore">
+      <div class="big" id="finalScoreText">0 / 0</div>
+      <p id="finalScoreMsg" style="margin-top:8px; color:var(--text-dim);"></p>
+      <button class="reset-btn" onclick="resetQuiz()"><span class="i18n" data-en="🔄 Try Again">🔄 إعادة المحاولة</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. STUDY PLAN ============ -->
+<section id="plan">
+  <div class="container">
+    <span class="eyebrow">07 / STUDY PLAN</span>
+    <h2 class="i18n" data-en="One-Day Study Plan">خطة مذاكرة ليوم واحد</h2>
+    <p class="lead i18n" data-en="A suggested schedule for reviewing this lecture in one study day before the exam.">جدول زمني مقترح لمراجعة هذه المحاضرة خلال يوم دراسي واحد قبل الامتحان.</p>
+    <div class="timeline">
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Hour 1">الساعة 1</div>
+        <div class="t-title i18n" data-en="Loop patterns: dependent, reverse, multi-variable, logarithmic, triple, mixed">أنماط الحلقات: المعتمدة، العكسية، متعددة المتغيرات، اللوغاريتمية، الثلاثية، المختلطة</div>
+        <p style="color:var(--text-dim);" class="i18n" data-en="Go through each loop pattern in the “Full Explanation” section and re-derive its Big O by hand — don't just read the answer.">راجع كل نمط حلقة في قسم "الشرح الكامل" وأعد اشتقاق Big O الخاص به يدويًا — لا تكتفِ بقراءة الإجابة.</p>
+      </div>
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Hour 2">الساعة 2</div>
+        <div class="t-title i18n" data-en="Best / Average / Worst case + the pattern table">أفضل / متوسط / أسوأ حالة + جدول الأنماط</div>
+        <p style="color:var(--text-dim);" class="i18n" data-en="Memorize the “Recognizing Complexity Patterns” table, and make sure you can explain WHY each case differs for Bubble Sort and Quick Sort specifically.">احفظ جدول "التعرّف على أنماط التعقيد"، وتأكد أنك تستطيع شرح لماذا تختلف كل حالة تحديدًا في Bubble Sort و Quick Sort.</p>
+      </div>
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Hour 3">الساعة 3</div>
+        <div class="t-title i18n" data-en="The 5 case studies">دراسات الحالة الخمس</div>
+        <p style="color:var(--text-dim);" class="i18n" data-en="Build a mental table: Algorithm | Best | Average | Worst, for Bubble Sort, Merge Sort, Quick Sort, BST, and BFS/DFS.">ابنِ جدولًا ذهنيًا: الخوارزمية | أفضل | متوسط | أسوأ، لكل من Bubble Sort و Merge Sort و Quick Sort و BST و BFS/DFS.</p>
+      </div>
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Hour 4">الساعة 4</div>
+        <div class="t-title i18n" data-en="Space complexity + the interactive quiz">تعقيد المساحة + الاختبار التفاعلي</div>
+        <p style="color:var(--text-dim);" class="i18n" data-en="Review Input/Auxiliary/Total space, then take the full interactive quiz and revisit any section related to a question you missed.">راجع Input/Auxiliary/Total space، ثم حل الاختبار التفاعلي كاملًا وارجع لأي قسم مرتبط بسؤال أخطأت فيه.</p>
+      </div>
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Right before the exam (last 20 minutes)">قبل الامتحان مباشرة (آخر 20 دقيقة)</div>
+        <div class="t-title i18n" data-en="Final focused review of only:">مراجعة أخيرة مركّزة فقط على:</div>
+        <ul style="color:var(--text-dim); padding-inline-start:20px; margin-top:6px;">
+          <li class="i18n" data-en="The whole “Comprehensive Summary” table">جدول "التلخيص الشامل" كاملًا</li>
+          <li class="i18n" data-en="The three common mistakes (sequential vs nested, log vs linear, O(n+m) vs O(nm))">الأخطاء الشائعة الثلاثة (متتالية مقابل متداخلة، لوغاريتمي مقابل خطي، O(n+m) مقابل O(nm))</li>
+          <li class="i18n" data-en="The 5-step checklist: Identify → Count → Express → Find dominant term → Simplify">قائمة التحقق من 5 خطوات: حدّد ← عُدّ ← عبّر ← أوجد الحد المهيمن ← بسّط</li>
+          <li class="i18n" data-en="Merge Sort's guaranteed O(n log n) vs. Quick Sort's worst-case O(n²)">ضمان Merge Sort لـ O(n log n) مقابل أسوأ حالة لـ Quick Sort وهي O(n²)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8. PRO TIPS ============ -->
+<section id="tips">
+  <div class="container">
+    <span class="eyebrow">08 / PRO TIPS</span>
+    <h2 class="i18n" data-en="Pro Tips">نصائح احترافية</h2>
+
+    <div class="grid grid-2" style="align-items:start;">
+      <div class="card">
+        <h3 class="i18n" data-en="💡 How to Understand Instead of Memorize">💡 كيف تفهم بدلًا من الحفظ</h3>
+        <div class="tip-item"><span class="tip-icon">🔍</span><div class="i18n" data-en="Don't memorize “Quick Sort is O(n log n)” as an absolute fact — understand that this is only the average/best case, and the worst case depends entirely on pivot choice.">لا تحفظ "Quick Sort هو O(n log n)" كحقيقة مطلقة — افهم أن هذا فقط في المتوسط/أفضل حالة، وأن أسوأ حالة تعتمد كليًا على اختيار المحور (pivot).</div></div>
+        <div class="tip-item"><span class="tip-icon">✍️</span><div class="i18n" data-en="For dependent nested loops, always write out the actual sequence of inner-loop counts (1,2,3,...,n) before jumping to the n(n+1)/2 formula — this prevents mechanical mistakes.">في الحلقات المتداخلة المعتمدة، اكتب دائمًا التسلسل الفعلي لعدّادات الحلقة الداخلية (1،2،3،...،n) قبل القفز إلى صيغة n(n+1)/2 — هذا يمنع الأخطاء الميكانيكية.</div></div>
+        <div class="tip-item"><span class="tip-icon">📐</span><div class="i18n" data-en="Separate the two questions “how much time?” and “how much memory?” in your head completely — an algorithm can be fast but memory-hungry (or vice versa), and exam questions often test exactly this distinction.">افصل تمامًا في ذهنك بين السؤالين "كم من الزمن؟" و"كم من الذاكرة؟" — الخوارزمية قد تكون سريعة لكنها شرهة للذاكرة (أو العكس)، وأسئلة الامتحان غالبًا ما تختبر هذا التمييز بالذات.</div></div>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="🏋️ Suggested Hands-On Practice">🏋️ تدريب عملي مقترح</h3>
+        <div class="tip-item"><span class="tip-icon">1️⃣</span><div class="i18n" data-en="Manually trace Bubble Sort on a small 5-element array in its worst case (reverse-sorted) and count every single comparison — verify it matches n(n-1)/2.">تتبّع Bubble Sort يدويًا على مصفوفة صغيرة من 5 عناصر في أسوأ حالة (مرتبة عكسيًا) واعدّ كل مقارنة — تحقق من أنها تطابق n(n-1)/2.</div></div>
+        <div class="tip-item"><span class="tip-icon">2️⃣</span><div class="i18n" data-en="Write 3 code snippets yourself: one with sequential loops (O(n+m)), one with nested loops (O(nm)), and compare their operation counts for the same small n and m.">اكتب 3 مقاطع كود بنفسك: واحد بحلقات متتالية (O(n+m))، وآخر بحلقات متداخلة (O(nm))، وقارن عدد عملياتهما لنفس القيم الصغيرة لـ n و m.</div></div>
+        <div class="tip-item"><span class="tip-icon">3️⃣</span><div class="i18n" data-en="Draw a balanced BST and an unbalanced BST with the same 7 values, and manually count search steps for the same target value in both to feel the O(log n) vs O(n) difference.">ارسم شجرة BST متوازنة وأخرى غير متوازنة بنفس 7 قيم، واعدّ يدويًا خطوات البحث عن نفس القيمة الهدف في كلتيهما لتشعر بالفرق بين O(log n) و O(n).</div></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h3 class="i18n" data-en="⚠️ Common Mistakes Students Make on This Exact Topic">⚠️ أخطاء شائعة يقع فيها الطلاب في هذا الموضوع تحديدًا</h3>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Assuming two loops always mean O(n²):</b> this is only true for nested loops. Two sequential (back-to-back) loops of size n each are O(n) + O(n) = O(n), not O(n²)."><b>افتراض أن حلقتين تعنيان دائمًا O(n²):</b> هذا صحيح فقط للحلقات المتداخلة. حلقتان متتاليتان (متتابعتان) كل واحدة بحجم n هما O(n) + O(n) = O(n)، وليس O(n²).</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Treating repeated halving as linear:</b> a loop like <code>while(n>1) n=n/2</code> looks like it runs “a lot”, but it's O(log n), not O(n) — count the actual number of halvings, don't guess."><b>معاملة التنصيف المتكرر كأنه خطي:</b> حلقة مثل <code>while(n>1) n=n/2</code> تبدو وكأنها تعمل "كثيرًا"، لكنها O(log n)، وليست O(n) — عُدّ عدد التنصيفات الفعلي، لا تخمّن.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Confusing O(n+m) with O(nm):</b> if two loops with different variables run one after another, add them (O(n+m)); if one is nested inside the other, multiply them (O(nm)). Mixing these up is one of the most common exam errors."><b>الخلط بين O(n+m) و O(nm):</b> إذا كانت حلقتان بمتغيّرين مختلفين تعملان واحدة بعد الأخرى، اجمعهما (O(n+m))؛ وإذا كانت إحداهما متداخلة داخل الأخرى، اضربهما (O(nm)). الخلط بينهما من أكثر أخطاء الامتحانات شيوعًا.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Quoting a single Big O for an algorithm without specifying the case:</b> saying “Quick Sort is O(n log n)” without mentioning that this is best/average case (not worst case) is an incomplete — and often marked-down — answer."><b>ذكر Big O واحد لخوارزمية دون تحديد الحالة:</b> قول "Quick Sort هو O(n log n)" دون ذكر أن هذا في أفضل/متوسط الحالة (وليس أسوأها) إجابة ناقصة — وغالبًا ما تُخصم عليها درجات.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Forgetting to measure space complexity separately from time:</b> some students assume a fast algorithm automatically uses little memory (or vice versa) — always evaluate Input Space and Auxiliary Space on their own terms."><b>نسيان قياس تعقيد المساحة بمعزل عن الزمن:</b> بعض الطلاب يفترضون أن الخوارزمية السريعة تستخدم بالضرورة ذاكرة قليلة (أو العكس) — قيّم دائمًا Input Space و Auxiliary Space بشكل مستقل.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="i18n" data-en="Interactive review sheet — Lecture 3: Time &amp; Space Complexity Analysis">
+  مرجع مراجعة تفاعلي — Lecture 3: Time &amp; Space Complexity Analysis
+</footer>
+
+<script>
+/* ===== LANGUAGE TOGGLE ===== */
+let currentLang = 'ar';
+function setLang(lang){
+  currentLang = lang;
+  document.getElementById('htmlRoot').setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  document.getElementById('htmlRoot').setAttribute('lang', lang);
+  document.getElementById('btnAr').classList.toggle('active', lang === 'ar');
+  document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+
+  document.querySelectorAll('.i18n').forEach(el => {
+    if(!el.hasAttribute('data-ar-cache')){
+      el.setAttribute('data-ar-cache', el.innerHTML);
+    }
+    const ar = el.getAttribute('data-ar-cache');
+    const en = el.getAttribute('data-en');
+    el.innerHTML = (lang === 'en' && en) ? en : ar;
+  });
+
+  QUIZ_LANG = lang;
+  renderQuiz(true);
+}
+
+/* ===== sticky nav active-state on scroll ===== */
+(function(){
+  const links = document.querySelectorAll('.nav-scroll a');
+  const sections = Array.from(links).map(a => document.querySelector(a.getAttribute('href')));
+  function onScroll(){
+    let idx = 0;
+    const y = window.scrollY + 120;
+    sections.forEach((s,i) => { if(s && s.offsetTop <= y) idx = i; });
+    links.forEach((l,i) => l.classList.toggle('active', i===idx));
+    const active = links[idx];
+    if(active){
+      const wrap = document.getElementById('navScroll');
+      const target = active.offsetLeft - wrap.clientWidth/2 + active.clientWidth/2;
+      wrap.scrollTo({left: target, behavior:'smooth'});
+    }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+
+/* ===== level tabs ===== */
+document.querySelectorAll('.level-tab').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.level-tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.level-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.level).classList.add('active');
+  });
+});
+
+/* ===== QUIZ DATA (bilingual) ===== */
+let QUIZ_LANG = 'ar';
+const QUIZ = [
+  {
+    type:'mcq',
+    prompt:'حلقة الكود التالي: for i=1 to n: for j=1 to i: operation — ما تعقيدها؟',
+    promptEn:'What is the complexity of: for i=1 to n: for j=1 to i: operation ?',
+    options:['O(n)','O(n log n)','O(n²)','O(2n)'],
+    optionsEn:['O(n)','O(n log n)','O(n²)','O(2n)'],
+    correct:2,
+    explain:'عدد العمليات = 1+2+3+...+n = n(n+1)/2، وهذا يبسّط إلى O(n²) لأن الحد المهيمن هو n².',
+    explainEn:'Operation count = 1+2+3+...+n = n(n+1)/2, which simplifies to O(n²) since the dominant term is n².'
+  },
+  {
+    type:'tf',
+    prompt:'الحلقتان for(i=1..n) for(j=i..n) و for(i=1..n) for(j=1..i) لهما نفس التعقيد المقارب O(n²)، رغم أن اتجاه العدّ معكوس.',
+    promptEn:'The loops for(i=1..n) for(j=i..n) and for(i=1..n) for(j=1..i) have the same asymptotic complexity O(n²), even though the counting direction is reversed.',
+    correct:true,
+    explain:'صحيح. كلاهما يحسب مجموع 1 إلى n (بترتيب مختلف)، والمجموع الكلي n(n+1)/2 متطابق في الحالتين ← O(n²).',
+    explainEn:'True. Both sum 1 through n (in different order), and the total n(n+1)/2 is identical in both cases → O(n²).'
+  },
+  {
+    type:'mcq',
+    prompt:'ما تعقيد الكود: for(i=1..n) for(j=1..m) operation ؟',
+    promptEn:'What is the complexity of: for(i=1..n) for(j=1..m) operation ?',
+    options:['O(n+m)','O(nm)','O(n²)','O(m²)'],
+    optionsEn:['O(n+m)','O(nm)','O(n²)','O(m²)'],
+    correct:1,
+    explain:'الحلقتان متداخلتان بمتغيّرين مستقلين n و m، فالعمليات = n×m ← O(nm). لا يجوز افتراض n=m.',
+    explainEn:'The loops are nested with two independent variables n and m, so operations = n×m → O(nm). You must not assume n=m.'
+  },
+  {
+    type:'fill',
+    prompt:'أكمل: الحلقة while(n>1) { n = n/2; } لها تعقيد زمني O(______).',
+    promptEn:'Fill in: the loop while(n>1) { n = n/2; } has time complexity O(______).',
+    accept:['log n','logn','log(n)'],
+    explain:'الإجابة: log n. تنصيف n بشكل متكرر ينتج نموًا لوغاريتميًا.',
+    explainEn:'Answer: log n. Repeatedly halving n produces logarithmic growth.'
+  },
+  {
+    type:'mcq',
+    prompt:'ما تعقيد ثلاث حلقات متداخلة، كل واحدة تعمل من 1 إلى n؟',
+    promptEn:'What is the complexity of three nested loops, each running from 1 to n?',
+    options:['O(3n)','O(n²)','O(n³)','O(n log n)'],
+    optionsEn:['O(3n)','O(n²)','O(n³)','O(n log n)'],
+    correct:2,
+    explain:'كل مستوى تداخل إضافي يضرب في n مرة أخرى: n × n × n = n³ ← O(n³).',
+    explainEn:'Each additional nesting level multiplies by n again: n × n × n = n³ → O(n³).'
+  },
+  {
+    type:'mcq',
+    prompt:'حلقة خارجية خطية (O(n)) تحتوي على حلقة داخلية لوغاريتمية (O(log n))، متداخلتان. ما التعقيد الكلي؟',
+    promptEn:'A linear outer loop (O(n)) contains a logarithmic inner loop (O(log n)), nested. What is the total complexity?',
+    options:['O(n + log n)','O(n log n)','O(log n)','O(n²)'],
+    optionsEn:['O(n + log n)','O(n log n)','O(log n)','O(n²)'],
+    correct:1,
+    explain:'لأنهما متداخلتان (nested)، نضرب التعقيدين: O(n) × O(log n) = O(n log n)، وليس نجمعهما.',
+    explainEn:'Because they are nested, we multiply the complexities: O(n) × O(log n) = O(n log n), not add them.'
+  },
+  {
+    type:'multi',
+    prompt:'أي مما يلي صحيح بخصوص Bubble Sort؟ (اختر كل ما ينطبق)',
+    promptEn:'Which of the following are true about Bubble Sort? (select all that apply)',
+    options:['أسوأ حالة O(n²)','أفضل حالة (مع تحسين) هي O(n)','متوسط الحالة هو O(log n)','مجموع المقارنات في أسوأ حالة هو n(n-1)/2'],
+    optionsEn:['Worst case is O(n²)','Best case (with optimization) is O(n)','Average case is O(log n)','Total comparisons in the worst case is n(n-1)/2'],
+    correctSet:[0,1,3],
+    explain:'متوسط حالة Bubble Sort هو O(n²) وليس O(log n) — العبارة الثالثة خاطئة. البقية صحيحة.',
+    explainEn:'Bubble Sort\'s average case is O(n²), not O(log n) — the third statement is false. The rest are true.'
+  },
+  {
+    type:'mcq',
+    prompt:'ما علاقة التكرار (Recurrence Relation) الخاصة بـ Merge Sort؟',
+    promptEn:'What is the recurrence relation for Merge Sort?',
+    options:['T(n) = T(n-1) + n','T(n) = 2T(n/2) + n','T(n) = 2T(n-1) + 1','T(n) = T(n/2) + 1'],
+    optionsEn:['T(n) = T(n-1) + n','T(n) = 2T(n/2) + n','T(n) = 2T(n-1) + 1','T(n) = T(n/2) + 1'],
+    correct:1,
+    explain:'T(n) = 2T(n/2) + n: حل نصفين بحجم n/2 (2T(n/2)) بالإضافة إلى عمل الدمج (n). هذا يؤول إلى O(n log n).',
+    explainEn:'T(n) = 2T(n/2) + n: solving two halves of size n/2 (2T(n/2)) plus the merge work (n). This resolves to O(n log n).'
+  },
+  {
+    type:'tf',
+    prompt:'Quick Sort لديه نفس التعقيد O(n log n) في كل من أفضل ومتوسط وأسوأ الحالات، تمامًا مثل Merge Sort.',
+    promptEn:'Quick Sort has the same O(n log n) complexity in the best, average, and worst cases, just like Merge Sort.',
+    correct:false,
+    explain:'خاطئ. Quick Sort هو O(n log n) في أفضل/متوسط الحالة فقط، لكنه يتدهور إلى O(n²) في أسوأ حالة (تقسيمات غير متوازنة بشدة). Merge Sort هو الذي يضمن O(n log n) في كل الحالات.',
+    explainEn:'False. Quick Sort is O(n log n) only in the best/average case, but degrades to O(n²) in the worst case (severely unbalanced partitions). Merge Sort is the one that guarantees O(n log n) in every case.'
+  },
+  {
+    type:'mcq',
+    prompt:'ما تعقيد البحث في شجرة BST غير متوازنة بشدة (في أسوأ الحالات)؟',
+    promptEn:'What is the search complexity of a severely unbalanced BST (worst case)?',
+    options:['O(1)','O(log n)','O(n)','O(n²)'],
+    optionsEn:['O(1)','O(log n)','O(n)','O(n²)'],
+    correct:2,
+    explain:'الشجرة غير المتوازنة بشدة تتحول فعليًا إلى ما يشبه قائمة مترابطة (linked list)، فيصبح البحث O(n) بدلًا من O(log n).',
+    explainEn:'A severely unbalanced tree effectively degenerates into a linked list, making search O(n) instead of O(log n).'
+  },
+  {
+    type:'mcq',
+    prompt:'ما تعقيد كل من BFS و DFS لاجتياز رسم بياني؟',
+    promptEn:'What is the complexity of both BFS and DFS for graph traversal?',
+    options:['O(V)','O(E)','O(V + E)','O(V × E)'],
+    optionsEn:['O(V)','O(E)','O(V + E)','O(V × E)'],
+    correct:2,
+    explain:'كلاهما O(V + E) — يعتمد على عدد الرؤوس (V) وعدد الأضلاع (E) معًا، وليس على حجم مدخل واحد n.',
+    explainEn:'Both are O(V + E) — depending on the number of vertices (V) and edges (E) together, not a single input size n.'
+  },
+  {
+    type:'tf',
+    prompt:'إذا كانت حلقتان تعملان بمتغيّرين مختلفين n و m واحدة بعد الأخرى (وليستا متداخلتين)، فإن تعقيدهما هو O(nm).',
+    promptEn:'If two loops with different variables n and m run one after another (not nested), their complexity is O(nm).',
+    correct:false,
+    explain:'خاطئ. الحلقات المتتالية تُجمع تكاليفها: O(n) + O(m) = O(n+m). الضرب O(nm) يحدث فقط عندما تكون إحداهما متداخلة داخل الأخرى.',
+    explainEn:'False. Consecutive loops have their costs added: O(n) + O(m) = O(n+m). Multiplication O(nm) only happens when one is nested inside the other.'
+  },
+  {
+    type:'mcq',
+    prompt:'خوارزمية تفرز مصفوفة في مكانها (in place) مستخدمة فقط بضعة متغيرات إضافية ثابتة العدد. ما Auxiliary Space الخاص بها؟',
+    promptEn:'An algorithm sorts an array in place using only a fixed, small number of extra variables. What is its Auxiliary Space?',
+    options:['O(1)','O(log n)','O(n)','O(n²)'],
+    optionsEn:['O(1)','O(log n)','O(n)','O(n²)'],
+    correct:0,
+    explain:'استخدام عدد ثابت من المتغيرات الإضافية (بغض النظر عن n) يعني Auxiliary Space = O(1)، بغض النظر عن تعقيد الزمن.',
+    explainEn:'Using a fixed number of extra variables (regardless of n) means Auxiliary Space = O(1), independent of the time complexity.'
+  },
+  {
+    type:'mcq',
+    prompt:'ما هي خطوة "Find the dominant term" في قائمة التحقق من 5 خطوات؟',
+    promptEn:'What does the "Find the dominant term" step in the 5-step checklist mean?',
+    options:['حدّد أول عملية في الكود','حدّد أي حد ينمو أسرع عندما n → ∞','عُدّ عدد المتغيرات في الكود','احسب الزمن الفعلي بالثواني'],
+    optionsEn:['Identify the first operation in the code','Determine which term grows fastest as n → ∞','Count the number of variables in the code','Calculate the actual time in seconds'],
+    correct:1,
+    explain:'الحد المهيمن هو الحد الذي ينمو أسرع من غيره عندما يكبر n، وهو ما يبقى بعد التبسيط النهائي إلى Big O.',
+    explainEn:'The dominant term is the one that grows fastest as n increases, and it is what remains after the final simplification to Big O.'
+  }
+];
+
+let userAnswers = new Array(QUIZ.length).fill(null);
+let checked = new Array(QUIZ.length).fill(false);
+let score = 0;
+
+const TYPE_LABELS = {
+  ar: {mcq:'اختيار من متعدد', tf:'صح / خطأ', multi:'اختيار متعدد الإجابات', fill:'إكمال الفراغ'},
+  en: {mcq:'Multiple Choice', tf:'True / False', multi:'Multiple Select', fill:'Fill in the Blank'}
+};
+
+function renderQuiz(preserveState){
+  const c = document.getElementById('quizContainer');
+  c.innerHTML = '';
+  document.getElementById('scoreTotal').textContent = QUIZ.length;
+
+  QUIZ.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'q-'+qi;
+
+    const typeLabel = TYPE_LABELS[QUIZ_LANG][q.type];
+    const prompt = (QUIZ_LANG === 'en' && q.promptEn) ? q.promptEn : q.prompt;
+    const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+
+    let optsHtml = '';
+    if(q.type === 'mcq'){
+      optsHtml = '<div class="opt-list">' + options.map((opt,oi)=>
+        `<label class="opt" id="opt-${qi}-${oi}">
+          <input type="radio" name="q${qi}" value="${oi}" onchange="selectAnswer(${qi}, ${oi})">
+          <span>${opt}</span>
+        </label>`).join('') + '</div>';
+    } else if(q.type === 'tf'){
+      const trueLabel = QUIZ_LANG === 'en' ? '✅ True' : '✅ صح (True)';
+      const falseLabel = QUIZ_LANG === 'en' ? '❌ False' : '❌ خطأ (False)';
+      optsHtml = `<div class="opt-list">
+        <label class="opt" id="opt-${qi}-1"><input type="radio" name="q${qi}" value="true" onchange="selectAnswer(${qi}, true)"><span>${trueLabel}</span></label>
+        <label class="opt" id="opt-${qi}-0"><input type="radio" name="q${qi}" value="false" onchange="selectAnswer(${qi}, false)"><span>${falseLabel}</span></label>
+      </div>`;
+    } else if(q.type === 'multi'){
+      optsHtml = '<div class="opt-list">' + options.map((opt,oi)=>
+        `<label class="opt" id="opt-${qi}-${oi}">
+          <input type="checkbox" name="q${qi}" value="${oi}" onchange="toggleMulti(${qi}, ${oi})">
+          <span>${opt}</span>
+        </label>`).join('') + '</div>';
+    } else if(q.type === 'fill'){
+      const placeholder = QUIZ_LANG === 'en' ? 'Type your answer here…' : 'اكتب إجابتك هنا (English)…';
+      optsHtml = `<input type="text" class="fill-input" id="fill-${qi}" placeholder="${placeholder}" oninput="userAnswers[${qi}] = this.value; document.getElementById('checkbtn-${qi}').disabled = !this.value.trim();">`;
+    }
+
+    const checkLabel = QUIZ_LANG === 'en' ? 'Check Answer' : 'تحقق من الإجابة';
+    const qLabel = QUIZ_LANG === 'en' ? 'Question' : 'سؤال';
+
+    card.innerHTML = `
+      <div class="q-meta">
+        <span class="q-type-tag">${qLabel} ${qi+1} · ${typeLabel}</span>
+      </div>
+      <div class="q-prompt">${prompt.replace(/\n/g,'<br>')}</div>
+      ${optsHtml}
+      <button class="check-btn" id="checkbtn-${qi}" onclick="checkAnswer(${qi})" ${q.type==='fill' ? 'disabled':''}>${checkLabel}</button>
+      <div class="q-feedback" id="feedback-${qi}"></div>
+    `;
+    c.appendChild(card);
+  });
+
+  if(!preserveState){
+    userAnswers = new Array(QUIZ.length).fill(null);
+    checked = new Array(QUIZ.length).fill(false);
+    score = 0;
+  }
+  updateScoreBar();
+  document.getElementById('finalScore').classList.remove('show');
+}
+
+function selectAnswer(qi, val){ userAnswers[qi] = val; }
+function toggleMulti(qi, oi){
+  if(!Array.isArray(userAnswers[qi])) userAnswers[qi] = [];
+  const idx = userAnswers[qi].indexOf(oi);
+  if(idx === -1) userAnswers[qi].push(oi); else userAnswers[qi].splice(idx,1);
+}
+
+function checkAnswer(qi){
+  if(checked[qi]) return;
+  const q = QUIZ[qi];
+  let isCorrect = false;
+  const fb = document.getElementById('feedback-'+qi);
+  const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+  const explain = (QUIZ_LANG === 'en' && q.explainEn) ? q.explainEn : q.explain;
+
+  if(q.type === 'mcq'){
+    if(userAnswers[qi] === null){ alert(QUIZ_LANG==='en' ? 'Please choose an answer first' : 'من فضلك اختر إجابة أولًا'); return; }
+    isCorrect = Number(userAnswers[qi]) === q.correct;
+    for(let i=0;i<options.length;i++){
+      const el = document.getElementById(`opt-${qi}-${i}`);
+      if(i === q.correct) el.classList.add('correct-flash');
+      else if(i === Number(userAnswers[qi])) el.classList.add('wrong-flash');
+    }
+  } else if(q.type === 'tf'){
+    if(userAnswers[qi] === null){ alert(QUIZ_LANG==='en' ? 'Please choose an answer first' : 'من فضلك اختر إجابة أولًا'); return; }
+    const chosen = (userAnswers[qi] === true || userAnswers[qi] === 'true');
+    isCorrect = chosen === q.correct;
+    const correctId = q.correct ? `opt-${qi}-1` : `opt-${qi}-0`;
+    const wrongId = q.correct ? `opt-${qi}-0` : `opt-${qi}-1`;
+    document.getElementById(correctId).classList.add('correct-flash');
+    if(!isCorrect) document.getElementById(wrongId).classList.add('wrong-flash');
+  } else if(q.type === 'multi'){
+    const chosen = Array.isArray(userAnswers[qi]) ? userAnswers[qi].slice().sort() : [];
+    const correctSet = q.correctSet.slice().sort();
+    isCorrect = chosen.length === correctSet.length && chosen.every((v,i)=>v===correctSet[i]);
+    for(let i=0;i<options.length;i++){
+      const el = document.getElementById(`opt-${qi}-${i}`);
+      const shouldBeCorrect = q.correctSet.includes(i);
+      const wasChosen = chosen.includes(i);
+      if(shouldBeCorrect) el.classList.add('correct-flash');
+      else if(wasChosen) el.classList.add('wrong-flash');
+    }
+  } else if(q.type === 'fill'){
+    const val = (userAnswers[qi] || '').trim().toLowerCase();
+    isCorrect = q.accept.some(a => a.toLowerCase() === val || val.includes(a.toLowerCase()));
+    const input = document.getElementById('fill-'+qi);
+    input.style.borderColor = isCorrect ? 'var(--ok)' : 'var(--bad)';
+  }
+
+  checked[qi] = true;
+  if(isCorrect) score++;
+  fb.className = 'q-feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+  const correctTag = QUIZ_LANG==='en' ? '✅ <b>Correct!</b> ' : '✅ <b>إجابة صحيحة!</b> ';
+  const wrongTag = QUIZ_LANG==='en' ? '❌ <b>Not quite.</b> ' : '❌ <b>إجابة غير صحيحة.</b> ';
+  fb.innerHTML = (isCorrect ? correctTag : wrongTag) + explain;
+  document.getElementById('checkbtn-'+qi).disabled = true;
+  document.querySelectorAll(`#q-${qi} input`).forEach(inp => inp.disabled = true);
+
+  updateScoreBar();
+  if(checked.every(Boolean)) showFinalScore();
+}
+
+function updateScoreBar(){
+  document.getElementById('scoreNow').textContent = score;
+  const answered = checked.filter(Boolean).length;
+  const pct = QUIZ.length ? (answered / QUIZ.length) * 100 : 0;
+  document.getElementById('quizBarFill').style.width = pct + '%';
+}
+
+function showFinalScore(){
+  const el = document.getElementById('finalScore');
+  const pct = Math.round((score/QUIZ.length)*100);
+  document.getElementById('finalScoreText').textContent = `${score} / ${QUIZ.length} (${pct}%)`;
+  let msg = '';
+  if(QUIZ_LANG === 'en'){
+    if(pct >= 85) msg = 'Excellent! You\'re fully ready for Time & Space Complexity Analysis. 🎉';
+    else if(pct >= 60) msg = 'Good! Review the questions you missed via the “Full Explanation” section.';
+    else msg = 'It\'s recommended to revisit the “Full Explanation” and “3 Levels” sections before trying again.';
+  } else {
+    if(pct >= 85) msg = 'ممتاز! أنت جاهز تمامًا لموضوع Time & Space Complexity Analysis. 🎉';
+    else if(pct >= 60) msg = 'جيد! راجع الأسئلة التي أخطأت فيها من خلال قسم "الشرح الكامل".';
+    else msg = 'يُنصح بمراجعة قسم "الشرح الكامل" و"3 مستويات" مرة أخرى قبل إعادة المحاولة.';
+  }
+  document.getElementById('finalScoreMsg').textContent = msg;
+  el.classList.add('show');
+}
+
+function resetQuiz(){
+  userAnswers = new Array(QUIZ.length).fill(null);
+  checked = new Array(QUIZ.length).fill(false);
+  score = 0;
+  document.getElementById('finalScore').classList.remove('show');
+  renderQuiz(true);
+  document.getElementById('quiz').scrollIntoView({behavior:'smooth'});
+}
+
+renderQuiz(false);
+</script>
+
+</body>
+</html>

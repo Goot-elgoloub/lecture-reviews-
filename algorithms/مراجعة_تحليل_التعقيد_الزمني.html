@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>مراجعة شاملة: تحليل التعقيد الزمني للخوارزميات (Big O)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+  chtml: { scale: 1.02 },
+  startup: { typeset: true }
+};
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.js"></script>
+<style>
+:root{
+  --chalk-green:#16332a;
+  --chalk-green-2:#1e4436;
+  --gold:#c9a227;
+  --gold-soft:#e4c65a;
+  --paper:#faf6ec;
+  --paper-2:#f2ead6;
+  --ink:#26221a;
+  --ink-soft:#5a5344;
+  --card:#ffffff;
+  --card-border:#e4d9bd;
+  --code-bg:#122031;
+  --code-fg:#d8e9dc;
+  --code-accent:#8fd6a8;
+  --r:14px;
+  --d-easy:#3d9970;
+  --d-easyplus:#5faa4f;
+  --d-med:#c99a2e;
+  --d-medhigh:#d97e3d;
+  --d-hard:#c14953;
+  --d-veryhard:#8c1c2b;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;}
+html{scroll-padding-top:70px;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Cairo',sans-serif;
+  line-height:1.9;
+}
+.ltr{direction:ltr;unicode-bidi:isolate;}
+h1,h2,h3,h4{font-family:'Amiri','Cairo',serif;margin:0 0 .4em;}
+p{margin:.3em 0 1em;}
+
+/* Hero */
+.hero{
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 4px),
+    radial-gradient(ellipse at 20% -10%, var(--chalk-green-2), var(--chalk-green) 60%);
+  color:#f4efe0;
+  padding:52px 22px 40px;
+  text-align:center;
+  border-bottom:6px solid var(--gold);
+  position:relative;
+}
+.hero .eyebrow{
+  color:var(--gold-soft);
+  font-size:.95rem;
+  font-weight:600;
+  margin-bottom:10px;
+}
+.hero h1{
+  font-size:clamp(1.6rem,4.5vw,2.5rem);
+  font-weight:700;
+  color:#fff;
+  margin-bottom:10px;
+}
+.hero .sub{
+  max-width:640px;
+  margin:0 auto;
+  color:#cfe3d6;
+  font-size:1.02rem;
+}
+.hero .sign{
+  margin-top:22px;
+  font-family:'Amiri',serif;
+  font-style:italic;
+  color:var(--gold-soft);
+  font-size:1.05rem;
+}
+
+/* Nav */
+nav.toc{
+  position:sticky;top:0;z-index:30;
+  background:rgba(22,51,42,0.97);
+  backdrop-filter:blur(4px);
+  padding:10px 14px;
+  padding-top:calc(10px + env(safe-area-inset-top,0px));
+  display:flex;gap:8px;flex-wrap:wrap;justify-content:center;
+  border-bottom:2px solid var(--gold);
+}
+nav.toc a{
+  color:#eee2bf;
+  text-decoration:none;
+  font-size:.88rem;
+  font-weight:600;
+  padding:7px 13px;
+  border:1px solid rgba(201,162,39,0.4);
+  border-radius:999px;
+  white-space:nowrap;
+}
+nav.toc a:hover{background:rgba(201,162,39,0.18);}
+
+main{max-width:880px;margin:0 auto;padding:30px 16px 60px;}
+
+/* Rule box */
+.rulebox{
+  background:var(--card);
+  border:1px solid var(--card-border);
+  border-radius:var(--r);
+  padding:22px 22px 8px;
+  margin-bottom:30px;
+  box-shadow:0 2px 10px rgba(60,50,20,0.06);
+}
+.rulebox h2{font-size:1.3rem;color:var(--chalk-green);}
+.rule-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  margin-bottom:18px;
+}
+@media(min-width:640px){.rule-grid{grid-template-columns:1fr 1fr 1fr;}}
+.rule-card{
+  background:var(--paper-2);
+  border-radius:10px;
+  padding:14px 16px;
+  border-inline-start:4px solid var(--gold);
+}
+.rule-card b{display:block;margin-bottom:4px;color:var(--chalk-green-2);}
+
+.growth-chain{
+  display:flex;flex-wrap:wrap;gap:6px;align-items:center;
+  justify-content:center;
+  background:var(--code-bg);
+  color:var(--code-fg);
+  border-radius:10px;
+  padding:16px;
+  margin:14px 0 20px;
+  direction:ltr;
+}
+.growth-chain span.term{
+  font-family:'JetBrains Mono',monospace;
+  background:rgba(255,255,255,0.06);
+  padding:4px 9px;
+  border-radius:6px;
+  color:var(--code-accent);
+  font-size:.92rem;
+}
+.growth-chain span.arrow{color:var(--gold-soft);}
+
+/* Section headers */
+.section-head{
+  margin:44px 0 22px;
+  padding-bottom:10px;
+  border-bottom:3px solid var(--gold);
+  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+}
+.section-head h2{color:var(--chalk-green);font-size:1.5rem;}
+.section-head .count{
+  font-size:.85rem;color:var(--ink-soft);font-family:'Cairo';font-weight:600;
+}
+
+/* Problem card */
+.problem{
+  background:var(--card);
+  border:1px solid var(--card-border);
+  border-radius:var(--r);
+  margin-bottom:26px;
+  overflow:hidden;
+  box-shadow:0 2px 10px rgba(60,50,20,0.05);
+  scroll-margin-top:70px;
+}
+.problem.extra{border-color:var(--gold);border-width:1.5px;}
+.p-head{
+  display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  padding:16px 20px;
+  background:var(--paper-2);
+  border-bottom:1px solid var(--card-border);
+}
+.p-head h3{margin:0;font-size:1.15rem;color:var(--ink);}
+.badge{
+  font-size:.78rem;font-weight:700;color:#fff;
+  padding:4px 12px;border-radius:999px;white-space:nowrap;
+}
+.b-سهل-جداً{background:var(--d-easyplus);}
+.b-سهل{background:var(--d-easy);}
+.b-متوسط{background:var(--d-med);}
+.b-متوسط-مرتفع{background:var(--d-medhigh);}
+.b-صعب{background:var(--d-hard);}
+.b-صعب-جداً{background:var(--d-veryhard);}
+.extra-tag{
+  font-size:.72rem;color:var(--chalk-green-2);font-weight:700;
+  border:1px dashed var(--gold);border-radius:999px;padding:3px 10px;
+}
+
+.code-block{
+  direction:ltr;text-align:left;
+  background:var(--code-bg);color:var(--code-fg);
+  font-family:'JetBrains Mono',monospace;
+  font-size:.88rem;
+  padding:16px 18px;
+  margin:0;
+  overflow-x:auto;
+  line-height:1.7;
+}
+.code-block .kw{color:#e0b04d;}
+.code-block .cm{color:#8ba3ff;}
+
+.p-body{padding:18px 22px 22px;}
+.p-body h4{
+  font-size:1rem;color:var(--chalk-green-2);margin:18px 0 8px;
+}
+.p-body h4:first-child{margin-top:0;}
+.steps{margin:0;padding-inline-start:22px;}
+.steps li{margin-bottom:8px;}
+.steps ul{margin:4px 0;padding-inline-start:20px;}
+
+.calc-box{
+  background:var(--paper-2);
+  border-radius:10px;
+  padding:14px 18px;
+  margin-top:12px;
+}
+.calc-box .line{margin:4px 0;}
+
+.result{
+  margin-top:16px;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  background:var(--chalk-green);
+  color:#fff;
+  border-radius:10px;
+  padding:14px 18px;
+}
+.result .label{font-weight:700;color:var(--gold-soft);font-size:.9rem;}
+.result .val{font-family:'JetBrains Mono',monospace;font-size:1.15rem;direction:ltr;}
+
+.note{
+  background:#fff7e0;
+  border-inline-start:4px solid var(--gold);
+  border-radius:8px;
+  padding:10px 16px;
+  margin-top:14px;
+  font-size:.93rem;
+  color:var(--ink-soft);
+}
+
+/* summary table */
+.summary-wrap{overflow-x:auto;margin-top:10px;}
+table.summary{
+  width:100%;border-collapse:collapse;
+  background:var(--card);
+  border-radius:10px;overflow:hidden;
+  font-size:.92rem;
+}
+table.summary th{
+  background:var(--chalk-green);color:#fff;
+  padding:10px 12px;text-align:right;font-weight:600;
+}
+table.summary td{
+  padding:9px 12px;border-bottom:1px solid var(--card-border);
+}
+table.summary tr:nth-child(even){background:var(--paper-2);}
+table.summary td.val{font-family:'JetBrains Mono',monospace;direction:ltr;text-align:left;color:var(--chalk-green-2);font-weight:700;}
+
+footer{
+  background:var(--chalk-green);
+  color:#dce9df;
+  text-align:center;
+  padding:34px 20px calc(34px + env(safe-area-inset-bottom,0px));
+  font-size:.92rem;
+}
+footer .sign{font-family:'Amiri',serif;font-style:italic;color:var(--gold-soft);margin-top:8px;font-size:1.05rem;}
+
+@media (prefers-reduced-motion:no-preference){
+  .problem{transition:transform .15s ease;}
+}
+
+/* ---- foundations section ---- */
+.found-block{
+  background:var(--card);
+  border:1px solid var(--card-border);
+  border-radius:12px;
+  padding:20px 20px 22px;
+  margin:22px 0;
+}
+.found-block h3{
+  font-size:1.1rem;color:var(--chalk-green);
+  display:flex;align-items:center;gap:10px;
+}
+.found-block .tag{
+  font-family:'JetBrains Mono',monospace;
+  background:var(--chalk-green);color:var(--gold-soft);
+  font-size:.85rem;padding:3px 10px;border-radius:6px;
+  direction:ltr;
+}
+.trace-table{width:100%;border-collapse:collapse;margin:14px 0;font-size:.9rem;}
+.trace-table th{background:var(--chalk-green-2);color:#fff;padding:8px 10px;text-align:center;}
+.trace-table td{padding:7px 10px;text-align:center;border-bottom:1px solid var(--card-border);}
+.trace-table tr:nth-child(even){background:var(--paper-2);}
+.trace-table .yes{color:var(--d-easy);font-weight:700;}
+.trace-table .no{color:var(--d-hard);font-weight:700;}
+.trace-table .fail-row{background:#fdeceb;}
+
+.grid-viz{
+  display:inline-grid;gap:4px;margin:14px 0;direction:ltr;
+}
+.grid-viz .cell{
+  width:44px;height:44px;display:flex;align-items:center;justify-content:center;
+  background:var(--code-bg);color:var(--code-accent);
+  font-family:'JetBrains Mono',monospace;font-size:.72rem;
+  border-radius:6px;
+}
+.grid-wrap{overflow-x:auto;padding-bottom:6px;}
+
+.stack-viz{
+  direction:ltr;font-family:'JetBrains Mono',monospace;font-size:.9rem;
+  background:var(--code-bg);color:var(--code-fg);border-radius:10px;
+  padding:14px 18px;margin:14px 0;line-height:2;
+}
+.stack-viz .frame{color:var(--code-accent);}
+.stack-viz .frame.base{color:var(--gold-soft);}
+
+.why-row{
+  display:flex;gap:10px;align-items:flex-start;
+  background:var(--paper-2);border-radius:8px;padding:10px 14px;margin:8px 0;
+}
+.why-row .q{font-weight:700;color:var(--chalk-green-2);white-space:nowrap;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="eyebrow">مراجعة مقرر — تحليل وتصميم الخوارزميات</div>
+  <h1>التعقيد الزمني للخوارزميات: من عدّ الأسطر إلى Big&nbsp;O</h1>
+  <p class="sub">
+    أعزائي الطلاب، هذه الورقة مُعدّة كمراجعة شاملة على طريقة عمل امتحاناتنا: نبدأ بعدّ تنفيذ كل سطر بدقة متناهية
+    (بما في ذلك تلك الزيادة "الخفية" في شرط الحلقة)، ثم نصعد درجة لنتعلّم كيف نُهمل التفاصيل الصغيرة ونُركّز على
+    الحد المسيطر عندما يكبر n بلا حدود. عدد المسائل هنا 24 مسألة: العشرون الأساسية بالإضافة إلى أربع مسائل
+    إضافية أدرجتها لتغطية زوايا يحب الممتحنون السؤال عنها.
+  </p>
+  <div class="sign">— بالتوفيق للجميع</div>
+</header>
+
+<nav class="toc">
+  <a href="#foundations">من أين تأتي الأرقام؟</a>
+  <a href="#rules">القواعد الأساسية</a>
+  <a href="#part1">القسم الأول: تحليل الأكواد</a>
+  <a href="#part2">القسم الثاني: التبسيط</a>
+  <a href="#summary">جدول الملخص</a>
+</nav>
+
+<main>
+
+<section id="foundations" class="rulebox">
+  <h2>من أين تأتي هذه الأرقام فعلياً؟ — تتبّع خطوة بخطوة بأرقام حقيقية</h2>
+  <p>
+    قبل ما نعيد القواعد المجرّدة، خلّينا نُثبتها بالتجربة. في كل جزء تحت، هنجيب مثال بعدد صغير (n = 4 أو n = 16)
+    ونعدّ يدوياً — دورة دورة — عشان تشوف بعينك <b>ليه</b> النتيجة طلعت n، أو n+1، أو m×n، أو n²، أو 2ⁿ.
+    كل قيمة من دول جايه من <b>سبب هندسي محدد</b> في شكل الكود، مش رقم بنحفظه.
+  </p>
+
+  <!-- ===== n and n+1 ===== -->
+  <div class="found-block" id="f-n1">
+    <h3><span class="tag">n و n+1</span> شرط الحلقة مقابل جسمها</h3>
+    <p>خذ هذا الكود بـ <span class="ltr">n = 4</span>:</p>
+    <pre class="code-block"><span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; n; i++) { body(); }</pre>
+    <p>الحاسوب لا "يعرف" أن الحلقة ستُكرَّر 4 مرات مسبقاً — هو يفحص الشرط <span class="ltr">i &lt; n</span> في كل مرة، وبعدها فقط يقرر هل ينفّذ الجسم أم يخرج. لنتتبّع هذا حرفياً:</p>
+    <table class="trace-table">
+      <tr><th>رقم الدورة</th><th>قيمة i</th><th>فحص الشرط i&lt;4</th><th>النتيجة</th><th>هل نُفّذ الجسم؟</th></tr>
+      <tr><td>1</td><td>0</td><td class="ltr">0 &lt; 4</td><td class="yes">صحيح</td><td class="yes">نعم</td></tr>
+      <tr><td>2</td><td>1</td><td class="ltr">1 &lt; 4</td><td class="yes">صحيح</td><td class="yes">نعم</td></tr>
+      <tr><td>3</td><td>2</td><td class="ltr">2 &lt; 4</td><td class="yes">صحيح</td><td class="yes">نعم</td></tr>
+      <tr><td>4</td><td>3</td><td class="ltr">3 &lt; 4</td><td class="yes">صحيح</td><td class="yes">نعم</td></tr>
+      <tr class="fail-row"><td>5</td><td>4</td><td class="ltr">4 &lt; 4</td><td class="no">خاطئ</td><td class="no">لا — خروج</td></tr>
+    </table>
+    <div class="why-row"><span class="q">لماذا n+1؟</span>
+      <span>لأن الحاسوب فحص الشرط 5 مرات إجمالاً (n=4 مرات نجح فيها + مرة أخيرة فشل فيها وخرج) = n+1 = 5. هذا الفحص الخامس "الفاشل" هو الذي يُنسى غالباً، لكنه عملية فعلية استهلكت وقت معالج.</span>
+    </div>
+    <div class="why-row"><span class="q">لماذا n؟</span>
+      <span>لأن الجسم <span class="ltr">body()</span> لا ينفَّذ إلا بعد نجاح الشرط، وقد نجح 4 مرات فقط (وليس 5) — الفحص الخامس فشل قبل أن يصل للجسم. لذلك جسم الحلقة دائماً = n، بينما شرطها = n+1.</span>
+    </div>
+  </div>
+
+  <!-- ===== m x n ===== -->
+  <div class="found-block" id="f-mn">
+    <h3><span class="tag">m × n</span> حلقتان متداخلتان بحدود مختلفة</h3>
+    <p>خذ <span class="ltr">m = 3</span> (حدود الخارجية) و <span class="ltr">n = 4</span> (حدود الداخلية):</p>
+    <pre class="code-block"><span class="kw">for</span> (i = 1; i &lt;= m; i++)      <span class="cm">// m=3 دورات</span>
+    <span class="kw">for</span> (j = 1; j &lt;= n; j++)  <span class="cm">// n=4 دورات كاملة، في كل مرة</span>
+        body();</pre>
+    <p>الفكرة الجوهرية: الحلقة الداخلية <b>لا "تتذكّر" أنها عملت من قبل</b> — في كل دورة من دورات i الثلاث، تبدأ الحلقة الداخلية من الصفر وتُكمل دورتها الأربع كاملة. هذا يعني تكرار الجسم الداخلي لعدد m من "الدفعات"، كل دفعة فيها n تنفيذ:</p>
+    <div class="grid-wrap">
+      <div class="grid-viz" style="grid-template-columns:repeat(4,44px);">
+        <div class="cell">i=1,j=1</div><div class="cell">i=1,j=2</div><div class="cell">i=1,j=3</div><div class="cell">i=1,j=4</div>
+        <div class="cell">i=2,j=1</div><div class="cell">i=2,j=2</div><div class="cell">i=2,j=3</div><div class="cell">i=2,j=4</div>
+        <div class="cell">i=3,j=1</div><div class="cell">i=3,j=2</div><div class="cell">i=3,j=3</div><div class="cell">i=3,j=4</div>
+      </div>
+    </div>
+    <div class="why-row"><span class="q">لماذا m×n؟</span>
+      <span>كل خلية في الشبكة أعلاه تمثّل تنفيذاً واحداً لِـ <span class="ltr">body()</span>. عدد الصفوف = m = 3 (دورات الخارجية)، وعدد الأعمدة في كل صف = n = 4 (دورة كاملة للداخلية). إجمالي الخلايا = عدد الصفوف × عدد الأعمدة = 3×4 = 12 = m×n. هذا هو بالضبط تعريف الضرب: تكرار شيء (n) لعدد معيّن من المرات (m).</span>
+    </div>
+  </div>
+
+  <!-- ===== n squared ===== -->
+  <div class="found-block" id="f-n2">
+    <h3><span class="tag">n²</span> حلقتان متداخلتان بنفس الحدود</h3>
+    <p>هذه حالة خاصة من m×n حين m = n. خذ <span class="ltr">n = 4</span> للحلقتين معاً:</p>
+    <pre class="code-block"><span class="kw">for</span> (i = 1; i &lt;= n; i++)
+    <span class="kw">for</span> (j = 1; j &lt;= n; j++)
+        body();</pre>
+    <div class="grid-wrap">
+      <div class="grid-viz" style="grid-template-columns:repeat(4,44px);">
+        <div class="cell">1,1</div><div class="cell">1,2</div><div class="cell">1,3</div><div class="cell">1,4</div>
+        <div class="cell">2,1</div><div class="cell">2,2</div><div class="cell">2,3</div><div class="cell">2,4</div>
+        <div class="cell">3,1</div><div class="cell">3,2</div><div class="cell">3,3</div><div class="cell">3,4</div>
+        <div class="cell">4,1</div><div class="cell">4,2</div><div class="cell">4,3</div><div class="cell">4,4</div>
+      </div>
+    </div>
+    <div class="why-row"><span class="q">لماذا n²؟</span>
+      <span>الشبكة الآن مربّعة تماماً: 4 صفوف × 4 أعمدة = 16 خلية = 4² = n². بصرياً: كل زوج (i,j) ممكن — وعددهم n اختيارات لِـ i مضروبة في n اختيارات لِـ j — يقابله تنفيذ واحد للجسم. هذا هو أصل الـ n² حرفياً: عدد كل الأزواج الممكنة (i,j) حين يتراوح كلاهما من 1 إلى n.</span>
+    </div>
+  </div>
+
+  <!-- ===== n-1 / recursive linear ===== -->
+  <div class="found-block" id="f-n-1">
+    <h3><span class="tag">n−1</span> التكرار الخطي (Recursion) عبر مكدّس الاستدعاءات</h3>
+    <p>خذ <span class="ltr">n = 4</span> في الدالة التكرارية <span class="ltr">factorial(n)</span> من المسألة الإضافية 11:</p>
+    <pre class="code-block"><span class="kw">int</span> factorial(<span class="kw">int</span> n) {
+    <span class="kw">if</span> (n &lt;= 1) <span class="kw">return</span> 1;
+    <span class="kw">return</span> n * factorial(n - 1);
+}</pre>
+    <p>كل استدعاء "ينتظر" نتيجة الاستدعاء التالي قبل أن يُكمل، فيتكوّن مكدّس (Stack) من الاستدعاءات المتراكمة:</p>
+    <div class="stack-viz">
+      <div class="frame">factorial(4)  → ينادي factorial(3)</div>
+      <div class="frame">&nbsp;&nbsp;factorial(3)  → ينادي factorial(2)</div>
+      <div class="frame">&nbsp;&nbsp;&nbsp;&nbsp;factorial(2)  → ينادي factorial(1)</div>
+      <div class="frame base">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;factorial(1)  → حالة القاعدة، يرجع مباشرة بدون نداء جديد</div>
+    </div>
+    <div class="why-row"><span class="q">لماذا n−1؟</span>
+      <span>الاستدعاء الأول <span class="ltr">factorial(4)</span> هو نقطة البداية (نعدّه كـ "الاستدعاء رقم 1")، وبعده حدثت 3 استدعاءات إضافية فقط (لأجل 3، ثم 2، ثم 1) قبل أن تتوقف عند حالة القاعدة — أي n−1 = 4−1 = 3 استدعاءً إضافياً فوق الاستدعاء الأصلي. لذلك عند "فكّ" العلاقة التكرارية تظهر (n−1) كعدد الخطوات الإضافية، لكن العدد الكلي للاستدعاءات (شاملة الأول وحالة القاعدة) هو n = 4 بالضبط — ولهذا تختفي الـ "−1" وتصبح النتيجة النهائية O(n) وليس O(n−1) (لأن الفرق بينهما مجرد ثابت 1، يُسقط في Big O).</span>
+    </div>
+  </div>
+
+  <!-- ===== log n ===== -->
+  <div class="found-block" id="f-logn">
+    <h3><span class="tag">log₂ n</span> التناقص بالقسمة على ثابت</h3>
+    <p>خذ <span class="ltr">n = 16</span> في حلقة المسألة 8:</p>
+    <pre class="code-block"><span class="kw">int</span> i = n;
+<span class="kw">while</span> (i &gt; 1) { i = i / 2; }</pre>
+    <table class="trace-table">
+      <tr><th>رقم الدورة</th><th>قيمة i قبل الفحص</th><th>i &gt; 1 ؟</th><th>القيمة بعد القسمة</th></tr>
+      <tr><td>1</td><td>16</td><td class="yes">صحيح</td><td>8</td></tr>
+      <tr><td>2</td><td>8</td><td class="yes">صحيح</td><td>4</td></tr>
+      <tr><td>3</td><td>4</td><td class="yes">صحيح</td><td>2</td></tr>
+      <tr><td>4</td><td>2</td><td class="yes">صحيح</td><td>1</td></tr>
+      <tr class="fail-row"><td>5</td><td>1</td><td class="no">خاطئ — خروج</td><td>—</td></tr>
+    </table>
+    <div class="why-row"><span class="q">لماذا log₂ n؟</span>
+      <span>القيمة انقسمت على 2 أربع مرات بالضبط لتنتقل من 16 إلى 1 (16→8→4→2→1). والسؤال الرياضي "كم مرة أقسم 16 على 2 حتى أصل إلى 1؟" هو بالتعريف الحرفي $\log_2 16 = 4$. لاحظ الفرق الجوهري عن حالة n: هناك كنا <b>نطرح</b> ثابتاً (i++ أي i = i+1) فاحتجنا n خطوة، أما هنا <b>نقسم</b> على ثابت فاحتجنا log₂n خطوة فقط — وهذا فرق هائل عملياً (n=16 تحتاج 16 خطوة جمعاً، لكن 4 خطوات فقط قسمةً).</span>
+    </div>
+  </div>
+
+  <!-- ===== 2^n ===== -->
+  <div class="found-block" id="f-2n">
+    <h3><span class="tag">2ⁿ</span> التفرّع الأُسّي (Exponential Branching)</h3>
+    <p>خذ دالة فيبوناتشي التكرارية الساذجة (بدون تخزين نتائج سابقة) بـ <span class="ltr">n = 4</span>:</p>
+    <pre class="code-block"><span class="kw">int</span> fib(<span class="kw">int</span> n) {
+    <span class="kw">if</span> (n &lt;= 1) <span class="kw">return</span> n;
+    <span class="kw">return</span> fib(n - 1) + fib(n - 2);
+}</pre>
+    <p>الفرق الجوهري هنا عن <span class="ltr">factorial</span>: كل استدعاء لا ينادي استدعاءً واحداً بل <b>استدعاءين اثنين</b>. هذا "التفرّع المزدوج" هو ما يُنتج النمو الأُسّي. لنتتبّع شجرة الاستدعاءات كاملة لِـ fib(4):</p>
+    <pre class="code-block ltr">fib(4)
+├── fib(3)
+│   ├── fib(2)
+│   │   ├── fib(1)  ← قاعدة
+│   │   └── fib(0)  ← قاعدة
+│   └── fib(1)       ← قاعدة
+└── fib(2)
+    ├── fib(1)        ← قاعدة
+    └── fib(0)        ← قاعدة</pre>
+    <div class="why-row"><span class="q">لماذا 2ⁿ؟</span>
+      <span>كل استدعاء (عدا حالة القاعدة) يتفرّع إلى استدعاءين. هذا مثل شجرة ثنائية عمقها تقريباً n مستوى: المستوى صفر فيه 1 عقدة (fib(4) نفسها)، المستوى 1 فيه 2 عقدة (fib(3)، fib(2))، المستوى 2 فيه حتى 4 عقد، وهكذا — العدد يتضاعف في كل مستوى. عدد العقد الكلي في شجرة ثنائية عمقها n هو من رتبة $2^n$ (بالضبط $2^{n+1}-1$ لو كانت الشجرة ممتلئة تماماً). لهذا فإن أي خوارزمية "تتفرّع لخيارين في كل خطوة، لعمق n خطوة" — كتوليد كل المجموعات الجزئية الممكنة (Power Set) أو تجربة كل الاحتمالات (Brute-force) — تكلفتها O(2ⁿ).</span>
+    </div>
+    <div class="note">قارن هذا بالمسألة 8: هناك كنا "نقسم" العدد على 2 في كل خطوة فنحصل على log₂n (نزول سريع). هنا نحن "نتفرّع" لخيارين في كل خطوة فنحصل على 2ⁿ (نمو سريع). القسمة تُنتج لوغاريتماً، والتفرّع يُنتج أُسّاً — وهما عكس بعضهما البعض رياضياً.</div>
+  </div>
+
+  <p style="margin-top:6px;">
+    والآن بعد ما شُفنا مصدر كل رقم بالتجربة العملية، خلّينا نُلخّص القواعد الثلاث بصيغتها العامة، ثم ننتقل لحل الأربع والعشرين مسألة بنفس المنطق بالضبط.
+  </p>
+</section>
+
+<section id="rules" class="rulebox">
+  <h2>قبل ما نبدأ: القواعد الذهبية للعدّ</h2>
+  <div class="rule-grid">
+    <div class="rule-card">
+      <b>شرط الحلقة (for / while)</b>
+      يُفحص عدد مرات دخول الجسم + مرة أخيرة يفشل فيها الشرط فتخرج الحلقة.
+      لذلك: <span class="ltr">condition = n + 1</span>
+    </div>
+    <div class="rule-card">
+      <b>جسم الحلقة</b>
+      ينفّذ فقط في المرات التي كان فيها الشرط صحيحاً.
+      لذلك: <span class="ltr">body = n</span>
+    </div>
+    <div class="rule-card">
+      <b>حلقتان متداخلتان</b>
+      جسم الحلقة الداخلية ينفّذ بعدد مرات الخارجية مضروبة في عدد مرات الداخلية.
+      لذلك: <span class="ltr">inner body = m × n</span>
+    </div>
+  </div>
+  <p>
+    هذه القواعد الثلاث كافية لحل 90% من أسئلة "حلّل هذا الكود سطراً بسطر". الفرق بين الطالب الذي يحصل على
+    الدرجة الكاملة والطالب الذي يخسر نصف درجة هو بالضبط هذا الـ <span class="ltr">"+1"</span> الذي يُنسى غالباً.
+  </p>
+  <h3 style="font-size:1.05rem;color:var(--chalk-green-2);">ترتيب فئات النمو (من الأبطأ إلى الأسرع)</h3>
+  <div class="growth-chain">
+    <span class="term">O(1)</span><span class="arrow">&lt;</span>
+    <span class="term">O(log n)</span><span class="arrow">&lt;</span>
+    <span class="term">O(n)</span><span class="arrow">&lt;</span>
+    <span class="term">O(n log n)</span><span class="arrow">&lt;</span>
+    <span class="term">O(n²)</span><span class="arrow">&lt;</span>
+    <span class="term">O(n³)</span><span class="arrow">&lt;</span>
+    <span class="term">O(2ⁿ)</span><span class="arrow">&lt;</span>
+    <span class="term">O(n!)</span><span class="arrow">&lt;</span>
+    <span class="term">O(nⁿ)</span>
+  </div>
+  <p style="margin-bottom:20px;">
+    في تبسيط الدوال، القاعدة العملية: أسقط كل الثوابت المضروبة، وأهمل كل حد أبطأ نمواً من الحد المسيطر (سواء
+    كان مجموعاً إليه أو مطروحاً منه)، لأن أثره يذوب أمام الحد المسيطر عندما n → ∞.
+  </p>
+</section>
+
+<div class="section-head" id="part1">
+  <h2>القسم الأول — تحليل الشيفرات سطراً بسطر</h2>
+  <span class="count">12 مسألة (10 أساسية + 2 إضافية)</span>
+</div>
+
+<!-- ================= PROBLEM 1 ================= -->
+<div class="problem" id="p1-1">
+  <div class="p-head"><h3>المسألة 1 — حلقة بسيطة تبدأ من صفر</h3><span class="badge b-سهل-جداً">سهل جداً</span></div>
+  <pre class="code-block"><span class="kw">int</span> x = 0;
+<span class="kw">for</span> (<span class="kw">int</span> i = 0; i &lt; n; i++) {
+    x = x + 2;
+}</pre>
+  <div class="p-body">
+    <h4>التحليل خطوة بخطوة</h4>
+    <ol class="steps">
+      <li>السطر <span class="ltr">int x = 0;</span> جملة إسناد بسيطة خارج أي حلقة، تُنفَّذ مرة واحدة فقط.</li>
+      <li>شرط الحلقة <span class="ltr">i &lt; n</span>: يبدأ i من صفر، ويبقى الشرط صحيحاً لِـ i = 0, 1, 2, …, n−1 أي n مرة،
+        ثم تُفحص القيمة i = n فيكون الشرط خاطئاً فتخرج الحلقة. إذن الشرط فُحص n+1 مرة إجمالاً.</li>
+      <li>جسم الحلقة <span class="ltr">x = x + 2;</span> ينفَّذ فقط في المرات التي نجح فيها الشرط، أي n مرة بالضبط.</li>
+    </ol>
+    <h4>حساب T(n)</h4>
+    <div class="calc-box">
+      <div class="line">$T(n) = \underbrace{1}_{\text{سطر }1} + \underbrace{(n+1)}_{\text{شرط}} + \underbrace{n}_{\text{جسم}} = 2n + 2$</div>
+    </div>
+    <div class="result"><span class="label">الدرجة النهائية</span><span class="val">O(n)</span></div>
+  </div>
+</div>
+
+<!-- ================= PROBLEM 2 ================= -->
+<div class="problem" id="p1-2">
+  <div class="p-head"><h3>المسألة 2 — حلقة بشرط ≤ وبداية من 1</h3><span class="badge b-سهل-جداً">سهل جداً</span></div>
+  <pre class="code-block"><span class="kw">int</span> sum = 0;
+<span class="kw">for</span> (<span class="kw">int</span> i = 1; i &lt;= n; i++) {
+    sum += i;
+}</pre>
+  <div class="p-body">
+    <h4>التحليل خطوة بخطوة</h4>
+    <ol class="steps">
+      <li><span class="ltr">int sum = 0;</span> تُنفَّذ مرة واحدة.</li>
+      <li>شرط <span class="ltr">i &lt;= n</span>: يصحّ لِـ i = 1 حتى i = n (أي n مرة)، ثم يُفحص عند i = n+1 فيفشل.
+        الإجمالي = n + 1.</li>
+      <li>الفرق الوحيد عن المسألة السابقة هو أن الحلقة تبدأ من 1 لا من صفر، لكن هذا لا يغيّر عدد مرات التكرار: مايزال n مرة بالضبط،
+        فقط تُغيّر نقطة البداية القيمة النهائية لِـ i لا عدد التكرارات.</li>
+      <li>الجسم <span class="ltr">sum += i;</span> ينفَّذ n مرة.</li>
+    </ol>
+    <h4>حساب T(n)</h4>
+    <div class="calc-box"><div class="line">$T(n) = 1 + (n+1) + n = 2n + 2$</div></div>
+    <div class="result"><span class="label">الدرجة النهائية</span><span class="val">O(n)</span></div>
+    <div class="note">لاحظ أن هذه المسألة مطابقة تماماً للمسألة 1 في الدرجة رغم اختلاف نقطة البداية والشرط — الدرس المستفاد: التفاصيل الصغيرة في صياغة الحلقة (0 أم 1، &lt; أم ≤) قد تُغيّر الثابت لكنها نادراً ما تُغيّر رتبة Big O.</div>
+  </div>
+</div>
+
+<!-- ================= PROBLEM 3 ================= -->
+<div class="problem" id="p1-3">
+  <div class="p-head"><h3>المسألة 3 — خطوة زيادة أكبر من 1</h3><span class="badge b-سهل">سهل</span></div>
+  <pre class="code-block"><span class="kw">int</span> count = 0;
+<span class="kw">for</span> (<span class="kw">int</span> i = 1; i &lt;= n; i += 2) {
+    count++;
+}</pre>
+  <div class="p-body">
+    <h4>التحليل خطوة بخطوة</h4>
+    <ol class="steps">
+      <li><span class="ltr">int count = 0;</span> تُنفَّذ مرة واحدة.</li>
+      <li>المتغيّر i يأخذ القيم 1, 3, 5, 7, … أي يزداد بمقدار 2 كل دورة، فعدد مرات نجاح الشرط ليس n بل n/2 تقريباً.</li>
+      <li>شرط الحلقة يُفحص n/2 مرة ناجحة + مرة أخيرة فاشلة = n/2 + 1.</li>
+      <li>الجسم <span class="ltr">count++;</span> ينفَّذ n/2 مرة فقط.</li>
+    </ol>
+    <h4>حساب T(n)</h4>
+    <div class="calc-box"><div class="line">$T(n) = 1 + \left(\dfrac{n}{2}+1\right) + \dfrac{n}{2} = n + 2$</div></div>
+    <div class="result"><span class="label">الدرجة النهائية</span><span class="val">O(n)</span></div>
+    <div class="note">القسمة على 2 هي مجرد معامل ثابت (1/2)، وهذا الثابت يُسقَط عند الانتقال لـ Big O. لا تخلط بين "قسمة i على متغيّر ثابت في كل خطوة جمعاً" (تبقى خطية O(n)) وبين "قسمة i على 2 ضرباً" كما سنرى في المسألة 8 (تصبح لوغاريتمية).</div>
+  </div>
+</div>
+
+<!-- ================= PROBLEM 4 ================= -->
+<div class="problem" id="p1-4">
+  <div class="p-head"><h3>المسألة 4 — حلقتان متتاليتان (غير متداخلتين)</h3><span class="badge b-سهل">سهل</span></div>
+  <pre class="code-block"><span class="kw">for</span> (<span class="kw">int</span> i = 1; i &lt;= n; i++) {
+    a = a + 1;
+}
+<span class="kw">for</span> (<span class="kw">int</span> j = 1; j &lt;= n; j++) {
+    b = b + 1;
+}</pre>
+  <div class="p-body">
+    <h4>التحليل خطوة بخطوة</h4>
+    <ol class="steps">
+      <li>الحلقة الأولى مستقلة تماماً عن الثانية؛ لأنهما متتاليتان (Sequential) وليستا متداخلتين، نجمع تكلفتيهما ولا نضربهما.</li>
+      <li>الحلقة الأولى: شرط = n+1، جسم = n.</li>
+      <li>الحلقة الثانية: شرط = n+1، جسم = n (نفس الحساب تماماً لأن حدودها مطابقة).</li>
+    </ol>
+    <h4>حساب T(n)</h4>
+    <div class="calc-box"><div class="line">$T(n) = \underbrace{(n+1)+n}_{\text{الحلقة الأولى}} + \underbrace{(n+1)+n}_{\text{الحلقة الثانية}} = 4n+2$</div></div>
+    <div class="result"><span class="label">الدرجة النهائية</span><span class="val">O(n)</span></div>
+    <div class="note">قاعدة عامة: حلقتان متتاليتان كل منهما O(n) ينتج عنهما O(n) + O(n) = O(2n) = O(n)، وليس O(n²). الضرب يحدث فقط عند التداخل الحقيقي (حلقة داخل حلقة)، لا عند التتابع.</div>
+  </div>
+</div>
+
+<!-- ================= PROBLEM 5 ================= -->
+<div class="problem" id="p1-5">
+  <div class="p-head"><h3>المسألة 5 — حلقتان متداخلتان متساويتان (n × n)</h3><span class="badge b-متوسط">متوسط</span></div>
+  <pre class="code-block"><span class="kw">for</span> (<span class="kw">int</span> i = 1; i &lt;= n; i++) {
+    <span class="kw">for</span> (<span class="kw">int</span> j = 1; j &lt;= n; j++) {
+        k = k + 1;
+    }
+}</pre>
+  <div class="p-body">
+    <h4>التحليل خطوة بخطوة</h4>
+    <ol class="steps">
+      <li>شرط الحلقة الخارجية: تدور i من 1 إلى n بنجاح، ثم فشل واحد عند n+1 → إجمالي n+1.</li>
+      <li>شرط الحلقة الداخلية: في <b>كل</b> دورة من دورات الخارجية الـ n، تعمل الحلقة الداخلية كاملة من جديد، وشرطها يُفحص n+1 مرة.
+        إذن إجمالي فحص شرط الداخلية عبر كل الدورات الخارجية = n×(n+1) = n² + n.</li>
+      <li>جسم الحلقة الداخلية <span class="ltr">k = k + 1;</span>: ينفَّذ n مرة في كل دورة خارجية، وبما أن الخارجية تدور n مرة،
+        فالإجمالي = n × n = n².</li>
+    </ol>
+    <h4>حساب T(n)</h4>
+    <div class="calc-box"><div class="line">$T(n) = (n+1) + (n^2+n) + n^2 = 2n^2 + 2n + 1$</div></div>
+    <div class="result"><span class="label">الدرجة النهائية</span><span class="val">O(n²)</span></div>
+  </div>
+</div>
+
+<!-- ================= PROBLEM 6 ================= -->
+<div class="problem" id="p1-6">
+  <div class="p-head"><h3>المسألة 6 — حلقتان بمتغيّرين مختلفين (m × n)</h3><span class="badge b-متوسط">متوسط</span></div>
+  <pre class="code-block"><span class="kw">for</span> (<span class="kw">int</span> i = 1; i &lt;= m; i++) {
+    <span class="kw">for</span> (<span class="kw">int</span> j = 1; j &lt;= n; j++) {
+        c = c + 1;
+    }
+}</pre>
+  <div class="p-body">
+    <h4>التحليل خطوة بخطوة</h4>
+    <ol class="steps">
+      <li>لدينا الآن مُتغيّران مستقلان: m لحدود الخارجية، n لحدود الداخلية، ولا علاقة بينهما.</li>
+      <li>شرط الحلقة الخارجية: m + 1.</li>
+      <li>شرط الحلقة الداخلية: يتكرر بالكامل (n+1) مرة في كل دورة من دورات m الخارجية → m(n+1) = mn + m.</li>
+      <li>جسم الحلقة الداخلية: n مرة في كل دورة من دورات m → m × n.</li>
+    </ol>
+    <h4>حساب T(n)</h4>
+    <div class="calc-box"><div class="line">$T(n) = (m+1) + (mn+m) + mn = 2mn + 2m + 1$</div></div>
+    <div class="result"><span class="label">الدرجة النهائية</span><span class="val">O(m·n)</span></div>
+    <div class="note">لا يجوز اختزال m·n إلى n² إلا إذا نصّ السؤال صراحة أن m و n من نفس الرتبة؛ في الحالة العامة يبقيان متغيّرين منفصلين في الإجابة.</div>
+  </div>
+</div>
+
+<!-- ================= PROBLEM 7 ================= -->
+<div class="problem" id="p1-7">
+  <div class="p-head"><h3>المسألة 7 — حلقة داخلية تعتمد على الخارجية (مثلثية)</h3><span class="badge b-متوسط-مرتفع">متوسط مرتفع</span></div>
+  <pre class="code-block"><span class="kw">for</span> (<span class="kw">int</span> i = 1; i &lt;= n; i++) {
+    <span class="kw">for</span> (<span class="kw">int</span> j = 1; j &lt;= i; j++) {
+        x++;
+    }
+}</pre>
+  <div class="p-body">
+    <h4>التحليل خطوة بخطوة</h4>
+    <ol class="steps">
+      <li>شرط الحلقة الخارجية: n+1 كالمعتاد.</li>
+      <li>هذه المرة عدد دورات الحلقة الداخلية <b>ليس ثابتاً</b>، بل يساوي قيمة i الحالية:
+        <ul>
+          <li>عند i=1 → j تعمل مرة واحدة</li>
+          <li>عند i=2 → j تعمل مرتين</li>
+          <li>...</li>
+          <li>عند i=n → j تعمل n مرة</li>
+        </ul>
+      </li>
+      <li>إجمالي جسم الحلقة الداخلية = $1+2+3+\dots+n = \dfrac{n(n+1)}{2}$ (متسلسلة حسابية شهيرة، احفظها فهي تتكرر كثيراً).</li>
+      <li>شرط الحلقة الداخلية ينفَّذ مرة زيادة عن الجسم في كل دورة (الفحص الفاشل الأخير)، أي:
+        $\dfrac{n(n+1)}{2} + n = \dfrac{n^2+3n}{2}$</li>
+    </ol>
+    <h4>حساب T(n)</h4>
+    <div class="calc-box">
+      <div class="line">$T(n) = (n+1) + \dfrac{n^2+3n}{2} + \dfrac{n^2+n}{2}$</div>
+      <div class="line">$= (n+1) + \dfrac{2n^2+4n}{2} = (n+1) + n^2 + 2n = n^2 + 3n + 1$</div>
+    </div>
+    <div class="result"><span class="label">الدرجة النهائية</span><span class="val">O(n²)</span></div>
+    <div class="note">هذا النمط (حلقة مثلثية) هو بالضبط ما يحدث في خوارزميات مثل Bubble Sort و Selection Sort، وهو السبب الحقيقي وراء كون تعقيدها O(n²) رغم أن الحلقة الداخلية "تتقلّص" مع كل دورة.</div>
+  </div>
+</div>
+
+<!-- ================= PROBLEM 8 ================= -->
+<div class="problem" id="p1-8">
+  <div class="p-head"><h3>المسألة 8 — حلقة تنازلية بالقسمة (لوغاريتمية)</h3><span class="badge b-صعب">صعب</span></div>
+  <pre class="code-block"><span class="kw">int</span> i = n;
+<span class="kw">while</span> (i &gt; 1) {
+    i = i / 2;
+}</pre>
+  <div class="p-body">
+    <h4>التحليل خطوة بخطوة</h4>
+    <ol class="steps">
+      <li><span class="ltr">int i = n;</span> تُنفَّذ مرة واحدة.</li>
+      <li>القيمة i تتناقص بالقسمة على 2 في كل دورة: n, n/2, n/4, n/8, …, 1. هذا النمط (القسمة على ثابت في كل خطوة) هو "بصمة" التعقيد اللوغاريتمي.</li>
+      <li>عدد المرات التي تحتاجها القيمة للوصول من n إلى 1 بالقسمة المتكررة على 2 هو بالتعريف $\log_2 n$.</li>
+      <li>شرط <span class="ltr">i &gt; 1</span> يُفحص $\log_2 n$ مرة ناجحة + مرة أخيرة فاشلة = $\log_2 n + 1$.</li>
+      <li>جسم <span class="ltr">i = i / 2;</span> ينفَّذ بعدد مرات النجاح فقط = $\log_2 n$.</li>
+    </ol>
+    <h4>حساب T(n)</h4>
+    <div class="calc-box"><div class="line">$T(n) = 1 + (\log_2 n + 1) + \log_2 n = 2\log_2 n + 2$</div></div>
+    <div class="result"><span class="label">الدرجة النهائية</span><span class="val">O(log n)</span></div>
+    <div class="note">قاعدة تشخيصية سريعة: كل مرة ترى فيها متغيّر التحكم في الحلقة يُضرب أو يُقسَم على ثابت (بدل أن يُجمع أو يُطرح منه ثابت)، فالتعقيد لوغاريتمي وليس خطياً.</div>
+  </div>
+</div>
+
+<!-- ================= PROBLEM 9 ================= -->
+<div class="problem" id="p1-9">
+  <div class="p-head"><h3>المسألة 9 — ثلاث حلقات متداخلة (مكعّبة)</h3><span class="badge b-صعب">صعب</span></div>
+  <pre class="code-block"><span class="kw">for</span> (<span class="kw">int</span> i = 1; i &lt;= n; i++) {
+    <span class="kw">for</span> (<span class="kw">int</span> j = 1; j &lt;= n; j++) {
+        <span class="kw">for</span> (<span class="kw">int</span> k = 1; k &lt;= n; k++) {
+            y = y + 1;
+        }
+    }
+}</pre>
+  <div class="p-body">
+    <h4>التحليل خطوة بخطوة (من الخارج للداخل)</h4>
+    <ol class="steps">
+      <li>شرط الحلقة الأولى (الخارجية): n+1.</li>
+      <li>شرط الحلقة الثانية (الوسطى): تتكرر كاملة (n+1) مرة داخل كل دورة من دورات الخارجية الـ n → n(n+1) = n²+n.</li>
+      <li>شرط الحلقة الثالثة (الداخلية): تتكرر (n+1) مرة، وهذا يحدث داخل كل توليفة (i,j) وعددها n×n، إذن الإجمالي = n·n·(n+1) = n³+n².</li>
+      <li>جسم الحلقة الأعمق <span class="ltr">y = y + 1;</span>: ينفَّذ n مرة داخل كل توليفة (i,j)، أي الإجمالي = n×n×n = n³.</li>
+    </ol>
+    <h4>حساب T(n)</h4>
+    <div class="calc-box"><div class="line">$T(n) = (n+1) + (n^2+n) + (n^3+n^2) + n^3 = 2n^3 + 2n^2 + n + 1$</div></div>
+    <div class="result"><span class="label">الدرجة النهائية</span><span class="val">O(n³)</span></div>
+    <div class="note">النمط العام: عدد حلقات متداخلة متساوية الحدود = k ينتج عنه تعقيد $O(n^k)$ لجسم الحلقة الأعمق.</div>
+  </div>
+</div>
+
+<!-- ================= PROBLEM 10 ================= -->
+<div class="problem" id="p1-10">
+  <div class="p-head"><h3>المسألة 10 — خارجية خطية + داخلية مضاعِفة</h3><span class="badge b-صعب-جداً">صعب جداً</span></div>
+  <pre class="code-block"><span class="kw">for</span> (<span class="kw">int</span> i = 1; i &lt;= n; i++) {
+    <span class="kw">for</span> (<span class="kw">int</span> j = 1; j &lt;= n; j = j * 2) {
+        ans++;
+    }
+}</pre>
+  <div class="p-body">
+    <h4>التحليل خطوة بخطوة</h4>
+    <ol class="steps">
+      <li>الحلقة الخارجية تدور n مرة، شرطها = n+1.</li>
+      <li>الحلقة الداخلية تبدأ من j=1 وتُضاعِف نفسها (1, 2, 4, 8, …) حتى تتجاوز n، وهذا — كما رأينا في المسألة 8 — نمط لوغاريتمي:
+        تعمل $\log_2 n$ مرة في كل دورة خارجية واحدة.</li>
+      <li>بما أن هذا يتكرر عبر دورات الخارجية الـ n كلها: إجمالي جسم الحلقة الداخلية = $n \times \log_2 n$.</li>
+      <li>شرط الحلقة الداخلية = $n \times (\log_2 n + 1) = n\log_2 n + n$.</li>
+    </ol>
+    <h4>حساب T(n)</h4>
+    <div class="calc-box"><div class="line">$T(n) = (n+1) + n\log_2 n + (n\log_2 n + n) = 2n\log_2 n + 2n + 1$</div></div>
+    <div class="result"><span class="label">الدرجة النهائية</span><span class="val">O(n log n)</span></div>
+    <div class="note">هذا بالضبط الشكل الذي يظهر في خوارزميات مثل Heap operations المتكررة على مصفوفة، وهو تعقيد الترتيب المثالي (كما في Merge Sort و Heap Sort).</div>
+  </div>
+</div>
+
+<!-- ================= EXTRA 11 ================= -->
+<div class="problem extra" id="p1-11">
+  <div class="p-head">
+    <h3>مسألة إضافية 11 — تعقيد دالة تكرارية (Recursion) بسيطة</h3>
+    <span class="badge b-متوسط">متوسط</span><span class="extra-tag">إضافة</span>
+  </div>
+  <pre class="code-block"><span class="kw">int</span> factorial(<span class="kw">int</span> n) {
+    <span class="kw">if</span> (n &lt;= 1) <span class="kw">return</span> 1;
+    <span class="kw">return</span> n * factorial(n - 1);
+}</pre>
+  <div class="p-body">
+    <h4>لماذا هذه المسألة مهمة؟</h4>
+    <p>كل ما سبق كان حلقات (Iteration). لكن كثيراً من أسئلة الامتحان تطرح دوالاً تكرارية (Recursive)، وطريقة التحليل تختلف: نكتب علاقة تكرارية (Recurrence Relation) ثم نحلّها.</p>
+    <h4>التحليل خطوة بخطوة</h4>
+    <ol class="steps">
+      <li>كل استدعاء لِـ <span class="ltr">factorial(n)</span> يقوم بعمل ثابت (مقارنة، ضرب) بالإضافة إلى استدعاء واحد لِـ <span class="ltr">factorial(n-1)</span>.</li>
+      <li>نكتب العلاقة التكرارية: $T(n) = T(n-1) + O(1)$، وحالة القاعدة (Base Case) هي $T(1) = O(1)$.</li>
+      <li>نفكّ العلاقة (Unrolling): 
+        <div class="ltr" style="margin-top:6px;">
+          T(n) = T(n-1) + 1<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;= T(n-2) + 1 + 1<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;= T(n-3) + 1 + 1 + 1<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;= … = T(1) + (n-1)
+        </div>
+      </li>
+      <li>عدد الاستدعاءات الكلي هو n (من n نزولاً إلى 1)، وكل استدعاء يقوم بعمل ثابت.</li>
+    </ol>
+    <h4>حساب T(n)</h4>
+    <div class="calc-box"><div class="line">$T(n) = T(1) + (n-1)\cdot O(1) = O(n)$</div></div>
+    <div class="result"><span class="label">الدرجة النهائية</span><span class="val">O(n)</span></div>
+  </div>
+</div>
+
+<!-- ================= EXTRA 12 ================= -->
+<div class="problem extra" id="p1-12">
+  <div class="p-head">
+    <h3>مسألة إضافية 12 — علاقة تكرارية بالتجزئة (نمط Merge Sort)</h3>
+    <span class="badge b-صعب">صعب</span><span class="extra-tag">إضافة</span>
+  </div>
+  <pre class="code-block"><span class="kw">void</span> mergeSort(<span class="kw">int</span> arr[], <span class="kw">int</span> n) {
+    <span class="kw">if</span> (n &lt;= 1) <span class="kw">return</span>;
+    mergeSort(left_half, n/2);   <span class="cm">// استدعاء أول</span>
+    mergeSort(right_half, n/2);  <span class="cm">// استدعاء ثاني</span>
+    merge(left_half, right_half); <span class="cm">// دمج بتكلفة O(n)</span>
+}</pre>
+  <div class="p-body">
+    <h4>التحليل باستخدام شجرة الاستدعاءات (Recursion Tree)</h4>
+    <ol class="steps">
+      <li>العلاقة التكرارية هنا: $T(n) = 2T(n/2) + n$ — استدعاءان على نصف الحجم، بالإضافة إلى عملية دمج بتكلفة خطية n.</li>
+      <li>نرسم شجرة الاستدعاءات: في المستوى الأول عندنا مسألة واحدة بحجم n وتكلفة دمج n. في المستوى الثاني مسألتان بحجم n/2 لكل منهما تكلفة دمج n/2، فالمجموع لهذا المستوى = 2×(n/2) = n أيضاً. وهكذا في كل مستوى، إجمالي تكلفة الدمج يبقى n بالضبط.</li>
+      <li>عدد المستويات في الشجرة: بما أن الحجم يُقسم على 2 في كل مستوى حتى يصل إلى 1، فعدد المستويات = $\log_2 n$ (تماماً كما في المسألة 8).</li>
+      <li>بما أن كل مستوى يكلّف n، والمستويات عددها $\log_2 n$:</li>
+    </ol>
+    <h4>حساب T(n)</h4>
+    <div class="calc-box"><div class="line">$T(n) = n \times \log_2 n = O(n\log n)$</div></div>
+    <div class="result"><span class="label">الدرجة النهائية</span><span class="val">O(n log n)</span></div>
+    <div class="note">هذا هو نفس الأسلوب الذي بُني عليه "مبرهنة الاستاذ" (Master Theorem) التي ستقابلها لاحقاً لحل أي علاقة من الشكل $T(n)=aT(n/b)+f(n)$ دون الحاجة لرسم الشجرة كاملة في كل مرة.</div>
+  </div>
+</div>
+
+<div class="section-head" id="part2">
+  <h2>القسم الثاني — التبسيط وتحديد الحد المسيطر</h2>
+  <span class="count">12 مسألة (10 أساسية + 2 إضافية)</span>
+</div>
+
+<!-- ================= S2 P1 ================= -->
+<div class="problem" id="p2-1">
+  <div class="p-head"><h3>المسألة 1 — دالة ثابتة</h3><span class="badge b-سهل-جداً">سهل جداً</span></div>
+  <div class="p-body">
+    <h4>الدالة المعطاة</h4>
+    <div class="calc-box"><div class="line">$T(n) = 47$</div></div>
+    <h4>التبسيط</h4>
+    <ol class="steps">
+      <li>هذه الدالة لا تحتوي على n إطلاقاً — تكلفتها ثابتة بغض النظر عن حجم المُدخل.</li>
+      <li>أي رقم ثابت (سواء 1 أو 47 أو مليون) يُستبدل بالرمز القياسي 1 عند كتابة Big O.</li>
+    </ol>
+    <div class="result"><span class="label">النتيجة</span><span class="val">O(1)</span></div>
+  </div>
+</div>
+
+<!-- ================= S2 P2 ================= -->
+<div class="problem" id="p2-2">
+  <div class="p-head"><h3>المسألة 2 — حد خطي وحد ثابت</h3><span class="badge b-سهل">سهل</span></div>
+  <div class="p-body">
+    <h4>الدالة المعطاة</h4>
+    <div class="calc-box"><div class="line">$T(n) = 10n + 45$</div></div>
+    <h4>التبسيط</h4>
+    <ol class="steps">
+      <li>لدينا حدّان: $10n$ (خطي) و $45$ (ثابت).</li>
+      <li>عندما $n \to \infty$، الحد $10n$ يكبر بلا حدود بينما $45$ يبقى كما هو، إذن $10n$ هو الحد المسيطر ونُهمل $45$.</li>
+      <li>نُسقط المعامل الثابت 10 المضروب في n.</li>
+    </ol>
+    <div class="result"><span class="label">النتيجة</span><span class="val">O(n)</span></div>
+  </div>
+</div>
+
+<!-- ================= S2 P3 ================= -->
+<div class="problem" id="p2-3">
+  <div class="p-head"><h3>المسألة 3 — دالة تربيعية بثلاثة حدود</h3><span class="badge b-سهل">سهل</span></div>
+  <div class="p-body">
+    <h4>الدالة المعطاة</h4>
+    <div class="calc-box"><div class="line">$T(n) = 4n^2 + 100n + 5000$</div></div>
+    <h4>التبسيط</h4>
+    <ol class="steps">
+      <li>الحدود الثلاثة مرتّبة حسب سرعة النمو: $4n^2$ (تربيعي) أسرع من $100n$ (خطي) أسرع من $5000$ (ثابت).</li>
+      <li>حتى لو كانت معاملات الحدود الأصغر كبيرة (100 و5000)، فإن $n^2$ سيتجاوزها حتماً عند n كبيرة بما يكفي — هذا هو جوهر تعريف Big O (يهتم بالسلوك عند اللانهاية لا بالقيم الصغيرة لـ n).</li>
+      <li>نُسقط المعامل 4 ونُهمل الحدين الأصغر.</li>
+    </ol>
+    <div class="result"><span class="label">النتيجة</span><span class="val">O(n²)</span></div>
+  </div>
+</div>
+
+<!-- ================= S2 P4 ================= -->
+<div class="problem" id="p2-4">
+  <div class="p-head"><h3>المسألة 4 — دالة تكعيبية</h3><span class="badge b-متوسط">متوسط</span></div>
+  <div class="p-body">
+    <h4>الدالة المعطاة</h4>
+    <div class="calc-box"><div class="line">$T(n) = 7n^3 + 50n^2 + 20n + 9$</div></div>
+    <h4>التبسيط</h4>
+    <ol class="steps">
+      <li>أربعة حدود من رتب مختلفة: تكعيبي، تربيعي، خطي، ثابت.</li>
+      <li>الحد $n^3$ ينمو أسرع بكثير من البقية مجتمعة عندما n كبيرة — قاعدة عامة: حدٌّ من رتبة أعلى يتفوّق دائماً على مجموع كل الحدود الأقل رتبة.</li>
+      <li>نُسقط 7 ونُهمل الباقي.</li>
+    </ol>
+    <div class="result"><span class="label">النتيجة</span><span class="val">O(n³)</span></div>
+  </div>
+</div>
+
+<!-- ================= S2 P5 ================= -->
+<div class="problem" id="p2-5">
+  <div class="p-head"><h3>المسألة 5 — مقارنة n log n مقابل n</h3><span class="badge b-متوسط">متوسط</span></div>
+  <div class="p-body">
+    <h4>الدالة المعطاة</h4>
+    <div class="calc-box"><div class="line">$T(n) = 5n\log_2 n + 3n + 7$</div></div>
+    <h4>التبسيط</h4>
+    <ol class="steps">
+      <li>نقارن معدلات النمو: بما أن $\log_2 n$ يكبر بلا حدود عندما $n\to\infty$ (وإن كان ببطء شديد)، فإن $n\log_2 n$ ينمو أسرع من $n$ وحدها.</li>
+      <li>إذن الحد المسيطر هو $5n\log_2 n$، ونُهمل $3n$ و $7$.</li>
+      <li>نُسقط المعامل 5.</li>
+    </ol>
+    <div class="result"><span class="label">النتيجة</span><span class="val">O(n log n)</span></div>
+  </div>
+</div>
+
+<!-- ================= S2 P6 ================= -->
+<div class="problem" id="p2-6">
+  <div class="p-head"><h3>المسألة 6 — معامل كسري أمام n²</h3><span class="badge b-متوسط">متوسط</span></div>
+  <div class="p-body">
+    <h4>الدالة المعطاة</h4>
+    <div class="calc-box"><div class="line">$T(n) = \dfrac{1}{2}n^2 + 6n + 2$</div></div>
+    <h4>التبسيط</h4>
+    <ol class="steps">
+      <li>حتى لو كان المعامل كسراً أصغر من 1 (هنا ½)، فهذا لا يُغيّر شيئاً في رتبة النمو، لأن Big O يهتم بالسلوك التقاربي لا بقيمة المعامل.</li>
+      <li>الحد المسيطر يبقى $\tfrac{1}{2}n^2$، ونُسقط الكسر ½ تماماً كما نُسقط أي معامل صحيح.</li>
+    </ol>
+    <div class="result"><span class="label">النتيجة</span><span class="val">O(n²)</span></div>
+  </div>
+</div>
+
+<!-- ================= S2 P7 ================= -->
+<div class="problem" id="p2-7">
+  <div class="p-head"><h3>المسألة 7 — مقارنة n² log n مقابل n³</h3><span class="badge b-متوسط-مرتفع">متوسط مرتفع</span></div>
+  <div class="p-body">
+    <h4>الدالة المعطاة</h4>
+    <div class="calc-box"><div class="line">$T(n) = 10n^3 + 100n^2\log_2 n + 50$</div></div>
+    <h4>التبسيط</h4>
+    <ol class="steps">
+      <li>هنا المقارنة أدق: نقارن $n^2\log n$ مع $n^3$.</li>
+      <li>نكتب $n^3 = n^2 \times n$. وبما أن $n$ تنمو أسرع من $\log n$ مهما كبرت n (اللوغاريتم "بطيء" جداً مقارنة بأي دالة قوى موجبة)، فإن $n^2 \times n$ أكبر من $n^2 \times \log n$ عند n كبيرة بما يكفي.</li>
+      <li>إذن $n^3$ هو الحد المسيطر رغم أن معامله (10) أقل من معامل الحد الآخر (100).</li>
+    </ol>
+    <div class="result"><span class="label">النتيجة</span><span class="val">O(n³)</span></div>
+    <div class="note">درس مهم: المعامل الأكبر لا يجعل الحد "أقوى" إذا كانت رتبة نموّه أقل — الرتبة (الأس أو نوع الدالة) هي الحاكم دائماً، لا قيمة المعامل.</div>
+  </div>
+</div>
+
+<!-- ================= S2 P8 ================= -->
+<div class="problem" id="p2-8">
+  <div class="p-head"><h3>المسألة 8 — كثير حدود مقابل دالة أُسّية</h3><span class="badge b-صعب">صعب</span></div>
+  <div class="p-body">
+    <h4>الدالة المعطاة</h4>
+    <div class="calc-box"><div class="line">$T(n) = n^{100} + 2^n$</div></div>
+    <h4>التبسيط</h4>
+    <ol class="steps">
+      <li>الحد $n^{100}$ يبدو "مرعباً" بسبب الأس الكبير (100)، لكنه يبقى في النهاية كثير حدود (Polynomial).</li>
+      <li>الدالة الأُسّية $2^n$ (حيث المتغيّر n في الأس نفسه وليس في القاعدة) تتفوّق حتماً على أي كثير حدود مهما كبرت درجته، بمجرد أن تصبح n كبيرة بما يكفي — حتى لو استغرق ذلك وقتاً طويلاً ليبدأ $2^n$ في "اللحاق".</li>
+      <li>الحد المسيطر هو $2^n$.</li>
+    </ol>
+    <div class="result"><span class="label">النتيجة</span><span class="val">O(2ⁿ)</span></div>
+  </div>
+</div>
+
+<!-- ================= S2 P9 ================= -->
+<div class="problem" id="p2-9">
+  <div class="p-head"><h3>المسألة 9 — تبسيط لوغاريتم لقوة</h3><span class="badge b-صعب">صعب</span></div>
+  <div class="p-body">
+    <h4>الدالة المعطاة</h4>
+    <div class="calc-box"><div class="line">$T(n) = \log_2(n^5) + 8n$</div></div>
+    <h4>التبسيط</h4>
+    <ol class="steps">
+      <li>نستخدم خاصية اللوغاريتمات $\log_b(x^k) = k\log_b x$ لتبسيط الحد الأول: $\log_2(n^5) = 5\log_2 n$.</li>
+      <li>أصبحت الدالة: $T(n) = 5\log_2 n + 8n$.</li>
+      <li>نقارن $\log n$ مع $n$: الحد الخطي $n$ ينمو أسرع بكثير من اللوغاريتمي مهما كان معامله صغيراً.</li>
+      <li>الحد المسيطر هو $8n$.</li>
+    </ol>
+    <div class="result"><span class="label">النتيجة</span><span class="val">O(n)</span></div>
+    <div class="note">تنبيه شائع: لا تخلط بين $\log(n^5)$ (يساوي $5\log n$ فقط) وبين $(\log n)^5$ (تختلف تماماً) — الأس داخل اللوغاريتم يتحول لمعامل، بينما الأس خارجه يبقى أساً.</div>
+  </div>
+</div>
+
+<!-- ================= S2 P10 ================= -->
+<div class="problem" id="p2-10">
+  <div class="p-head"><h3>المسألة 10 — أُسّي مقابل مضروب</h3><span class="badge b-صعب-جداً">صعب جداً</span></div>
+  <div class="p-body">
+    <h4>الدالة المعطاة</h4>
+    <div class="calc-box"><div class="line">$T(n) = 2^n + n! + n^5$</div></div>
+    <h4>التبسيط</h4>
+    <ol class="steps">
+      <li>لدينا ثلاثة حدود من عائلات مختلفة تماماً: كثير حدود $n^5$، أُسّي $2^n$، ومضروب $n!$.</li>
+      <li>حسب ترتيب فئات النمو: كثير الحدود دائماً أبطأ من الأُسّي، والأُسّي دائماً أبطأ من المضروب — لأن $n! = n\times(n-1)\times(n-2)\times\dots\times1$ يحتوي على n عامل متزايد، بينما $2^n$ يضرب في العدد الثابت 2 فقط n مرة.</li>
+      <li>الحد المسيطر بلا منازع هو $n!$.</li>
+    </ol>
+    <div class="result"><span class="label">النتيجة</span><span class="val">O(n!)</span></div>
+    <div class="note">هذا هو النمط الذي تراه في مسائل الاستكشاف الشامل بدون تقليم (Brute-force) مثل حل مسألة البائع المتجوّل (TSP) بتجربة كل التباديل الممكنة.</div>
+  </div>
+</div>
+
+<!-- ================= S2 EXTRA 11 ================= -->
+<div class="problem extra" id="p2-11">
+  <div class="p-head">
+    <h3>مسألة إضافية 11 — لوغاريتمات بقواعد مختلفة</h3>
+    <span class="badge b-متوسط">متوسط</span><span class="extra-tag">إضافة</span>
+  </div>
+  <div class="p-body">
+    <h4>الدالة المعطاة</h4>
+    <div class="calc-box"><div class="line">$T(n) = 5\log_2 n + 3\log_{10} n$</div></div>
+    <h4>لماذا هذه المسألة مهمة؟</h4>
+    <p>سؤال شائع في الامتحانات: هل $O(\log_2 n)$ يختلف عن $O(\log_{10} n)$؟ الجواب لا، وهذا يستحق فهماً دقيقاً.</p>
+    <h4>التبسيط</h4>
+    <ol class="steps">
+      <li>بصيغة تغيير الأساس: $\log_{10} n = \dfrac{\log_2 n}{\log_2 10}$، والمقدار $\log_2 10$ ثابت رقمي (تقريباً 3.32) لا يعتمد على n إطلاقاً.</li>
+      <li>إذن $\log_{10} n$ ما هي إلا $\log_2 n$ مضروبة في ثابت — وأي معامل ثابت يُسقط في Big O.</li>
+      <li>لذلك الحدّان معاً من نفس الفئة $O(\log n)$ بغضّ النظر عن الأساس، ونجمعهما ونُسقط المعاملات.</li>
+    </ol>
+    <div class="result"><span class="label">النتيجة</span><span class="val">O(log n)</span></div>
+    <div class="note">لهذا السبب تكتب كتب الخوارزميات دائماً $O(\log n)$ بدون تحديد الأساس — لأن الأساس لا يؤثر على الرتبة، فقط على المعامل الثابت المُهمَل أصلاً.</div>
+  </div>
+</div>
+
+<!-- ================= S2 EXTRA 12 ================= -->
+<div class="problem extra" id="p2-12">
+  <div class="p-head">
+    <h3>مسألة إضافية 12 — حالة الطرح: هل تتغيّر القاعدة؟</h3>
+    <span class="badge b-متوسط">متوسط</span><span class="extra-tag">إضافة</span>
+  </div>
+  <div class="p-body">
+    <h4>الدالة المعطاة</h4>
+    <div class="calc-box"><div class="line">$T(n) = n^2 - 50n + 300$</div></div>
+    <h4>لماذا هذه المسألة مهمة؟</h4>
+    <p>يظن بعض الطلاب أن وجود إشارة الطرح "-50n" يُغيّر القاعدة، أو أن الدالة قد تصبح سالبة فتُبطل التحليل. لنوضّح الأمر بدقة.</p>
+    <h4>التبسيط</h4>
+    <ol class="steps">
+      <li>قاعدة إهمال الحدود الأصغر لا تفرّق بين الجمع والطرح: سواء كان الحد الأصغر مضافاً أم مطروحاً، فأثره يذوب أمام الحد المسيطر عندما $n\to\infty$.</li>
+      <li>هنا $n^2$ يظل الحد المسيطر، ونُهمل $-50n$ و $+300$ تماماً كما نُهملهما لو كانا موجبين.</li>
+      <li>ملاحظة دقيقة (لغرض الفهم لا الحفظ): تعريف Big O الرسمي يتطلب أن تصبح الدالة موجبة ومحدودة بأعلى بدالة $cn^2$ بدءاً من قيمة معينة $n_0$ فصاعداً — وهذا محقَّق هنا بمجرد أن تصبح n أكبر من نحو 50، وهو أمر طبيعي في التحليل المقارب الذي يهتم بالسلوك عند n الكبيرة فقط.</li>
+    </ol>
+    <div class="result"><span class="label">النتيجة</span><span class="val">O(n²)</span></div>
+  </div>
+</div>
+
+<section id="summary" class="rulebox">
+  <h2>جدول الملخص السريع — للمراجعة الأخيرة قبل الامتحان</h2>
+  <div class="summary-wrap">
+    <table class="summary">
+      <thead><tr><th>#</th><th>الوصف</th><th>الدرجة النهائية</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>حلقة بسيطة (تبدأ من 0)</td><td class="val">O(n)</td></tr>
+        <tr><td>2</td><td>حلقة بسيطة (شرط ≤، تبدأ من 1)</td><td class="val">O(n)</td></tr>
+        <tr><td>3</td><td>حلقة بخطوة زيادة = 2</td><td class="val">O(n)</td></tr>
+        <tr><td>4</td><td>حلقتان متتاليتان</td><td class="val">O(n)</td></tr>
+        <tr><td>5</td><td>حلقتان متداخلتان (n×n)</td><td class="val">O(n²)</td></tr>
+        <tr><td>6</td><td>حلقتان متداخلتان (m×n)</td><td class="val">O(m·n)</td></tr>
+        <tr><td>7</td><td>حلقة مثلثية (j ≤ i)</td><td class="val">O(n²)</td></tr>
+        <tr><td>8</td><td>حلقة تنازلية بالقسمة على 2</td><td class="val">O(log n)</td></tr>
+        <tr><td>9</td><td>ثلاث حلقات متداخلة</td><td class="val">O(n³)</td></tr>
+        <tr><td>10</td><td>خارجية خطية + داخلية مضاعِفة</td><td class="val">O(n log n)</td></tr>
+        <tr><td>11★</td><td>Factorial التكرارية</td><td class="val">O(n)</td></tr>
+        <tr><td>12★</td><td>Merge Sort التكرارية</td><td class="val">O(n log n)</td></tr>
+        <tr><td>13</td><td>دالة ثابتة</td><td class="val">O(1)</td></tr>
+        <tr><td>14</td><td>10n + 45</td><td class="val">O(n)</td></tr>
+        <tr><td>15</td><td>4n² + 100n + 5000</td><td class="val">O(n²)</td></tr>
+        <tr><td>16</td><td>7n³ + 50n² + 20n + 9</td><td class="val">O(n³)</td></tr>
+        <tr><td>17</td><td>5n log n + 3n + 7</td><td class="val">O(n log n)</td></tr>
+        <tr><td>18</td><td>½n² + 6n + 2</td><td class="val">O(n²)</td></tr>
+        <tr><td>19</td><td>10n³ + 100n² log n + 50</td><td class="val">O(n³)</td></tr>
+        <tr><td>20</td><td>n¹⁰⁰ + 2ⁿ</td><td class="val">O(2ⁿ)</td></tr>
+        <tr><td>21</td><td>log₂(n⁵) + 8n</td><td class="val">O(n)</td></tr>
+        <tr><td>22</td><td>2ⁿ + n! + n⁵</td><td class="val">O(n!)</td></tr>
+        <tr><td>23★</td><td>لوغاريتمات بقواعد مختلفة</td><td class="val">O(log n)</td></tr>
+        <tr><td>24★</td><td>n² − 50n + 300 (حالة الطرح)</td><td class="val">O(n²)</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p style="margin-top:16px;font-size:.88rem;color:var(--ink-soft);">★ = مسألة إضافية غير موجودة في الأصل.</p>
+</section>
+
+</main>
+
+<footer>
+  نصيحة أخيرة: لا تحفظ النتائج، افهم السبب في كل خطوة — فالممتحن الجيد يُغيّر الأرقام ويُبقي البنية،
+  ومن فهم القواعد الثلاث في أعلى الصفحة يستطيع حل أي متغيّر منها.
+  <div class="sign">وبالله التوفيق</div>
+</footer>
+
+</body>
+</html>

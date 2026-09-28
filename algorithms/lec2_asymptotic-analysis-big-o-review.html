@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مرجع المراجعة | Asymptotic Analysis &amp; Big O</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e16;
+    --bg-alt:#0d1220;
+    --card:#121a2b;
+    --card2:#0f1524;
+    --border:#212b40;
+    --border-soft:#1a2336;
+    --text:#e7ecf5;
+    --text-dim:#93a1bd;
+    --text-faint:#5c6a89;
+    --accent:#38bdf8;
+    --accent-soft:#38bdf822;
+
+    --c-o1:#94a3b8;
+    --c-ologn:#a78bfa;
+    --c-on:#38bdf8;
+    --c-onlogn:#34d399;
+    --c-on2:#fbbf24;
+    --c-on3:#fb923c;
+    --c-o2n:#f87171;
+
+    --ok:#34d399;
+    --bad:#f87171;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, #12203a55, transparent 60%),
+      radial-gradient(900px 500px at -10% 20%, #1a123655, transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Tajawal', sans-serif;
+    line-height:1.75;
+  }
+  html[dir="ltr"] body{font-family:'Fira Code','Tajawal',sans-serif;}
+  code, .mono, .eq, .term-en{
+    font-family:'Fira Code', monospace;
+    direction:ltr;
+    unicode-bidi:isolate;
+  }
+  a{color:var(--accent);}
+  h1,h2,h3,h4{font-weight:800; margin:0 0 .5em;}
+  p{margin:0 0 1em; color:var(--text);}
+  .container{max-width:1080px; margin:0 auto; padding:0 20px;}
+
+  /* ===== LANG TOGGLE ===== */
+  .lang-toggle{
+    position:fixed; top:16px; z-index:200;
+    inset-inline-end:16px;
+    display:flex; background:#0d1524ee; border:1px solid var(--border);
+    border-radius:999px; padding:4px; backdrop-filter:blur(8px);
+    box-shadow:0 4px 18px #00000055;
+  }
+  .lang-toggle button{
+    border:none; background:transparent; color:var(--text-dim); font-family:'Fira Code',monospace;
+    font-weight:600; font-size:.78rem; padding:7px 14px; border-radius:999px; cursor:pointer; transition:.2s;
+  }
+  .lang-toggle button.active{background:var(--accent); color:#04121c;}
+
+  /* ===== HERO ===== */
+  .hero{position:relative; padding:70px 0 50px; overflow:hidden; border-bottom:1px solid var(--border-soft);}
+  .hero-bg-curve{position:absolute; inset:0; opacity:.35; pointer-events:none;}
+  .hero .kicker{
+    display:inline-block; font-family:'Fira Code',monospace; font-size:.78rem;
+    letter-spacing:.12em; color:var(--accent); background:var(--accent-soft);
+    border:1px solid #38bdf844; padding:5px 12px; border-radius:999px; margin-bottom:18px;
+  }
+  .hero h1{font-size:2.4rem; line-height:1.25; max-width:780px;}
+  .hero h1 .glow{color:var(--accent); text-shadow:0 0 30px #38bdf866;}
+  .hero p.sub{font-size:1.08rem; color:var(--text-dim); max-width:640px;}
+  @media(max-width:640px){ .hero h1{font-size:1.7rem;} .lang-toggle{top:10px;} }
+
+  /* ===== STICKY NAV ===== */
+  .nav-wrap{position:sticky; top:0; z-index:50; background:#0a0e16dd; backdrop-filter:blur(10px); border-bottom:1px solid var(--border-soft);}
+  .nav-scroll{display:flex; gap:6px; overflow-x:auto; padding:10px 20px; max-width:1080px; margin:0 auto; scrollbar-width:none;}
+  .nav-scroll::-webkit-scrollbar{display:none;}
+  .nav-scroll a{
+    flex:none; white-space:nowrap; font-size:.86rem; font-weight:500;
+    color:var(--text-dim); text-decoration:none; padding:8px 14px; border-radius:999px; border:1px solid transparent; transition:.2s;
+  }
+  .nav-scroll a:hover{color:var(--text); border-color:var(--border);}
+  .nav-scroll a.active{color:#04121c; background:var(--accent); font-weight:700;}
+
+  section{padding:56px 0; border-bottom:1px solid var(--border-soft);}
+  section:last-of-type{border-bottom:none;}
+  .eyebrow{font-family:'Fira Code',monospace; font-size:.75rem; color:var(--accent); letter-spacing:.1em; margin-bottom:8px; display:block;}
+  section > .container > h2{font-size:1.7rem; margin-bottom:.25em;}
+  section > .container > p.lead{color:var(--text-dim); max-width:720px; margin-bottom:2em; font-size:1.02rem;}
+
+  .grid{display:grid; gap:16px;}
+  .grid-2{grid-template-columns:repeat(2,1fr);}
+  .grid-3{grid-template-columns:repeat(3,1fr);}
+  .grid-4{grid-template-columns:repeat(4,1fr);}
+  @media(max-width:860px){ .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;} }
+
+  .card{background:linear-gradient(180deg, var(--card), var(--card2)); border:1px solid var(--border); border-radius:var(--radius); padding:22px 22px;}
+  .card h3{font-size:1.12rem; margin-bottom:.4em;}
+  .card h3 .num{color:var(--accent); font-family:'Fira Code',monospace; margin-left:6px;}
+  .card.tinted{border-color:#38bdf844; background:linear-gradient(180deg,#0f1a2c,#0d1524);}
+
+  .badge{display:inline-flex; align-items:center; gap:6px; font-size:.72rem; font-weight:700; font-family:'Fira Code',monospace; padding:3px 10px; border-radius:999px; letter-spacing:.03em;}
+  .b-o1{color:var(--c-o1); background:#94a3b81a; border:1px solid #94a3b855;}
+  .b-ologn{color:var(--c-ologn); background:#a78bfa1a; border:1px solid #a78bfa55;}
+  .b-on{color:var(--c-on); background:#38bdf81a; border:1px solid #38bdf855;}
+  .b-onlogn{color:var(--c-onlogn); background:#34d3991a; border:1px solid #34d39955;}
+  .b-on2{color:var(--c-on2); background:#fbbf241a; border:1px solid #fbbf2455;}
+  .b-on3{color:var(--c-on3); background:#fb923c1a; border:1px solid #fb923c55;}
+  .b-o2n{color:var(--c-o2n); background:#f871711a; border:1px solid #f8717155;}
+
+  pre{background:#080b12; border:1px solid var(--border); border-radius:10px; padding:16px 18px; overflow-x:auto; direction:ltr; text-align:left; font-family:'Fira Code',monospace; font-size:.88rem; color:#c9e6ff; margin:12px 0;}
+  .line-note{display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-top:1px dashed var(--border-soft);}
+  .line-note:first-child{border-top:none;}
+  .line-note .ln{font-family:'Fira Code',monospace; font-size:.78rem; color:var(--accent); background:#0d1524; border:1px solid var(--border); border-radius:6px; padding:2px 8px; flex:none; margin-top:2px;}
+
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:.95rem;}
+  th,td{padding:11px 12px; text-align:start; border-bottom:1px solid var(--border-soft);}
+  th{color:var(--accent); font-family:'Fira Code',monospace; font-size:.78rem; letter-spacing:.04em; border-bottom:1px solid var(--border);}
+  tr:hover td{background:#ffffff05;}
+  td .mono{color:#c9e6ff;}
+
+  .note{border-radius:10px; border:1px solid #fbbf2444; background:#fbbf240d; padding:14px 16px; font-size:.95rem; color:#f3e2b0;}
+  .note.good{border-color:#34d39944; background:#34d3990d; color:#bdf3da;}
+  .note.info{border-color:#38bdf844; background:#38bdf80d; color:#bfe6fb;}
+
+  .diagram-block{border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:22px; background:var(--card);}
+  .diagram-head{padding:16px 20px; border-bottom:1px solid var(--border-soft); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;}
+  .diagram-head h3{margin:0;}
+  .diagram-body{padding:20px;}
+  .curve-legend{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0;}
+  .curve-row{display:flex; align-items:center; gap:10px; padding:6px 0;}
+  .curve-swatch{width:26px; height:4px; border-radius:3px; flex:none;}
+
+  .level-tabs{display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;}
+  .level-tab{padding:9px 16px; border-radius:10px; border:1px solid var(--border); background:var(--card2); color:var(--text-dim); cursor:pointer; font-family:'Tajawal',sans-serif; font-weight:700; font-size:.9rem;}
+  .level-tab.active{background:var(--accent); color:#04121c; border-color:var(--accent);}
+  .level-panel{display:none;}
+  .level-panel.active{display:block;}
+  .quickref-list{list-style:none; padding:0; margin:0; font-family:'Fira Code',monospace; direction:ltr; text-align:left;}
+  .quickref-list li{padding:10px 14px; margin-bottom:6px; border-radius:8px; background:#0d1524; border:1px solid var(--border-soft); font-size:.86rem; color:#d7e6f7;}
+
+  .quiz-progress{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 18px; gap:14px; flex-wrap:wrap;}
+  .quiz-score{font-family:'Fira Code',monospace; font-weight:600; color:var(--accent); font-size:1.05rem;}
+  .quiz-bar{flex:1; min-width:140px; height:8px; border-radius:99px; background:#1a2336; overflow:hidden;}
+  .quiz-bar-fill{height:100%; width:0%; background:linear-gradient(90deg,#38bdf8,#34d399); transition:width .3s;}
+
+  .q-card{border:1px solid var(--border); background:var(--card); border-radius:var(--radius); padding:20px 22px; margin-bottom:16px;}
+  .q-card .q-meta{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:10px; flex-wrap:wrap;}
+  .q-type-tag{font-family:'Fira Code',monospace; font-size:.7rem; color:var(--text-faint); border:1px solid var(--border); padding:2px 9px; border-radius:999px;}
+  .q-prompt{font-weight:700; font-size:1.02rem; margin-bottom:14px;}
+  .q-prompt code{background:#0d1524; padding:1px 6px; border-radius:5px; font-size:.9em;}
+  .opt-list{display:flex; flex-direction:column; gap:8px;}
+  .opt{display:flex; align-items:center; gap:10px; padding:11px 14px; border-radius:10px; border:1px solid var(--border); background:var(--card2); cursor:pointer; transition:.15s; font-size:.95rem;}
+  .opt:hover{border-color:#38bdf866;}
+  .opt input{accent-color:var(--accent); width:16px; height:16px; flex:none;}
+  .opt.correct-flash{border-color:var(--ok); background:#34d3991a;}
+  .opt.wrong-flash{border-color:var(--bad); background:#f871711a;}
+  .fill-input{width:100%; max-width:320px; background:#0d1524; border:1px solid var(--border); border-radius:9px; padding:11px 14px; color:var(--text); font-family:'Fira Code',monospace; font-size:.95rem; direction:ltr; text-align:left;}
+  .fill-input:focus{outline:none; border-color:var(--accent);}
+  .check-btn{margin-top:14px; background:var(--accent); color:#04121c; border:none; padding:9px 20px; border-radius:9px; font-weight:700; cursor:pointer; font-family:'Tajawal',sans-serif; font-size:.9rem;}
+  .check-btn:disabled{opacity:.5; cursor:default;}
+  .check-btn:hover:not(:disabled){filter:brightness(1.1);}
+  .q-feedback{margin-top:12px; padding:12px 14px; border-radius:10px; font-size:.9rem; display:none;}
+  .q-feedback.show{display:block;}
+  .q-feedback.correct{background:#34d3991a; border:1px solid #34d39955; color:#c8f5e2;}
+  .q-feedback.incorrect{background:#f871711a; border:1px solid #f8717155; color:#fbd7d7;}
+  .final-score{text-align:center; padding:30px 20px; border-radius:var(--radius); border:1px solid var(--accent); background:linear-gradient(180deg,#0f1a2c,#0d1524); margin-top:20px; display:none;}
+  .final-score.show{display:block;}
+  .final-score .big{font-size:2.4rem; font-weight:800; color:var(--accent); font-family:'Fira Code',monospace;}
+  .reset-btn{margin-top:14px; background:transparent; border:1px solid var(--border); color:var(--text); padding:9px 20px; border-radius:9px; cursor:pointer; font-family:'Tajawal',sans-serif; font-weight:700;}
+
+  .timeline{position:relative; padding-inline-start:26px; border-inline-start:2px solid var(--border);}
+  .t-item{position:relative; padding-bottom:26px;}
+  .t-item:last-child{padding-bottom:0;}
+  .t-item::before{content:''; position:absolute; inset-inline-start:-32px; top:4px; width:12px; height:12px; border-radius:50%; background:var(--accent); box-shadow:0 0 0 4px #38bdf822;}
+  .t-time{font-family:'Fira Code',monospace; color:var(--accent); font-size:.82rem; margin-bottom:2px;}
+  .t-title{font-weight:700; margin-bottom:3px;}
+
+  .tip-item, .mistake-item{display:flex; gap:12px; padding:14px 0; border-top:1px solid var(--border-soft);}
+  .tip-item:first-child, .mistake-item:first-child{border-top:none;}
+  .tip-icon, .mistake-icon{flex:none; font-size:1.2rem; line-height:1.4;}
+
+  footer{padding:30px 0 60px; text-align:center; color:var(--text-faint); font-size:.85rem;}
+</style>
+</head>
+<body>
+
+<div class="lang-toggle">
+  <button id="btnAr" class="active" onclick="setLang('ar')">AR · عربي</button>
+  <button id="btnEn" onclick="setLang('en')">EN</button>
+</div>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <svg class="hero-bg-curve" viewBox="0 0 1080 260" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,250 C 200,245 400,235 550,180 C 700,120 800,20 900,-40" stroke="#f87171" stroke-width="2" fill="none"/>
+    <path d="M0,252 C 250,245 500,220 650,150 C 800,80 900,20 1000,-20" stroke="#fb923c" stroke-width="2" fill="none"/>
+    <path d="M0,254 C 300,248 550,225 700,180 C 850,130 950,90 1080,40" stroke="#fbbf24" stroke-width="2" fill="none"/>
+    <path d="M0,256 C 350,250 600,235 750,215 C 900,190 1000,175 1080,160" stroke="#34d399" stroke-width="2" fill="none"/>
+    <path d="M0,257 C 400,253 650,244 800,235 C 950,225 1050,218 1080,214" stroke="#38bdf8" stroke-width="2" fill="none"/>
+    <path d="M0,258 C 400,255 700,252 1080,248" stroke="#a78bfa" stroke-width="2" fill="none"/>
+    <path d="M0,259 L1080,259" stroke="#94a3b8" stroke-width="2" fill="none"/>
+  </svg>
+  <div class="container">
+    <span class="kicker">LECTURE 2 · REVIEW SHEET</span>
+    <h1><span class="i18n" data-en="Asymptotic Analysis &amp;">Asymptotic Analysis &amp;</span> <span class="glow i18n" data-en="Big O">Big O</span></h1>
+    <p class="sub i18n" data-en="An interactive, comprehensive review sheet — how do we measure algorithm efficiency, and why does it matter when data scales?">مرجع مراجعة تفاعلي شامل — كيف نقيس كفاءة الخوارزميات، ولماذا يهم الأمر عندما تتضخم البيانات؟</p>
+  </div>
+</header>
+
+<!-- ============ STICKY NAV ============ -->
+<div class="nav-wrap">
+  <nav class="nav-scroll" id="navScroll">
+    <a href="#overview" class="i18n" data-en="Overview">نظرة عامة</a>
+    <a href="#explain" class="i18n" data-en="Full Explanation">الشرح الكامل</a>
+    <a href="#diagrams" class="i18n" data-en="Diagrams &amp; Charts">الرسومات والمخططات</a>
+    <a href="#summary" class="i18n" data-en="Summary Table">جدول التلخيص</a>
+    <a href="#levels" class="i18n" data-en="3 Levels">3 مستويات</a>
+    <a href="#quiz" class="i18n" data-en="Interactive Quiz">الاختبار التفاعلي</a>
+    <a href="#plan" class="i18n" data-en="Study Plan">خطة المذاكرة</a>
+    <a href="#tips" class="i18n" data-en="Pro Tips">نصائح احترافية</a>
+  </nav>
+</div>
+
+<!-- ============ 1. OVERVIEW ============ -->
+<section id="overview">
+  <div class="container">
+    <span class="eyebrow">01 / OVERVIEW</span>
+    <h2 class="i18n" data-en="Lecture Overview">نظرة عامة على المحاضرة</h2>
+    <p class="lead i18n" data-en="This is Lecture 2 in the Algorithms course, and its core topic is Asymptotic Analysis and Big O notation: the mathematical tool we use to describe an algorithm's efficiency independently of hardware or programming language.">
+      هذه المحاضرة الثانية في مادة الخوارزميات، وموضوعها الأساسي هو <b>Asymptotic Analysis</b> (التحليل المقارب)
+      وترميز <b>Big O</b>: الأداة الرياضية التي نستخدمها لوصف كفاءة الخوارزمية بشكل مستقل عن نوع الجهاز أو لغة البرمجة.
+    </p>
+
+    <div class="grid grid-2">
+      <div class="card tinted">
+        <h3 class="i18n" data-en="🎯 The Core Idea">🎯 الفكرة المحورية</h3>
+        <p class="i18n" data-en="Being correct is not enough for an algorithm. We need to know: is it fast enough? Does it use reasonable memory? Will it keep working when data grows into the millions? The answer comes from analyzing how runtime grows as input size n grows — not from timing seconds on one particular machine.">
+          كون الخوارزمية <b>correct</b> (صحيحة) لا يكفي. يجب أن نعرف: هل هي سريعة بما يكفي؟ هل تستهلك ذاكرة معقولة؟
+          هل ستستمر في العمل عندما يكبر حجم البيانات إلى الملايين؟ الإجابة على هذه الأسئلة تأتي من <b>تحليل نمو</b>
+          زمن التشغيل مع تزايد حجم المدخل <span class="term-en">n</span>، وليس من قياس الثواني الفعلية على جهاز معين.
+        </p>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="🧠 Key Concepts in This Lecture">🧠 أهم المفاهيم في هذه المحاضرة</h3>
+        <ul style="margin:0; padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="Input Size (n) and Growth Rate">حجم المدخل <span class="term-en">Input Size (n)</span> ومعدل النمو <span class="term-en">Growth Rate</span></li>
+          <li class="i18n" data-en="Asymptotic Analysis as n → ∞">التحليل المقارب <span class="term-en">Asymptotic Analysis</span> عند <span class="term-en">n → ∞</span></li>
+          <li class="i18n" data-en="The three notations: Big O, Big Ω, Big Θ">الترميزات الثلاثة: <span class="term-en">Big O</span>, <span class="term-en">Big Ω</span>, <span class="term-en">Big Θ</span></li>
+          <li class="i18n" data-en="The Dominant Term principle and dropping constants">مبدأ الحد المهيمن <span class="term-en">Dominant Term</span> وإسقاط الثوابت</li>
+          <li class="i18n" data-en="The four steps of algorithm analysis (Identify → Count → Express → Simplify)">خطوات تحليل الخوارزمية الأربع (Identify → Count → Express → Simplify)</li>
+          <li class="i18n" data-en="Consecutive statements (added) vs. nested loops (multiplied)">تحليل الجمل المتتالية (تُجمع) مقابل الحلقات المتداخلة (تُضرب)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid grid-3" style="margin-top:16px;">
+      <div class="card">
+        <h3 class="i18n" data-en="🛠️ Skills Gained">🛠️ المهارات المكتسبة</h3>
+        <p style="color:var(--text-dim); margin:0;" class="i18n" data-en="The ability to read simple code and derive its Big O step by step.">القدرة على قراءة أي كود بسيط واستخراج <span class="term-en">Big O</span> الخاص به خطوة بخطوة.</p>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="⚖️ Fair Comparison">⚖️ مقارنة عادلة</h3>
+        <p style="color:var(--text-dim); margin:0;" class="i18n" data-en="Comparing two different algorithms without being influenced by CPU speed or programming language.">مقارنة خوارزميتين مختلفتين دون التأثر بسرعة المعالج أو لغة البرمجة المستخدمة.</p>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="📈 Predicting Scale">📈 التنبؤ بالتوسع</h3>
+        <p style="color:var(--text-dim); margin:0;" class="i18n" data-en="Predicting how an algorithm behaves on huge data (a million records) without actually testing it.">توقّع سلوك الخوارزمية عند بيانات ضخمة (مليون سجل) دون الحاجة لتجربتها فعليًا.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. FULL EXPLANATION ============ -->
+<section id="explain">
+  <div class="container">
+    <span class="eyebrow">02 / FULL EXPLANATION</span>
+    <h2 class="i18n" data-en="Full Explanation of Every Section">الشرح الكامل لكل قسم في المحاضرة</h2>
+    <p class="lead i18n" data-en="Each card covers one part of the lecture in order, without dropping any information from the slides.">كل بطاقة تغطي جزءًا من المحاضرة بالترتيب، دون تجاوز أي معلومة واردة في الشرائح.</p>
+
+    <!-- 2.1 -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.1</span> <span class="i18n" data-en="Why Do We Analyze Algorithms?">لماذا نحلل الخوارزميات؟</span></h3>
+      <p class="i18n" data-en="A correct algorithm is not necessarily a good one. Analysis helps us answer critical questions before deploying code to production:">الخوارزمية <b>الصحيحة (correct)</b> ليست بالضرورة خوارزمية <b>جيدة</b>. التحليل يساعدنا على الإجابة على أسئلة حاسمة قبل نشر الكود في بيئة إنتاج فعلية (production):</p>
+      <table>
+        <tr><th class="i18n" data-en="Question">السؤال</th><th class="i18n" data-en="Meaning">المعنى</th></tr>
+        <tr><td>⚡ Speed</td><td class="i18n" data-en="Is it fast enough for real-world use?">هل هي سريعة بما يكفي للاستخدام الواقعي؟</td></tr>
+        <tr><td>💾 Memory</td><td class="i18n" data-en="Does it use resources efficiently?">هل تستخدم الموارد بكفاءة؟</td></tr>
+        <tr><td>📦 Scale</td><td class="i18n" data-en="Can it handle millions of records?">هل تستطيع التعامل مع ملايين السجلات؟</td></tr>
+        <tr><td>📈 Growth</td><td class="i18n" data-en="Will performance collapse as input grows?">هل سينهار الأداء مع تزايد حجم المدخلات؟</td></tr>
+      </table>
+    </div>
+
+    <!-- 2.2 -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.2</span> <span class="i18n" data-en="What Actually Affects Running Time?">ما الذي يؤثر فعلًا على زمن التشغيل؟</span></h3>
+      <p class="i18n" data-en="<b>Key principle:</b> we analyze the algorithm itself, not the machine it runs on."><b>المبدأ الأساسي:</b> نحلل الخوارزمية نفسها، وليس الجهاز الذي تعمل عليه.</p>
+      <table>
+        <tr><th class="i18n" data-en="✅ What We Focus On">✅ ما نركّز عليه</th><th class="i18n" data-en="❌ What We Ignore (environment-dependent)">❌ ما نتجاهله (تختلف حسب البيئة)</th></tr>
+        <tr><td class="i18n" data-en="Input Size (n) — the amount of data processed">Input Size (n) — كمية البيانات المعالجة</td><td class="i18n" data-en="CPU speed and hardware specs">سرعة المعالج ومواصفات الجهاز (CPU speed)</td></tr>
+        <tr><td class="i18n" data-en="Algorithm Design — the logic and structure chosen">Algorithm Design — المنطق والبنية المُختارة</td><td class="i18n" data-en="Programming language used">لغة البرمجة المستخدمة</td></tr>
+        <tr><td class="i18n" data-en="Number of Operations — steps executed per input">Number of Operations — عدد الخطوات لكل مدخل</td><td class="i18n" data-en="Operating system and compiler optimizations">نظام التشغيل وتحسينات المترجم (compiler)</td></tr>
+      </table>
+    </div>
+
+    <!-- 2.3 -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.3</span> <span class="i18n" data-en="Why Execution Time Alone Is Misleading">لماذا زمن التنفيذ الفعلي وحده مضلِّل؟</span></h3>
+      <p class="i18n" data-en="Two identical algorithms can show wildly different runtimes depending on the environment — that's not a fair comparison:">خوارزميتان متطابقتان تمامًا قد تُظهران زمن تشغيل مختلفًا جدًا حسب البيئة — وهذه ليست مقارنة عادلة:</p>
+      <div class="grid grid-3">
+        <div class="card" style="padding:14px;"><b>🖥️ Processor Performance</b><p style="margin-top:6px; color:var(--text-dim);" class="i18n" data-en="A faster CPU doesn't mean a better algorithm.">معالج أسرع لا يعني خوارزمية أفضل.</p></div>
+        <div class="card" style="padding:14px;"><b>💽 Memory Availability</b><p style="margin-top:6px; color:var(--text-dim);" class="i18n" data-en="RAM constraints can skew timing results.">محدودية الذاكرة RAM قد تُشوّه نتائج القياس.</p></div>
+        <div class="card" style="padding:14px;"><b>🔤 Language &amp; Compiler</b><p style="margin-top:6px; color:var(--text-dim);" class="i18n" data-en="C++ vs. Python can differ by 100× for the same logic.">‎<span class="term-en">C++ vs Python</span> قد يختلفان بمقدار <b>100×</b> لنفس المنطق البرمجي.</p></div>
+      </div>
+    </div>
+
+    <!-- 2.4 -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.4</span> <span class="i18n" data-en="Input Size — n">حجم المدخل — <span class="term-en">Input Size (n)</span></span></h3>
+      <p class="i18n" data-en="n represents the amount of data an algorithm processes. Performance is always expressed relative to n:"><span class="term-en">n</span> يمثّل كمية البيانات التي تعالجها الخوارزمية. يتم التعبير عن الأداء دائمًا بدلالة <span class="term-en">n</span>:</p>
+      <table>
+        <tr><th class="i18n" data-en="Context">السياق</th><th class="i18n" data-en="What n represents">ماذا يمثّل <span class="term-en">n</span></th></tr>
+        <tr><td>Searching &amp; Sorting</td><td class="i18n" data-en="n = number of elements in the array"><span class="term-en">n</span> = عدد العناصر في المصفوفة (array)</td></tr>
+        <tr><td>Graphs</td><td class="i18n" data-en="n = number of vertices or edges"><span class="term-en">n</span> = عدد الرؤوس أو الأضلاع (vertices/edges)</td></tr>
+        <tr><td>Matrices</td><td class="i18n" data-en="n = number of rows and columns"><span class="term-en">n</span> = عدد الصفوف والأعمدة</td></tr>
+      </table>
+    </div>
+
+    <!-- 2.5 -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.5</span> <span class="i18n" data-en="Growth Rate">معدل النمو — <span class="term-en">Growth Rate</span></span></h3>
+      <p class="i18n" data-en="As n increases, running time changes — this relationship is called the growth rate, and it describes how quickly resource usage expands as the problem grows.">مع تزايد <span class="term-en">n</span>، يتغيّر زمن التشغيل — وهذه العلاقة تُسمى معدل النمو، وهي تصف مدى سرعة تضخّم استهلاك الموارد مع تضخّم المسألة.</p>
+      <div class="note info">
+        <b class="i18n" data-en="Key question:">السؤال المحوري:</b>
+        <span class="i18n" data-en=" Does every algorithm grow at the same rate when n goes from 10 → 100 → 1,000 → 10,000?"> هل تنمو كل الخوارزميات بنفس المعدل عندما ينتقل <span class="term-en">n</span> من 10 → 100 → 1,000 → 10,000؟</span>
+        <br><span class="i18n" data-en="The answer is no — and that difference is exactly what asymptotic analysis measures and compares."><b>الإجابة: لا</b> — وهذا الفرق بالضبط هو ما يقيسه التحليل المقارب.</span>
+      </div>
+    </div>
+
+    <!-- 2.6 -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.6</span> <span class="i18n" data-en="What Is Asymptotic Analysis?">ما هو التحليل المقارب — <span class="term-en">Asymptotic Analysis</span>؟</span></h3>
+      <p class="i18n" data-en="A mathematical technique that evaluates algorithm performance as n → ∞ — focusing on growth behavior, not exact execution time.">هو تقنية رياضية تقيّم أداء الخوارزمية عندما <span class="term-en">n → ∞</span> — وتركّز على <b>سلوك النمو</b> وليس زمن التنفيذ الدقيق.</p>
+      <div class="grid grid-2">
+        <div><b>Fair Comparison</b><p style="color:var(--text-dim); margin-top:4px;" class="i18n" data-en="Eliminates hardware and language bias.">يُلغي التحيز الناتج عن اختلاف الجهاز أو لغة البرمجة.</p></div>
+        <div><b>Predicts Scalability</b><p style="color:var(--text-dim); margin-top:4px;" class="i18n" data-en="Reveals how algorithms behave at scale.">يكشف كيف تتصرف الخوارزمية عند نطاق واسع من البيانات.</p></div>
+        <div><b>Focuses on Efficiency</b><p style="color:var(--text-dim); margin-top:4px;" class="i18n" data-en="Isolates the algorithm's inherent cost.">يعزل التكلفة الجوهرية للخوارزمية نفسها.</p></div>
+      </div>
+      <div class="note good" style="margin-top:14px;">
+        <b class="i18n" data-en="Lecture key takeaways (Wrap-up):">أهم استنتاجات المحاضرة (Wrap-up):</b>
+        <ol style="margin:8px 0 0; padding-inline-start:18px;">
+          <li class="i18n" data-en="Analyze the algorithm, not the machine — hardware and language vary, but the algorithm's structure is the fixed measure.">نحلل الخوارزمية، لا الجهاز — الأجهزة واللغات تتغيّر، لكن بنية الخوارزمية هي المقياس الثابت.</li>
+          <li class="i18n" data-en="Input size n drives performance — express runtime as a function of n for a fair comparison.">حجم المدخل <span class="term-en">n</span> هو محرّك الأداء — نُعبّر عن زمن التشغيل كدالة في <span class="term-en">n</span> لمقارنة عادلة.</li>
+          <li class="i18n" data-en="Asymptotic analysis looks at n → ∞ — we care about behavior at scale, not small inputs.">التحليل المقارب ينظر إلى <span class="term-en">n → ∞</span> — نهتم بالسلوك عند النطاق الكبير، لا عند المدخلات الصغيرة.</li>
+          <li class="i18n" data-en="Big O, Ω, Θ describe bounds — Big O (worst-case) is the standard comparison tool."><span class="term-en">Big O, Ω, Θ</span> تصف الحدود — و<span class="term-en">Big O</span> (أسوأ حالة) هي الأداة القياسية في المقارنة.</li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- 2.7 -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.7</span> <span class="i18n" data-en="Lower Growth Rates Scale Better">معدلات النمو المنخفضة تتوسّع بشكل أفضل</span></h3>
+      <p class="i18n" data-en="A small difference in growth class can mean the difference between finishing in seconds, or never finishing at all.">فرق بسيط في "فئة النمو" (growth class) قد يعني الفرق بين إنهاء المهمة خلال ثوانٍ، أو عدم انتهائها إطلاقًا.</p>
+      <div class="grid grid-2">
+        <div class="card b-onlogn" style="padding:14px; border-color:#34d39944;"><b>Low Growth Rate</b><p style="color:var(--text-dim); margin-top:6px;" class="i18n" data-en="Scales efficiently — handles millions of inputs with ease.">يتوسع بكفاءة — يتعامل مع ملايين المدخلات براحة.</p></div>
+        <div class="card" style="padding:14px; border-color:#f8717144;"><b>High Growth Rate</b><p style="color:var(--text-dim); margin-top:6px;" class="i18n" data-en="Struggles quickly — becomes impractical even at moderate input sizes.">يتعثّر سريعًا — يصبح غير عملي حتى عند أحجام مدخلات متوسطة.</p></div>
+      </div>
+    </div>
+
+    <!-- 2.9 notations -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.9</span> <span class="i18n" data-en="The Three Asymptotic Notations">الترميزات المقاربة الثلاثة</span></h3>
+      <p class="i18n" data-en="These notations describe how an algorithm's running time grows for large input sizes — independent of hardware or programming language.">تصف هذه الترميزات كيف ينمو زمن تشغيل الخوارزمية للمدخلات الكبيرة — بمعزل عن الجهاز أو لغة البرمجة.</p>
+      <table>
+        <tr><th class="i18n" data-en="Notation">الترميز</th><th class="i18n" data-en="Meaning">المعنى</th><th class="i18n" data-en="Typical Use">الاستخدام النموذجي</th></tr>
+        <tr><td><span class="badge b-on">O(f(n))</span></td><td class="i18n" data-en="Upper Bound — the algorithm will never grow faster than this">Upper Bound — الحد الأعلى، لن تنمو الخوارزمية أسرع من هذا</td><td class="i18n" data-en="Worst-case analysis — most commonly used">تحليل أسوأ حالة (worst-case) — الأكثر استخدامًا</td></tr>
+        <tr><td><span class="badge b-ologn">Ω(f(n))</span></td><td class="i18n" data-en="Lower Bound — the algorithm will never grow slower than this">Lower Bound — الحد الأدنى، لن تنمو أبطأ من هذا</td><td class="i18n" data-en="Best-case analysis">تحليل أفضل حالة (best-case)</td></tr>
+        <tr><td><span class="badge b-onlogn">Θ(f(n))</span></td><td class="i18n" data-en="Tight Bound — upper and lower bounds match">Tight Bound — الحدين الأعلى والأدنى متطابقان</td><td class="i18n" data-en="Precise description of the actual growth rate (average-case)">الوصف الدقيق لمعدل النمو الفعلي (average-case)</td></tr>
+      </table>
+      <div class="note" style="margin-top:10px;">
+        <span class="i18n" data-en="Quick memory aid:">قاعدة تذكّر سريعة:</span>
+        <b class="i18n" data-en="Θ → “exactly”">Θ → "بالضبط"</b> &nbsp;|&nbsp; <b class="i18n" data-en="Ω → “at least”">Ω → "على الأقل"</b> &nbsp;|&nbsp; <b class="i18n" data-en="O → “at most”">O → "على الأكثر"</b>
+      </div>
+    </div>
+
+    <!-- 2.10 -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.10</span> <span class="i18n" data-en="Introducing Big O and Common Classes">التعريف بـ <span class="term-en">Big O</span> والفئات الشائعة</span></h3>
+      <p class="i18n" data-en="Big O describes an upper bound on an algorithm's growth, answering: how does running time grow as input size increases? It's the standard tool for worst-case performance."><span class="term-en">Big O</span> يصف حدًا أعلى لنمو الخوارزمية، ويجيب عن: كيف ينمو زمن التشغيل مع تزايد حجم المدخل؟ وهو الأداة القياسية لوصف <b>أسوأ الحالات (worst-case)</b>.</p>
+      <div class="curve-legend">
+        <span class="badge b-o1">O(1) · Constant</span>
+        <span class="badge b-ologn">O(log n) · Logarithmic</span>
+        <span class="badge b-on">O(n) · Linear</span>
+        <span class="badge b-onlogn">O(n log n) · Linearithmic</span>
+        <span class="badge b-on2">O(n²) · Quadratic</span>
+      </div>
+    </div>
+
+    <!-- 2.11 dominant term with worked examples -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.11</span> <span class="i18n" data-en="How Big O Simplifies Growth — the Dominant Term Principle">كيف يبسّط <span class="term-en">Big O</span> النمو — مبدأ الحد المهيمن</span></h3>
+      <p class="i18n" data-en="Big O focuses only on the dominant term — the term that grows fastest as n becomes large. Constants and lower-order terms are dropped because they become insignificant at scale."><span class="term-en">Big O</span> يركّز فقط على <b>الحد المهيمن (dominant term)</b> — الحد الذي ينمو أسرع عندما يكبر <span class="term-en">n</span>. تُسقَط الثوابت والحدود الأقل رتبة لأنها تصبح عديمة الأهمية عند النطاق الكبير.</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:16px; background:#0d1524;">
+          <b class="i18n" data-en="Example 1 — a linear function">مثال 1 — دالة خطية</b>
+          <p class="eq" style="margin:10px 0; color:#c9e6ff;">T(n) = 5n + 3</p>
+          <p style="color:var(--text-dim);" class="i18n" data-en="Drop the constant 3 and coefficient 5 → O(n)">نُسقط الثابت <b>3</b> والمعامل <b>5</b> ← <span class="badge b-on">O(n)</span></p>
+          <p style="color:var(--text-faint); font-size:.85rem;" class="i18n" data-en="Numeric example: at n=1000 → T(n)=5003 operations, but the true growth order is still linear.">مثال رقمي: عند n=1000 → T(n)=5003 عملية، لكن الترتيب الحقيقي للنمو خطي فقط.</p>
+        </div>
+        <div class="card" style="padding:16px; background:#0d1524;">
+          <b class="i18n" data-en="Example 2 — a quadratic function">مثال 2 — دالة تربيعية</b>
+          <p class="eq" style="margin:10px 0; color:#c9e6ff;">T(n) = 2n² + 10n + 5</p>
+          <p style="color:var(--text-dim);" class="i18n" data-en="n² dominates as n grows → O(n²)">الحد <b>n²</b> يهيمن مع تزايد n ← <span class="badge b-on2">O(n²)</span></p>
+          <p style="color:var(--text-faint); font-size:.85rem;" class="i18n" data-en="Numeric example: at n=1000 → 2(10⁶)+10(10³)+5 = 2,010,005 — the n² term is over 99% of the value.">مثال رقمي: عند n=1000 → 2(10⁶)+10(10³)+5 = 2,010,005 — الحد n² يشكّل أكثر من 99% من القيمة.</p>
+        </div>
+      </div>
+      <div class="note good" style="margin-top:12px;"><b class="i18n" data-en="Principle:">المبدأ:</b> <span class="i18n" data-en="The dominant term determines the growth rate for large n. This is what makes Big O a powerful abstraction.">الحد المهيمن هو ما يحدد معدل النمو عند n الكبيرة. هذا ما يجعل Big O أداة تجريد قوية.</span></div>
+    </div>
+
+    <!-- 2.12 why big o -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.12</span> <span class="i18n" data-en="Why Do We Use Big O?">لماذا نستخدم <span class="term-en">Big O</span>؟</span></h3>
+      <p class="i18n" data-en="Big O is a common language for discussing algorithm efficiency — independent of machine, language, or implementation details."><span class="term-en">Big O</span> لغة مشتركة لمناقشة كفاءة الخوارزميات — بمعزل عن الجهاز أو اللغة أو تفاصيل التنفيذ.</p>
+      <table>
+        <tr><td><b>Compare Fairly</b></td><td class="i18n" data-en="Evaluate algorithms on their own merits, not hardware speed.">تقييم الخوارزميات بناءً على جوهرها لا على سرعة الجهاز.</td></tr>
+        <tr><td><b>Predict at Scale</b></td><td class="i18n" data-en="Estimate performance for inputs far larger than you can test.">تقدير الأداء لمدخلات أكبر بكثير مما يمكن اختباره فعليًا.</td></tr>
+        <tr><td><b>Evaluate Scalability</b></td><td class="i18n" data-en="Choose solutions that stay efficient as data grows.">اختيار حلول تبقى فعّالة مع تزايد البيانات.</td></tr>
+        <tr><td><b>Language Independent</b></td><td class="i18n" data-en="Applies universally across all programming languages and platforms.">ينطبق عالميًا على جميع لغات ومنصات البرمجة.</td></tr>
+      </table>
+    </div>
+
+    <!-- 2.13 four steps -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.13</span> <span class="i18n" data-en="How to Analyze an Algorithm — a Four-Step Process">كيف نحلل خوارزمية — عملية من 4 خطوات</span></h3>
+      <p class="i18n" data-en="A systematic process that turns any algorithm into a Big O expression:">عملية منهجية تحوّل أي خوارزمية إلى تعبير <span class="term-en">Big O</span>:</p>
+      <table>
+        <tr><th>#</th><th class="i18n" data-en="Step">الخطوة</th><th class="i18n" data-en="What you do">ماذا تفعل</th></tr>
+        <tr><td>1</td><td><b>Identify</b></td><td class="i18n" data-en="Find the most repeated basic operation">حدّد العملية الأساسية الأكثر تكرارًا</td></tr>
+        <tr><td>2</td><td><b>Count</b></td><td class="i18n" data-en="Compute how often it runs in terms of n">احسب عدد مرات تنفيذها بدلالة n</td></tr>
+        <tr><td>3</td><td><b>Express T(n)</b></td><td class="i18n" data-en="Write the running time as a function of n">اكتب زمن التشغيل كدالة في n</td></tr>
+        <tr><td>4</td><td><b>Simplify</b></td><td class="i18n" data-en="Use Big O: drop constants and lower-order terms">استخدم Big O: أسقط الثوابت والحدود الأقل رتبة</td></tr>
+      </table>
+      <p style="color:var(--text-dim); font-size:.92rem; margin-top:6px;" class="i18n" data-en="Following these steps ensures a consistent, reproducible analysis that any developer can verify and compare.">اتّباع هذه الخطوات يضمن تحليلًا متسقًا وقابلًا للتكرار يمكن لأي مطوّر التحقق منه ومقارنته.</p>
+    </div>
+
+    <!-- 2.14 example with code, line by line -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.14</span> <span class="i18n" data-en="Worked Example: Counting Basic Operations">مثال تطبيقي: عدّ العمليات الأساسية</span></h3>
+      <pre>Algorithm Example(n)
+  for i = 1 to n
+      print(i)</pre>
+      <div class="line-note"><span class="ln">01</span><div class="i18n" data-en="Defines an algorithm named <code>Example</code> that takes one parameter, <code>n</code>.">تعريف الخوارزمية باسم <code>Example</code> تستقبل معاملًا واحدًا هو <code>n</code>.</div></div>
+      <div class="line-note"><span class="ln">02</span><div class="i18n" data-en="A <code>for</code> loop iterates <code>i</code> from 1 to <code>n</code> — this is the “wrapper” that controls the number of iterations.">حلقة <code>for</code> تكرر المتغيّر <code>i</code> من 1 إلى <code>n</code> — هذا هو "الغلاف" الذي يتحكم في عدد التكرارات.</div></div>
+      <div class="line-note"><span class="ln">03</span><div class="i18n" data-en="<code>print(i)</code> is the basic operation — the statement executed on every iteration."><code>print(i)</code> هي العملية الأساسية (basic operation) — الجملة التي تُنفَّذ في كل تكرار.</div></div>
+      <div class="grid grid-4" style="margin-top:14px;">
+        <div class="card" style="padding:12px;"><b>1. Basic Operation</b><p style="color:var(--text-dim); margin-top:4px; font-size:.88rem;" class="i18n" data-en="<code>print(i)</code> — the statement executed repeatedly"><code>print(i)</code> — الجملة المُنفَّذة بشكل متكرر</p></div>
+        <div class="card" style="padding:12px;"><b>2. Execution Count</b><p style="color:var(--text-dim); margin-top:4px; font-size:.88rem;" class="i18n" data-en="Runs exactly n times — once per loop iteration">تُنفَّذ بالضبط n مرة — مرة واحدة لكل تكرار في الحلقة</p></div>
+        <div class="card" style="padding:12px;"><b>3. Running Time T(n)</b><p style="color:var(--text-dim); margin-top:4px; font-size:.88rem;"><span class="eq">T(n) = n</span></p></div>
+        <div class="card" style="padding:12px;"><b>4. Big O Result</b><p style="color:var(--text-dim); margin-top:4px; font-size:.88rem;"><span class="badge b-on">O(n)</span> <span class="i18n" data-en="— linear time">— زمن خطي</span></p></div>
+      </div>
+      <div class="note info" style="margin-top:12px;">
+        <b class="i18n" data-en="Numeric trace example (n = 5):">مثال تتبّع رقمي (n = 5):</b>
+        <span class="i18n" data-en=" the loop runs at i = 1, 2, 3, 4, 5 — exactly 5 iterations, so T(5) = 5. If we double n to 10, time doubles to T(10) = 10 — this is the nature of linear growth: double the input, double the time."> تعمل الحلقة عند i = 1, 2, 3, 4, 5 — أي 5 تكرارات بالضبط، وبالتالي T(5) = 5.
+        إذا ضاعفنا n إلى 10، يتضاعف الزمن إلى T(10) = 10 — هذه هي طبيعة النمو الخطي: <b>ضاعف المدخل، يتضاعف الزمن.</b></span>
+      </div>
+    </div>
+
+    <!-- 2.15 consecutive -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.15</span> <span class="i18n" data-en="Analyzing Consecutive Statements">تحليل الجمل المتتالية — <span class="term-en">Consecutive Statements</span></span></h3>
+      <p class="i18n" data-en="When two (or more) loops run one after another (not nested), their costs are added, not multiplied.">عندما تُنفَّذ حلقتان (أو أكثر) واحدة تلو الأخرى (وليس متداخلتين)، فإن تكلفتيهما <b>تُجمعان (added)</b> وليس تُضربان.</p>
+      <pre>for i = 1 to n
+    print(i)          // T1(n) = n
+
+for j = 1 to n
+    print(j)          // T2(n) = n
+
+// Total: T(n) = T1(n) + T2(n) = n + n = 2n → O(n)</pre>
+      <p style="color:var(--text-dim); font-size:.92rem;" class="i18n" data-en="Even after adding, the dominant term stays linear — so the result remains O(n), not O(n²).">حتى بعد الجمع، يبقى الحد المهيمن خطيًا — لذلك يظل الناتج <span class="badge b-on">O(n)</span> وليس O(n²).</p>
+    </div>
+
+    <!-- 2.16 nested loops -->
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.16</span> <span class="i18n" data-en="Analyzing Nested Loops">تحليل الحلقات المتداخلة — <span class="term-en">Nested Loops</span></span></h3>
+      <p class="i18n" data-en="When one loop runs inside another, their costs are multiplied.">عندما تعمل حلقة داخل حلقة أخرى، فإن تكلفتيهما <b>تُضربان (multiplied)</b>.</p>
+      <pre>for i = 1 to n
+    for j = 1 to n
+        operation</pre>
+      <div class="grid grid-3">
+        <div class="card" style="padding:14px;"><b>Outer Loop</b><p style="color:var(--text-dim); margin-top:4px; font-size:.88rem;" class="i18n" data-en="Runs n times">تعمل n مرة</p></div>
+        <div class="card" style="padding:14px;"><b>Inner Loop</b><p style="color:var(--text-dim); margin-top:4px; font-size:.88rem;" class="i18n" data-en="Runs n times per outer iteration">تعمل n مرة لكل تكرار من الحلقة الخارجية</p></div>
+        <div class="card" style="padding:14px; border-color:#fbbf2444;"><b>Total Cost</b><p style="color:var(--text-dim); margin-top:4px; font-size:.88rem;"><span class="eq">T(n) = n × n = n²</span> → <span class="badge b-on2">O(n²)</span></p></div>
+      </div>
+      <div class="note" style="margin-top:12px;"><b class="i18n" data-en="Rule:">القاعدة:</b> <span class="i18n" data-en="Nested loops usually multiply their execution counts.">الحلقات المتداخلة عادةً تضرب عدد مرات التنفيذ.</span> <br><b class="i18n" data-en="Numeric example (n=4):">مثال رقمي (n=4):</b> <span class="i18n" data-en="the outer loop runs 4 times, and each time the inner loop runs 4 times → total 4×4 = 16 operations = n².">الحلقة الخارجية تعمل 4 مرات، وفي كل مرة تعمل الداخلية 4 مرات → إجمالي 4×4 = 16 عملية = n².</span></div>
+    </div>
+
+    <!-- 2.17 challenge -->
+    <div class="card" style="margin-bottom:0;">
+      <h3><span class="num">2.17</span> <span class="i18n" data-en="Quick Challenge">تحدٍ سريع للتطبيق</span></h3>
+      <p class="i18n" data-en="Analyze this code using the four analysis steps before seeing the answer:">حلّل الكود التالي باستخدام خطوات التحليل الأربع قبل رؤية الإجابة:</p>
+      <pre>for (i = 1; i <= n; i++) {
+    print(i);
+}</pre>
+      <ol style="color:var(--text-dim); padding-inline-start:20px;">
+        <li><b class="i18n" data-en="Basic Operation?">Basic Operation؟</b> <span class="i18n" data-en="Identify the statement executed most often.">حدّد الجملة الأكثر تنفيذًا.</span></li>
+        <li><b class="i18n" data-en="How Many Times?">كم مرة؟</b> <span class="i18n" data-en="Count executions in terms of n.">احسب عدد التنفيذات بدلالة n.</span></li>
+        <li><b class="i18n" data-en="What is T(n)?">ما هو T(n)؟</b> <span class="i18n" data-en="Write the exact step count.">اكتب عدد الخطوات بدقة.</span></li>
+        <li><b class="i18n" data-en="Final Big O?">Big O النهائي؟</b> <span class="i18n" data-en="Simplify to the dominant term.">بسّط إلى الحد المهيمن.</span></li>
+      </ol>
+      <div class="note good i18n" data-en="This code has the same structure as example 2.14 (a for loop from 1 to n with one print inside) — the answer: print(i) executes n times, so T(n) = n, and the result is O(n) — linear time. (This exercise is meant to be discussed at the start of the next lecture).">
+        هذا الكود مطابق بنيويًا لمثال 2.14 (نفس منطق حلقة for من 1 إلى n مع طباعة واحدة داخلها) — الإجابة: <code>print(i)</code> تُنفَّذ n مرة، فـ T(n) = n، والناتج <span class="badge b-on">O(n)</span> — زمن خطي. (هذا التمرين وُضع في المحاضرة ليُناقَش في بداية المحاضرة القادمة).
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ 3. DIAGRAMS ============ -->
+<section id="diagrams">
+  <div class="container">
+    <span class="eyebrow">03 / DIAGRAMS &amp; CHARTS</span>
+    <h2 class="i18n" data-en="Explaining the Diagrams and Charts">شرح الرسومات والمخططات</h2>
+    <p class="lead i18n" data-en="A precise description of every chart in the lecture, tied back to the theory behind it.">وصف دقيق لكل رسم بياني ورد في المحاضرة، مرتبط بالمفهوم النظري خلفه.</p>
+
+    <!-- diagram 1: main growth rate chart -->
+    <div class="diagram-block">
+      <div class="diagram-head">
+        <h3 class="i18n" data-en="📊 Chart 1 — Common Growth Rates">📊 مخطط 1 — معدلات النمو الشائعة (Common Growth Rates)</h3>
+        <span class="badge b-on">Line Chart · Log Scale</span>
+      </div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="This is the most important chart in the lecture. The horizontal axis (x) represents input size n on a logarithmic scale, ranging from 1 to 10⁶ (one million), so that 1, 10, 100, 1,000, 10,000... appear evenly spaced visually even though they grow exponentially. The vertical axis (y) represents running time T(n), or number of operations.">
+          هذا هو أهم رسم بياني في المحاضرة. المحور الأفقي (x) يمثّل <b>حجم المدخل n</b> بمقياس لوغاريتمي (log scale)
+          يمتد من 1 إلى 10⁶ (مليون)، بحيث تظهر القيم 1، 10، 100، 1,000، 10,000... بمسافات متساوية بصريًا رغم أنها
+          تتضاعف أسّيًا. المحور الرأسي (y) يمثّل <b>زمن التشغيل T(n)</b> أو عدد العمليات.
+        </p>
+        <p class="i18n" data-en="Seven colored curves emerge from the origin (bottom-left corner), each representing a different growth class, ordered from slowest (bottom) to fastest (top):">يخرج من نقطة الأصل (الزاوية السفلى اليسرى) سبعة منحنيات ملوّنة، كل واحد يمثل فئة نمو مختلفة، مرتبة من الأبطأ (الأسفل) إلى الأسرع (الأعلى):</p>
+        <div class="curve-legend" style="flex-direction:column; align-items:flex-start;">
+          <div class="curve-row"><span class="curve-swatch" style="background:var(--c-o1);"></span> <b>O(1)</b> <span class="i18n" data-en="— black/gray, an almost perfectly flat horizontal line at the bottom of the chart — Constant, unaffected by n at all">— أسود/رمادي، خط أفقي شبه مستوٍ تمامًا عند أسفل الرسم — <span style="color:var(--text-dim);">Constant، لا يتأثر بزيادة n إطلاقًا</span></span></div>
+          <div class="curve-row"><span class="curve-swatch" style="background:var(--c-ologn);"></span> <b>O(log n)</b> <span class="i18n" data-en="— purple, an almost flat curve that rises very slowly — Logarithmic, extremely efficient">— بنفسجي، منحنى شبه مسطّح يرتفع ببطء شديد — <span style="color:var(--text-dim);">Logarithmic، كفاءة عالية جدًا</span></span></div>
+          <div class="curve-row"><span class="curve-swatch" style="background:var(--c-on);"></span> <b>O(n)</b> <span class="i18n" data-en="— blue, a steadily rising line (appears almost straight due to the log-scale x-axis) — Linear, good for large inputs">— أزرق، خط يرتفع بانتظام (يقترب من الاستقامة بسبب المقياس اللوغاريتمي للمحور x) — <span style="color:var(--text-dim);">Linear، جيد للمدخلات الكبيرة</span></span></div>
+          <div class="curve-row"><span class="curve-swatch" style="background:var(--c-onlogn);"></span> <b>O(n log n)</b> <span class="i18n" data-en="— green, slightly above the blue line — Linearithmic, efficient for many algorithms">— أخضر، أعلى قليلًا من الخط الأزرق — <span style="color:var(--text-dim);">Linearithmic، فعّال لكثير من الخوارزميات</span></span></div>
+          <div class="curve-row"><span class="curve-swatch" style="background:var(--c-on2);"></span> <b>O(n²)</b> <span class="i18n" data-en="— yellow/gold, a curve that rises noticeably and reaches a moderate height by n=10⁶ — Quadratic, gets slow quickly">— أصفر/ذهبي، منحنى يتصاعد بشكل واضح ويصل إلى ارتفاع متوسط عند n=10⁶ — <span style="color:var(--text-dim);">Quadratic، يصبح بطيئًا بسرعة</span></span></div>
+          <div class="curve-row"><span class="curve-swatch" style="background:var(--c-on3);"></span> <b>O(n³)</b> <span class="i18n" data-en="— orange, steeper than the yellow curve and reaches a much greater height at the same n — Cubic, slow for large n">— برتقالي، أكثر انحدارًا من الأصفر ويصل لارتفاع أعلى بكثير عند نفس نقطة n — <span style="color:var(--text-dim);">Cubic، بطيء عند n الكبيرة</span></span></div>
+          <div class="curve-row"><span class="curve-swatch" style="background:var(--c-o2n);"></span> <b>O(2ⁿ)</b> <span class="i18n" data-en="— red, the steepest curve; it shoots up almost vertically and leaves the chart bounds at a relatively small n (around 10⁴) — Exponential, not practical at all">— أحمر، أكثر المنحنيات انحدارًا؛ يقفز بشكل شبه رأسي ويخرج من حدود الرسم عند قيمة n صغيرة نسبيًا (حوالي 10⁴) — <span style="color:var(--text-dim);">Exponential، غير عملي إطلاقًا</span></span></div>
+        </div>
+        <div class="note info" style="margin-top:10px;">
+          <b class="i18n" data-en="How to read the chart (as shown at the bottom of the original slide):">كيف تُقرأ الرسم (كما هو موضّح أسفل الشريحة الأصلية):</b>
+          <ul style="margin:8px 0 0; padding-inline-start:18px;">
+            <li class="i18n" data-en="At n = 10 (small input): all curves are very close together — differences aren't noticeable.">عند n = 10 (مدخل صغير): جميع المنحنيات متقاربة جدًا من بعضها — الفروق غير محسوسة.</li>
+            <li class="i18n" data-en="At n = 10³ (medium input): differences start to appear and spread apart.">عند n = 10³ (مدخل متوسط): تبدأ الفروق في الظهور والتباعد.</li>
+            <li class="i18n" data-en="At n = 10⁶ (huge input): the differences become massive — this is the core reason growth rate matters.">عند n = 10⁶ (مدخل ضخم): الفروق تصبح <b>هائلة جدًا</b> — وهذا هو جوهر أهمية معدل النمو.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- diagram 2: small demo chart -->
+    <div class="diagram-block">
+      <div class="diagram-head">
+        <h3 class="i18n" data-en="📊 Chart 2 — A Zoomed-In View of O(n²) Growth">📊 مخطط 2 — تصوّر مصغّر لنمو O(n²)</h3>
+        <span class="badge b-on2">Line Chart · Small n</span>
+      </div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="A second, simpler chart illustrates the same idea on a small scale: the horizontal axis represents n from 0 to 12 in regular (non-logarithmic) steps, and the vertical axis spans 0 to 250. A single dark maroon/purple curve represents O(n²), starting almost flat at small values, then rising at an accelerating rate to reach about 250 at n=12 — while the other curves (linear and constant) stay close to zero throughout this small range.">
+          رسم بياني ثانٍ أبسط يوضّح نفس الفكرة على نطاق صغير: المحور الأفقي يمثّل n من 0 إلى 12 بخطوات منتظمة (غير لوغاريتمية)،
+          والمحور الرأسي يمتد من 0 إلى 250. يظهر منحنى واحد بلون عنّابي/بنفسجي غامق يمثّل <b>O(n²)</b> ويبدأ مسطحًا تقريبًا
+          عند القيم الصغيرة، ثم يتصاعد بشكل متسارع ليصل إلى قرابة 250 عند n=12 — بينما تبقى بقية المنحنيات (الخطية والثابتة)
+          قريبة جدًا من الصفر طوال هذا النطاق الصغير.
+        </p>
+        <p class="i18n" data-en="The caption next to the chart shows the practical gap with real numbers: an O(n²) algorithm that takes 1 second at n=1,000 takes over 11 days at n=1,000,000 — while an O(n log n) algorithm finishes the same task in just minutes. This proves in practice that the gap that looks small at small n (chart 2) becomes a massive gap at large n (chart 1).">الرسالة المرافقة للرسم توضّح الفارق العملي بالأرقام: خوارزمية <span class="badge b-on2">O(n²)</span> تستغرق ثانية واحدة عند n=1,000، لكنها تستغرق <b>أكثر من 11 يومًا</b> عند n=1,000,000 — بينما خوارزمية <span class="badge b-onlogn">O(n log n)</span> تُنهي نفس المهمة خلال دقائق فقط. هذا يُثبت عمليًا أن الفارق الذي يبدو بسيطًا عند n الصغيرة (المخطط الثاني) يتحول إلى فجوة ضخمة عند n الكبيرة (المخطط الأول).</p>
+      </div>
+    </div>
+
+    <!-- diagram 3: nested loop concept -->
+    <div class="diagram-block">
+      <div class="diagram-head">
+        <h3 class="i18n" data-en="🔁 Diagram 3 (Conceptual) — Nested Loop Structure">🔁 مخطط 3 (مفاهيمي) — بنية الحلقات المتداخلة</h3>
+        <span class="badge b-on2">Nested Structure</span>
+      </div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="While this isn't a numeric chart, the lecture represents it visually as two boxes: a large outer box representing the outer loop (running n times), and inside it a smaller box representing the inner loop (running n times for every time the outer box is opened). To visualize it: imagine opening the outer box n times, and each time finding another box inside that must itself be opened n times — the total result is n × n = n² “open” operations.">
+          رغم أن هذا ليس رسمًا بيانيًا بالأرقام، إلا أن المحاضرة تمثّله بصريًا كصندوقين: صندوق خارجي كبير يمثّل الحلقة الخارجية
+          (Outer Loop تعمل n مرة)، وبداخله صندوق أصغر يمثّل الحلقة الداخلية (Inner Loop تعمل n مرة في كل مرة يُفتح فيها الصندوق الخارجي).
+          لتخيّل الفكرة: تخيّل أنك تفتح الصندوق الخارجي n مرة، وفي كل مرة تجد بداخله صندوقًا آخر يجب فتحه n مرة — النتيجة
+          الإجمالية هي n × n = n² عملية فتح.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. SUMMARY TABLE ============ -->
+<section id="summary">
+  <div class="container">
+    <span class="eyebrow">04 / SUMMARY</span>
+    <h2 class="i18n" data-en="Comprehensive Summary — Key Concepts and Definitions">تلخيص شامل — المفاهيم والتعريفات الجوهرية</h2>
+    <table>
+      <tr><th class="i18n" data-en="Term">المصطلح</th><th class="i18n" data-en="Definition">التعريف</th></tr>
+      <tr><td class="mono">n (Input Size)</td><td class="i18n" data-en="The amount of data the algorithm processes; the basis on which performance is measured.">كمية البيانات التي تعالجها الخوارزمية؛ الأساس الذي يُقاس عليه الأداء.</td></tr>
+      <tr><td class="mono">Growth Rate</td><td class="i18n" data-en="How quickly running time changes as n increases.">مدى سرعة تغيّر زمن التشغيل مع تزايد n.</td></tr>
+      <tr><td class="mono">Asymptotic Analysis</td><td class="i18n" data-en="A mathematical technique evaluating performance behavior as n → ∞, independent of hardware.">تقنية رياضية تقيّم سلوك الأداء عند n → ∞، بمعزل عن الجهاز.</td></tr>
+      <tr><td class="mono">Big O — O(f(n))</td><td class="i18n" data-en="Upper Bound — worst case; the most commonly used in practice.">الحد الأعلى (Upper Bound) — أسوأ حالة؛ الأكثر استخدامًا في الممارسة.</td></tr>
+      <tr><td class="mono">Big Ω — Ω(f(n))</td><td class="i18n" data-en="Lower Bound — best case.">الحد الأدنى (Lower Bound) — أفضل حالة.</td></tr>
+      <tr><td class="mono">Big Θ — Θ(f(n))</td><td class="i18n" data-en="Tight Bound — upper and lower bounds match; a precise description.">الحد المُحكم (Tight Bound) — الحدّان الأعلى والأدنى متطابقان؛ وصف دقيق.</td></tr>
+      <tr><td class="mono">Dominant Term</td><td class="i18n" data-en="The term that grows fastest in T(n); what remains after simplifying to Big O.">الحد الذي ينمو أسرع في T(n)؛ هو ما يبقى بعد تبسيط Big O.</td></tr>
+      <tr><td class="mono">Basic Operation</td><td class="i18n" data-en="The most repeated statement or step in the algorithm; the basis for counting in the analysis.">الجملة أو الخطوة الأكثر تكرارًا في الخوارزمية، وهي أساس العدّ في التحليل.</td></tr>
+      <tr><td class="mono">T(n)</td><td class="i18n" data-en="A mathematical function expressing the number of steps/running time in terms of n.">دالة رياضية تعبّر عن عدد الخطوات/زمن التشغيل بدلالة n.</td></tr>
+      <tr><td><b>Consecutive Statements</b></td><td class="i18n" data-en="Sequential loops/statements (not nested) — their costs are added."><span>حلقات/جمل متتالية (وليست متداخلة) — تكاليفها <b>تُجمع</b>.</span></td></tr>
+      <tr><td><b>Nested Loops</b></td><td class="i18n" data-en="A loop inside a loop — their costs are multiplied."><span>حلقة داخل حلقة — تكاليفها <b>تُضرب</b>.</span></td></tr>
+      <tr><td class="mono">O(1)</td><td class="i18n" data-en="Constant — running time doesn't depend on n.">Constant — زمن ثابت، لا يتأثر بحجم n.</td></tr>
+      <tr><td class="mono">O(log n)</td><td class="i18n" data-en="Logarithmic — extremely efficient.">Logarithmic — كفاءة عالية جدًا.</td></tr>
+      <tr><td class="mono">O(n)</td><td class="i18n" data-en="Linear — time doubles when n doubles.">Linear — يتضاعف الزمن مع مضاعفة n.</td></tr>
+      <tr><td class="mono">O(n log n)</td><td class="i18n" data-en="Linearithmic — efficient, slightly worse than quadratic-adjacent cases.">Linearithmic — فعّال، أفضل قليلًا من التربيعي.</td></tr>
+      <tr><td class="mono">O(n²)</td><td class="i18n" data-en="Quadratic — becomes slow quickly with nested loops.">Quadratic — يصبح بطيئًا بسرعة مع الحلقات المتداخلة.</td></tr>
+      <tr><td class="mono">O(n³)</td><td class="i18n" data-en="Cubic — slow for large inputs.">Cubic — بطيء عند المدخلات الكبيرة.</td></tr>
+      <tr><td class="mono">O(2ⁿ)</td><td class="i18n" data-en="Exponential — very slow and impractical.">Exponential — بطيء جدًا وغير عملي.</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 5. THREE LEVELS ============ -->
+<section id="levels">
+  <div class="container">
+    <span class="eyebrow">05 / THREE LEVELS</span>
+    <h2 class="i18n" data-en="Simplified at 3 Levels">تبسيط على 3 مستويات</h2>
+    <div class="level-tabs">
+      <button class="level-tab active" data-level="beginner"><span class="i18n" data-en="🌱 Beginner">🌱 للمبتدئين</span></button>
+      <button class="level-tab" data-level="intermediate"><span class="i18n" data-en="🎓 University Level">🎓 مستوى جامعي</span></button>
+      <button class="level-tab" data-level="quick"><span class="i18n" data-en="⚡ Quick Review">⚡ مراجعة سريعة</span></button>
+    </div>
+
+    <div class="level-panel active" id="panel-beginner">
+      <div class="card">
+        <p class="i18n" data-en="Imagine you're looking for a friend's name in a phone book:">تخيّل أنك تبحث عن اسم صديق في دفتر تليفون:</p>
+        <ul style="padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="<b>O(1):</b> like knowing your own name directly — no searching at all, instant regardless of the book's size."><b>O(1):</b> مثل معرفة اسمك أنت مباشرة — لا تحتاج للبحث إطلاقًا، الأمر فوري بغض النظر عن حجم الدفتر.</li>
+          <li class="i18n" data-en="<b>O(log n):</b> like opening the book at the middle, then picking the correct half and repeating — each time you eliminate half the book (this is what sorted libraries do)."><b>O(log n):</b> مثل فتح الدفتر من المنتصف، ثم تختار النصف الصحيح وتكرر — كل مرة تستبعد نصف الدفتر (هذا ما تفعله المكتبات المرتبة).</li>
+          <li class="i18n" data-en="<b>O(n):</b> like reading every page from the start until you find the name — if the book doubles in size, the time doubles."><b>O(n):</b> مثل قراءة كل صفحة من أول الدفتر حتى تجد الاسم — لو تضاعف حجم الدفتر، يتضاعف الوقت.</li>
+          <li class="i18n" data-en="<b>O(n²):</b> like comparing every page to every other page — if the book has 10 pages that's 100 comparisons; at 100 pages that's 10,000!"><b>O(n²):</b> مثل مقارنة كل صفحة بكل صفحة أخرى — لو الدفتر فيه 10 صفحات فهذا 100 مقارنة؛ لو صار 100 صفحة فهذا 10,000 مقارنة!</li>
+          <li class="i18n" data-en="<b>O(2ⁿ):</b> like trying every possible combination of letters — with each extra letter the possibilities double, and it quickly becomes impossible."><b>O(2ⁿ):</b> مثل تجربة كل تركيبة ممكنة من الحروف — مع كل حرف إضافي تتضاعف الاحتمالات، وسرعان ما يصبح الأمر مستحيلًا.</li>
+        </ul>
+        <p style="margin-top:10px;" class="i18n" data-en="Core idea: Big O tells us “how much worse things get” as data grows — not exactly how many seconds it takes on your specific computer.">الفكرة الأساسية: <b>Big O</b> يخبرنا "كم سيسوء الوضع" عندما تكبر كمية البيانات — وليس كم من الثواني بالضبط ستستغرق على حاسوبك أنت تحديدًا.</p>
+      </div>
+    </div>
+
+    <div class="level-panel" id="panel-intermediate">
+      <div class="card i18n" data-en="<p>The goal of Asymptotic Analysis is to express the running-time function T(n) in terms of input size n, then classify its behavior as n → ∞ using one (or more) of the three notations:</p>
+        <ul style='padding-inline-start:20px; color:var(--text-dim);'>
+          <li>O(f(n)) describes the asymptotic upper bound: there exists a constant c and an input n₀ such that T(n) ≤ c·f(n) for all n ≥ n₀.</li>
+          <li>Ω(f(n)) describes the asymptotic lower bound using the same logic but in the opposite direction.</li>
+          <li>Θ(f(n)) is used when the upper and lower bounds coincide — a precise description of actual growth.</li>
+        </ul>
+        <p>In practice, we obtain T(n) via four steps: identify the basic operation, count how many times it executes in terms of n, write T(n) as the sum/product of these operations, then drop constants and lower-order terms to reach the dominant term (the final Big O). The two key operational rules: consecutive statements have their costs added (so the higher order stays dominant), while nested loops have their costs multiplied (which raises the growth order, often from linear to quadratic).</p>">
+        <p>
+          الهدف من <span class="term-en">Asymptotic Analysis</span> هو التعبير عن دالة زمن التشغيل <span class="term-en">T(n)</span>
+          كدالة في حجم المدخل <span class="term-en">n</span>، ثم تصنيف سلوكها عند <span class="term-en">n → ∞</span> عبر واحدة (أو أكثر)
+          من الترميزات الثلاثة:
+        </p>
+        <ul style="padding-inline-start:20px; color:var(--text-dim);">
+          <li><span class="term-en">O(f(n))</span> يصف الحد الأعلى المقارب: يوجد ثابت c ومدخل n₀ بحيث T(n) ≤ c·f(n) لكل n ≥ n₀.</li>
+          <li><span class="term-en">Ω(f(n))</span> يصف الحد الأدنى المقارب بنفس المنطق لكن باتجاه معاكس.</li>
+          <li><span class="term-en">Θ(f(n))</span> يُستخدم عندما يتطابق الحدّان الأعلى والأدنى — وصف دقيق للنمو الفعلي.</li>
+        </ul>
+        <p>
+          عمليًا، نحصل على <span class="term-en">T(n)</span> عبر أربع خطوات: تحديد العملية الأساسية، عدّ مرات تنفيذها بدلالة n،
+          كتابة T(n) كمجموع/حاصل ضرب هذه العمليات، ثم إسقاط الثوابت والحدود الأقل رتبة للوصول إلى الحد المهيمن (Big O النهائي).
+          القاعدتان العمليتان الأساسيتان: الجمل المتتالية تُجمع تكاليفها (فتبقى الرتبة الأعلى هي المسيطرة)، بينما الحلقات
+          المتداخلة تُضرب تكاليفها (مما يرفع رتبة النمو، غالبًا من خطي إلى تربيعي).
+        </p>
+      </div>
+    </div>
+
+    <div class="level-panel" id="panel-quick">
+      <div class="card">
+        <ul class="quickref-list">
+          <li>Analyze the algorithm, not the machine.</li>
+          <li>n = input size; performance always expressed relative to n.</li>
+          <li>Asymptotic analysis studies behavior as n → ∞.</li>
+          <li>Big O = upper bound = worst case (most used).</li>
+          <li>Big Ω = lower bound = best case.</li>
+          <li>Big Θ = tight bound = exact growth (upper = lower).</li>
+          <li>Drop constants + lower-order terms → keep dominant term only.</li>
+          <li>T(n) = 5n + 3 → O(n). T(n) = 2n² + 10n + 5 → O(n²).</li>
+          <li>Consecutive loops → ADD costs.</li>
+          <li>Nested loops → MULTIPLY costs.</li>
+          <li>Single loop 1..n → O(n). Nested loop 1..n × 1..n → O(n²).</li>
+          <li>Growth order (slow→fast): O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²) &lt; O(n³) &lt; O(2ⁿ).</li>
+          <li>4 steps: Identify → Count → Express T(n) → Simplify.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. QUIZ ============ -->
+<section id="quiz">
+  <div class="container">
+    <span class="eyebrow">06 / INTERACTIVE QUIZ</span>
+    <h2 class="i18n" data-en="Interactive Quiz">اختبار تفاعلي</h2>
+    <p class="lead i18n" data-en="Answer the questions, then press “Check Answer” for each — your final score appears at the bottom.">أجب عن الأسئلة ثم اضغط "تحقق من الإجابة" لكل سؤال — النتيجة النهائية تظهر أسفل الصفحة.</p>
+
+    <div class="quiz-progress">
+      <div class="quiz-score"><span class="i18n" data-en="Score:">النتيجة:</span> <span id="scoreNow">0</span> / <span id="scoreTotal">0</span></div>
+      <div class="quiz-bar"><div class="quiz-bar-fill" id="quizBarFill"></div></div>
+    </div>
+
+    <div id="quizContainer"></div>
+
+    <div class="final-score" id="finalScore">
+      <div class="big" id="finalScoreText">0 / 0</div>
+      <p id="finalScoreMsg" style="margin-top:8px; color:var(--text-dim);"></p>
+      <button class="reset-btn" onclick="resetQuiz()"><span class="i18n" data-en="🔄 Try Again">🔄 إعادة المحاولة</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. STUDY PLAN ============ -->
+<section id="plan">
+  <div class="container">
+    <span class="eyebrow">07 / STUDY PLAN</span>
+    <h2 class="i18n" data-en="One-Day Study Plan">خطة مذاكرة ليوم واحد</h2>
+    <p class="lead i18n" data-en="A suggested schedule for reviewing this lecture in one study day before the exam.">جدول زمني مقترح لمراجعة هذه المحاضرة خلال يوم دراسي واحد قبل الامتحان.</p>
+    <div class="timeline">
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Hour 1">الساعة 1</div>
+        <div class="t-title i18n" data-en="Quick read + grasp the big picture">قراءة سريعة + فهم الفكرة العامة</div>
+        <p style="color:var(--text-dim);" class="i18n" data-en="Read the “Overview” and “Full Explanation” sections once without stopping to memorize — the goal is to build a general mental map of the topic.">اقرأ قسم "نظرة عامة" و"الشرح الكامل" مرة واحدة بدون توقف للحفظ — الهدف بناء خريطة ذهنية عامة للموضوع.</p>
+      </div>
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Hour 2">الساعة 2</div>
+        <div class="t-title i18n" data-en="Master the three notations and classes">استيعاب الترميزات الثلاثة والفئات</div>
+        <p style="color:var(--text-dim);" class="i18n" data-en="Focus on the Big O / Ω / Θ table, and memorize the growth-class order (O(1) → O(2ⁿ)) by heart using the “Diagrams &amp; Charts” section.">ركّز على جدول Big O / Ω / Θ، واحفظ ترتيب فئات النمو (O(1) → O(2ⁿ)) عن ظهر قلب باستخدام قسم "الرسومات والمخططات".</p>
+      </div>
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Hour 3">الساعة 3</div>
+        <div class="t-title i18n" data-en="Hands-on practice with code">تدريب عملي على الأكواد</div>
+        <p style="color:var(--text-dim);" class="i18n" data-en="Re-solve the single-loop, consecutive-loop, and nested-loop examples by hand using Identify → Count → Express → Simplify, without looking at the solution.">أعد حل أمثلة الحلقة المفردة والمتتالية والمتداخلة يدويًا بخطوات Identify → Count → Express → Simplify، دون النظر للحل.</p>
+      </div>
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Hour 4">الساعة 4</div>
+        <div class="t-title i18n" data-en="The interactive quiz">الاختبار التفاعلي</div>
+        <p style="color:var(--text-dim);" class="i18n" data-en="Take the full interactive quiz on this page. Review every question you got wrong by going straight to its related explanation section.">حل الاختبار التفاعلي في هذه الصفحة كاملًا. راجع كل سؤال أخطأت فيه بالرجوع لقسم الشرح المرتبط مباشرة.</p>
+      </div>
+      <div class="t-item">
+        <div class="t-time i18n" data-en="Right before the exam (last 20 minutes)">قبل الامتحان مباشرة (آخر 20 دقيقة)</div>
+        <div class="t-title i18n" data-en="Final focused review of only:">مراجعة أخيرة مركّزة فقط على:</div>
+        <ul style="color:var(--text-dim); padding-inline-start:20px; margin-top:6px;">
+          <li class="i18n" data-en="The whole “Comprehensive Summary” table">جدول "التلخيص الشامل" كاملًا</li>
+          <li class="i18n" data-en="The “3 Levels → Quick Review” section (the English bullets)">قسم "3 مستويات → مراجعة سريعة" (النقاط الإنجليزية)</li>
+          <li class="i18n" data-en="The add rule (consecutive) vs. the multiply rule (nested)">قاعدة الجمع (متتالية) مقابل الضرب (متداخلة)</li>
+          <li class="i18n" data-en="Remember: Θ=“exactly”, Ω=“at least”, O=“at most”">تذكّر Θ="بالضبط"، Ω="على الأقل"، O="على الأكثر"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 8. PRO TIPS ============ -->
+<section id="tips">
+  <div class="container">
+    <span class="eyebrow">08 / PRO TIPS</span>
+    <h2 class="i18n" data-en="Pro Tips">نصائح احترافية</h2>
+
+    <div class="grid grid-2" style="align-items:start;">
+      <div class="card">
+        <h3 class="i18n" data-en="💡 How to Understand Instead of Memorize">💡 كيف تفهم بدلًا من الحفظ</h3>
+        <div class="tip-item"><span class="tip-icon">🔍</span><div class="i18n" data-en="Don't memorize “O(n²) = two nested loops” as a rigid rule — understand <b>why</b>: every outer iteration triggers a full inner iteration, so the cost multiplies rather than adds.">لا تحفظ "O(n²) = حلقتين متداخلتين" كقاعدة جامدة — افهم <b>لماذا</b>: كل تكرار خارجي يستدعي تكرارًا داخليًا كاملًا، فالكلفة تتضاعف بالضرب لا بالجمع.</div></div>
+        <div class="tip-item"><span class="tip-icon">✍️</span><div class="i18n" data-en="When you face new code, manually write T(n) step by step (Identify → Count → Express → Simplify) instead of guessing the final answer directly.">عند مواجهة كود جديد، اكتب T(n) يدويًا خطوة بخطوة (Identify → Count → Express → Simplify) بدلًا من تخمين الإجابة النهائية مباشرة.</div></div>
+        <div class="tip-item"><span class="tip-icon">📐</span><div class="i18n" data-en="Link every growth class to a mental picture (the chart in section 3) rather than memorizing the order as plain text — a mental image sticks longer in memory.">اربط كل فئة نمو برسم بياني ذهني (الرسم البياني في قسم 3) بدل حفظ الترتيب كنص مجرد — الصورة الذهنية تبقى أطول في الذاكرة.</div></div>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="🏋️ Suggested Hands-On Practice">🏋️ تدريب عملي مقترح</h3>
+        <div class="tip-item"><span class="tip-icon">1️⃣</span><div class="i18n" data-en="Take 5 simple code snippets (a single loop, two consecutive loops, two nested loops, a loop inside two loops, a log-style loop) and analyze each one by hand.">خذ 5 أكواد بسيطة (حلقة واحدة، حلقتان متتاليتان، حلقتان متداخلتان، حلقة داخل حلقتين، حلقة log) وحلل كل واحدة يدويًا.</div></div>
+        <div class="tip-item"><span class="tip-icon">2️⃣</span><div class="i18n" data-en="Try computing T(n) for three different polynomial functions, then simplify each to Big O as in example 2.11.">جرّب حساب T(n) لثلاث دوال متعددة الحدود (polynomials) مختلفة ثم بسّطها إلى Big O كما في مثال 2.11.</div></div>
+        <div class="tip-item"><span class="tip-icon">3️⃣</span><div class="i18n" data-en="Manually sketch (on paper) the curves for O(n), O(n²), and O(2ⁿ) over the same range of n to cement the visual difference in your mind.">ارسم يدويًا (على ورقة) منحنيات O(n) و O(n²) و O(2ⁿ) لنفس نطاق n لترسّخ الفرق البصري في ذهنك.</div></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h3 class="i18n" data-en="⚠️ Common Mistakes Students Make on This Exact Topic">⚠️ أخطاء شائعة يقع فيها الطلاب في هذا الموضوع تحديدًا</h3>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Confusing Big O with actual time in seconds:</b> Big O describes growth behavior, not the real number of seconds — two algorithms with the same O(n) can still have very different real-world runtimes."><b>الخلط بين Big O والزمن الفعلي بالثواني:</b> Big O يصف <b>سلوك النمو</b> وليس رقم الثواني الحقيقي — خوارزميتان بنفس O(n) قد يكون لهما زمن تنفيذ فعلي مختلف تمامًا.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Treating consecutive loops as if they were nested (multiplying instead of adding):</b> remember that two loops running one after another have their costs added, not multiplied."><b>معاملة الحلقات المتتالية كأنها متداخلة (ضرب بدل جمع):</b> تذكّر أن حلقتين تعملان واحدة بعد الأخرى تُجمع تكلفتاهما، لا تُضرب.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Believing O(n log n) is always faster than O(n²) for every n:</b> this is only true once n is large enough; at very small n the two can be close, or even reversed, due to the dropped constants."><b>الاعتقاد بأن O(n log n) دائمًا أسرع من O(n²) عند كل قيم n:</b> هذا صحيح فقط عند n الكبيرة بما يكفي؛ عند n صغيرة جدًا قد تتقارب الخوارزميتان أو حتى تنعكس النتيجة بسبب الثوابت المُسقطة.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Mixing up Ω and O:</b> many students mistakenly use Ω when they mean “worst case” — remember: O = at most (worst), Ω = at least (best)."><b>الخلط بين Ω و O:</b> يخطئ كثير من الطلاب باستخدام Ω عندما يقصدون "أسوأ حالة" — تذكّر: O = على الأكثر (worst)، Ω = على الأقل (best).</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Dropping constants too early or too late:</b> you must first write the complete, exact T(n), then drop constants and lower-order terms only in the final simplification step — not while counting."><b>نسيان إسقاط الثوابت قبل الأوان أو بعد فوات الأوان:</b> يجب أولًا كتابة T(n) الكاملة بدقة، ثم إسقاط الثوابت والحدود الأقل رتبة في الخطوة الأخيرة فقط — وليس أثناء العدّ.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="i18n" data-en="Interactive review sheet — Lecture 2: Asymptotic Analysis &amp; Big O">
+  مرجع مراجعة تفاعلي — Lecture 2: Asymptotic Analysis &amp; Big O
+</footer>
+
+<script>
+/* ===== LANGUAGE TOGGLE ===== */
+let currentLang = 'ar';
+function setLang(lang){
+  if(lang === currentLang) { /* still re-apply in case */ }
+  currentLang = lang;
+  document.getElementById('htmlRoot').setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  document.getElementById('htmlRoot').setAttribute('lang', lang);
+  document.getElementById('btnAr').classList.toggle('active', lang === 'ar');
+  document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+
+  document.querySelectorAll('.i18n').forEach(el => {
+    if(!el.hasAttribute('data-ar-cache')){
+      el.setAttribute('data-ar-cache', el.innerHTML);
+    }
+    const ar = el.getAttribute('data-ar-cache');
+    const en = el.getAttribute('data-en');
+    el.innerHTML = (lang === 'en' && en) ? en : ar;
+  });
+
+  QUIZ_LANG = lang;
+  renderQuiz(true);
+}
+
+/* ===== sticky nav active-state on scroll ===== */
+(function(){
+  const links = document.querySelectorAll('.nav-scroll a');
+  const sections = Array.from(links).map(a => document.querySelector(a.getAttribute('href')));
+  function onScroll(){
+    let idx = 0;
+    const y = window.scrollY + 120;
+    sections.forEach((s,i) => { if(s && s.offsetTop <= y) idx = i; });
+    links.forEach((l,i) => l.classList.toggle('active', i===idx));
+    const active = links[idx];
+    if(active){
+      const wrap = document.getElementById('navScroll');
+      const target = active.offsetLeft - wrap.clientWidth/2 + active.clientWidth/2;
+      wrap.scrollTo({left: target, behavior:'smooth'});
+    }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+
+/* ===== level tabs ===== */
+document.querySelectorAll('.level-tab').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.level-tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.level-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.level).classList.add('active');
+  });
+});
+
+/* ===== QUIZ DATA (bilingual) ===== */
+let QUIZ_LANG = 'ar';
+const QUIZ = [
+  {
+    type:'mcq',
+    prompt:'لماذا لا يكفي أن تكون الخوارزمية "correct" (صحيحة) فقط؟',
+    promptEn:'Why isn\'t it enough for an algorithm to just be "correct"?',
+    options:['لأنها قد تكون بطيئة أو تستهلك ذاكرة كبيرة أو لا تتحمل التوسع','لأن الصحة ليست معيارًا مهمًا إطلاقًا','لأن كل خوارزمية صحيحة هي بالضرورة الأسرع','لا يوجد سبب، الصحة كافية دائمًا'],
+    optionsEn:['Because it might be slow, memory-hungry, or unable to scale','Because correctness isn\'t an important criterion at all','Because every correct algorithm is necessarily the fastest','There is no reason — correctness is always enough'],
+    correct:0,
+    explain:'الخوارزمية الصحيحة قد تفشل في الاستخدام الواقعي بسبب السرعة (Speed) أو الذاكرة (Memory) أو عدم القدرة على التعامل مع بيانات ضخمة (Scale) أو انهيار الأداء مع النمو (Growth).',
+    explainEn:'A correct algorithm can still fail in real-world use due to Speed, Memory, an inability to handle huge Scale, or performance collapsing with Growth.'
+  },
+  {
+    type:'tf',
+    prompt:'عند تحليل الخوارزمية، نأخذ بعين الاعتبار سرعة المعالج (CPU speed) كجزء أساسي من التحليل.',
+    promptEn:'When analyzing an algorithm, CPU speed is treated as a core part of the analysis.',
+    correct:false,
+    explain:'خاطئ. سرعة المعالج تُعتبر من العوامل التي "نتجاهلها" لأنها تختلف حسب البيئة وليست خاصية جوهرية في الخوارزمية نفسها.',
+    explainEn:'False. CPU speed is one of the factors we "ignore" because it varies by environment and isn\'t an inherent property of the algorithm itself.'
+  },
+  {
+    type:'mcq',
+    prompt:'ماذا يمثّل الرمز n في تحليل الخوارزميات؟',
+    promptEn:'What does the symbol n represent in algorithm analysis?',
+    options:['رقم إصدار الخوارزمية','حجم المدخل (كمية البيانات المعالجة)','عدد المطورين الذين كتبوا الكود','سرعة المعالج بالجيجاهرتز'],
+    optionsEn:['The algorithm\'s version number','Input size (the amount of data processed)','The number of developers who wrote the code','CPU speed in gigahertz'],
+    correct:1,
+    explain:'n يمثّل حجم المدخل (Input Size) — كمية البيانات التي تعالجها الخوارزمية، ويُعبَّر عن الأداء دائمًا بدلالته.',
+    explainEn:'n represents Input Size — the amount of data the algorithm processes, and performance is always expressed in terms of it.'
+  },
+  {
+    type:'fill',
+    prompt:'أكمل: نقول إننا نحلل الخوارزمية بمعزل عن الـ ______ لأن السرعة الفعلية تختلف حسب الجهاز المستخدم.',
+    promptEn:'Fill in the blank: we say we analyze the algorithm independently of ______ because actual speed varies by the machine used.',
+    accept:['hardware','machine','الجهاز'],
+    explain:'الإجابة الصحيحة: hardware (أو machine) — المبدأ الأساسي هو "نحلل الخوارزمية نفسها، لا الجهاز الذي تعمل عليه".',
+    explainEn:'Correct answer: hardware (or machine) — the core principle is "we analyze the algorithm itself, not the machine it runs on."'
+  },
+  {
+    type:'mcq',
+    prompt:'أي ترميز يصف الحد الأعلى (Upper Bound) ويُستخدم لتحليل أسوأ حالة (worst-case)؟',
+    promptEn:'Which notation describes the Upper Bound and is used for worst-case analysis?',
+    options:['Big Ω','Big Θ','Big O','لا شيء مما سبق'],
+    optionsEn:['Big Ω','Big Θ','Big O','None of the above'],
+    correct:2,
+    explain:'Big O يصف الحد الأعلى — لن تنمو الخوارزمية أسرع من هذا الحد، وهو الأداة القياسية لتحليل أسوأ الحالات.',
+    explainEn:'Big O describes the upper bound — the algorithm will never grow faster than this bound, and it is the standard tool for worst-case analysis.'
+  },
+  {
+    type:'mcq',
+    prompt:'ماذا يصف ترميز Big Ω؟',
+    promptEn:'What does the Big Ω notation describe?',
+    options:['الحد الأدنى / أفضل حالة (best-case)','الحد الأعلى / أسوأ حالة','الحد المُحكم بين الأعلى والأدنى','لا علاقة له بالتحليل المقارب'],
+    optionsEn:['The lower bound / best-case','The upper bound / worst-case','The tight bound between upper and lower','It has no relation to asymptotic analysis'],
+    correct:0,
+    explain:'Big Ω يصف الحد الأدنى (Lower Bound) — الخوارزمية لن تنمو أبطأ من هذا الحد، ويُستخدم لتحليل أفضل حالة.',
+    explainEn:'Big Ω describes the lower bound — the algorithm will never grow slower than this bound, and it is used for best-case analysis.'
+  },
+  {
+    type:'tf',
+    prompt:'Big Θ يُستخدم عندما يتطابق الحد الأعلى (O) مع الحد الأدنى (Ω)، مما يعطي وصفًا دقيقًا لمعدل النمو.',
+    promptEn:'Big Θ is used when the upper bound (O) matches the lower bound (Ω), giving a precise description of the growth rate.',
+    correct:true,
+    explain:'صحيح. Big Θ هو الحد المُحكم (Tight Bound) — يُستخدم عندما تتطابق حدود O و Ω، ويمثّل الوصف الأدق لمعدل النمو الفعلي.',
+    explainEn:'True. Big Θ is the tight bound — used when the O and Ω bounds coincide, representing the most precise description of the actual growth rate.'
+  },
+  {
+    type:'multi',
+    prompt:'عند تبسيط T(n) إلى Big O، أي العناصر التالية "تُسقط" من التعبير؟ (اختر كل ما ينطبق)',
+    promptEn:'When simplifying T(n) to Big O, which of the following are "dropped" from the expression? (select all that apply)',
+    options:['الثوابت المضافة (constants)','معاملات الحدود (coefficients)','الحد المهيمن (dominant term)','الحدود الأقل رتبة (lower-order terms)'],
+    optionsEn:['Added constants','Term coefficients','The dominant term','Lower-order terms'],
+    correctSet:[0,1,3],
+    explain:'نُسقط الثوابت، والمعاملات، والحدود الأقل رتبة. أما الحد المهيمن فهو ما "يبقى" ويمثّل الإجابة النهائية — لا يُسقط أبدًا.',
+    explainEn:'We drop constants, coefficients, and lower-order terms. The dominant term is what "remains" and represents the final answer — it is never dropped.'
+  },
+  {
+    type:'mcq',
+    prompt:'ما هو Big O الصحيح للدالة التالية: T(n) = 5n + 3 ؟',
+    promptEn:'What is the correct Big O for the following function: T(n) = 5n + 3 ?',
+    options:['O(1)','O(n)','O(n²)','O(5n)'],
+    optionsEn:['O(1)','O(n)','O(n²)','O(5n)'],
+    correct:1,
+    explain:'نُسقط الثابت 3 والمعامل 5 (لأننا نهتم بالرتبة وليس القيمة الدقيقة) فيتبقى الحد n فقط → O(n).',
+    explainEn:'We drop the constant 3 and the coefficient 5 (since we care about order, not exact value), leaving just n → O(n).'
+  },
+  {
+    type:'mcq',
+    prompt:'ما هو Big O الصحيح للدالة التالية: T(n) = 2n² + 10n + 5 ؟',
+    promptEn:'What is the correct Big O for the following function: T(n) = 2n² + 10n + 5 ?',
+    options:['O(n)','O(n log n)','O(n²)','O(2n²)'],
+    optionsEn:['O(n)','O(n log n)','O(n²)','O(2n²)'],
+    correct:2,
+    explain:'الحد n² هو الحد المهيمن لأنه ينمو أسرع من 10n و5 عندما يكبر n، فتُسقط بقية الحدود والمعامل 2 → O(n²).',
+    explainEn:'The n² term is dominant because it grows faster than 10n and 5 as n grows, so the rest and the coefficient 2 are dropped → O(n²).'
+  },
+  {
+    type:'mcq',
+    prompt:'ما هو Big O للكود التالي؟\n<code>for i = 1 to n:\n    print(i)</code>',
+    promptEn:'What is the Big O of the following code?\n<code>for i = 1 to n:\n    print(i)</code>',
+    options:['O(1)','O(log n)','O(n)','O(n²)'],
+    optionsEn:['O(1)','O(log n)','O(n)','O(n²)'],
+    correct:2,
+    explain:'العملية print(i) تُنفَّذ بالضبط n مرة (مرة واحدة لكل تكرار)، فـ T(n) = n → O(n) — زمن خطي.',
+    explainEn:'print(i) executes exactly n times (once per iteration), so T(n) = n → O(n) — linear time.'
+  },
+  {
+    type:'mcq',
+    prompt:'ما هو Big O للكود التالي؟\n<code>for i = 1 to n:\n    for j = 1 to n:\n        operation</code>',
+    promptEn:'What is the Big O of the following code?\n<code>for i = 1 to n:\n    for j = 1 to n:\n        operation</code>',
+    options:['O(n)','O(n log n)','O(n²)','O(2n)'],
+    optionsEn:['O(n)','O(n log n)','O(n²)','O(2n)'],
+    correct:2,
+    explain:'الحلقة الخارجية تعمل n مرة، وفي كل مرة تعمل الداخلية n مرة أيضًا → T(n) = n × n = n² → O(n²).',
+    explainEn:'The outer loop runs n times, and each time the inner loop also runs n times → T(n) = n × n = n² → O(n²).'
+  },
+  {
+    type:'tf',
+    prompt:'عند تشغيل حلقتين منفصلتين تعملان واحدة بعد الأخرى (وليستا متداخلتين)، نضرب تكلفتيهما ببعض.',
+    promptEn:'When running two separate loops one after another (not nested), we multiply their costs together.',
+    correct:false,
+    explain:'خاطئ. الجمل/الحلقات المتتالية (consecutive) تُجمع تكلفتاهما وليس تُضرب. الضرب يحدث فقط في حالة الحلقات المتداخلة (nested).',
+    explainEn:'False. Consecutive statements/loops have their costs added, not multiplied. Multiplication only happens with nested loops.'
+  },
+  {
+    type:'mcq',
+    prompt:'رتّب الفئات التالية من الأبطأ نموًا (الأكثر كفاءة) إلى الأسرع نموًا (الأقل كفاءة) — أيها الأبطأ نموًا؟',
+    promptEn:'Among the following growth classes, which grows the slowest (most efficient)?',
+    options:['O(2ⁿ)','O(n²)','O(1)','O(n)'],
+    optionsEn:['O(2ⁿ)','O(n²)','O(1)','O(n)'],
+    correct:2,
+    explain:'O(1) هو الأبطأ نموًا (الأكثر كفاءة) لأن الزمن يبقى ثابتًا بغض النظر عن حجم n، بينما O(2ⁿ) هو الأسرع نموًا (الأسوأ) وغير عملي.',
+    explainEn:'O(1) grows the slowest (most efficient) because time stays constant regardless of n, while O(2ⁿ) grows the fastest (worst) and is impractical.'
+  }
+];
+
+let userAnswers = new Array(QUIZ.length).fill(null);
+let checked = new Array(QUIZ.length).fill(false);
+let score = 0;
+
+const TYPE_LABELS = {
+  ar: {mcq:'اختيار من متعدد', tf:'صح / خطأ', multi:'اختيار متعدد الإجابات', fill:'إكمال الفراغ'},
+  en: {mcq:'Multiple Choice', tf:'True / False', multi:'Multiple Select', fill:'Fill in the Blank'}
+};
+
+function renderQuiz(preserveState){
+  const c = document.getElementById('quizContainer');
+  c.innerHTML = '';
+  document.getElementById('scoreTotal').textContent = QUIZ.length;
+
+  QUIZ.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'q-'+qi;
+
+    const typeLabel = TYPE_LABELS[QUIZ_LANG][q.type];
+    const prompt = (QUIZ_LANG === 'en' && q.promptEn) ? q.promptEn : q.prompt;
+    const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+
+    let optsHtml = '';
+    if(q.type === 'mcq'){
+      optsHtml = '<div class="opt-list">' + options.map((opt,oi)=>
+        `<label class="opt" id="opt-${qi}-${oi}">
+          <input type="radio" name="q${qi}" value="${oi}" onchange="selectAnswer(${qi}, ${oi})">
+          <span>${opt}</span>
+        </label>`).join('') + '</div>';
+    } else if(q.type === 'tf'){
+      const trueLabel = QUIZ_LANG === 'en' ? '✅ True' : '✅ صح (True)';
+      const falseLabel = QUIZ_LANG === 'en' ? '❌ False' : '❌ خطأ (False)';
+      optsHtml = `<div class="opt-list">
+        <label class="opt" id="opt-${qi}-1"><input type="radio" name="q${qi}" value="true" onchange="selectAnswer(${qi}, true)"><span>${trueLabel}</span></label>
+        <label class="opt" id="opt-${qi}-0"><input type="radio" name="q${qi}" value="false" onchange="selectAnswer(${qi}, false)"><span>${falseLabel}</span></label>
+      </div>`;
+    } else if(q.type === 'multi'){
+      optsHtml = '<div class="opt-list">' + options.map((opt,oi)=>
+        `<label class="opt" id="opt-${qi}-${oi}">
+          <input type="checkbox" name="q${qi}" value="${oi}" onchange="toggleMulti(${qi}, ${oi})">
+          <span>${opt}</span>
+        </label>`).join('') + '</div>';
+    } else if(q.type === 'fill'){
+      const placeholder = QUIZ_LANG === 'en' ? 'Type your answer here…' : 'اكتب إجابتك هنا (English)…';
+      optsHtml = `<input type="text" class="fill-input" id="fill-${qi}" placeholder="${placeholder}" oninput="userAnswers[${qi}] = this.value; document.getElementById('checkbtn-${qi}').disabled = !this.value.trim();">`;
+    }
+
+    const checkLabel = QUIZ_LANG === 'en' ? 'Check Answer' : 'تحقق من الإجابة';
+    const qLabel = QUIZ_LANG === 'en' ? 'Question' : 'سؤال';
+
+    card.innerHTML = `
+      <div class="q-meta">
+        <span class="q-type-tag">${qLabel} ${qi+1} · ${typeLabel}</span>
+      </div>
+      <div class="q-prompt">${prompt.replace(/\\n/g,'<br>')}</div>
+      ${optsHtml}
+      <button class="check-btn" id="checkbtn-${qi}" onclick="checkAnswer(${qi})" ${q.type==='fill' ? 'disabled':''}>${checkLabel}</button>
+      <div class="q-feedback" id="feedback-${qi}"></div>
+    `;
+    c.appendChild(card);
+  });
+
+  if(!preserveState){
+    userAnswers = new Array(QUIZ.length).fill(null);
+    checked = new Array(QUIZ.length).fill(false);
+    score = 0;
+  }
+  updateScoreBar();
+  document.getElementById('finalScore').classList.remove('show');
+}
+
+function selectAnswer(qi, val){ userAnswers[qi] = val; }
+function toggleMulti(qi, oi){
+  if(!Array.isArray(userAnswers[qi])) userAnswers[qi] = [];
+  const idx = userAnswers[qi].indexOf(oi);
+  if(idx === -1) userAnswers[qi].push(oi); else userAnswers[qi].splice(idx,1);
+}
+
+function checkAnswer(qi){
+  if(checked[qi]) return;
+  const q = QUIZ[qi];
+  let isCorrect = false;
+  const fb = document.getElementById('feedback-'+qi);
+  const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+  const explain = (QUIZ_LANG === 'en' && q.explainEn) ? q.explainEn : q.explain;
+
+  if(q.type === 'mcq'){
+    if(userAnswers[qi] === null){ alert(QUIZ_LANG==='en' ? 'Please choose an answer first' : 'من فضلك اختر إجابة أولًا'); return; }
+    isCorrect = Number(userAnswers[qi]) === q.correct;
+    for(let i=0;i<options.length;i++){
+      const el = document.getElementById(`opt-${qi}-${i}`);
+      if(i === q.correct) el.classList.add('correct-flash');
+      else if(i === Number(userAnswers[qi])) el.classList.add('wrong-flash');
+    }
+  } else if(q.type === 'tf'){
+    if(userAnswers[qi] === null){ alert(QUIZ_LANG==='en' ? 'Please choose an answer first' : 'من فضلك اختر إجابة أولًا'); return; }
+    const chosen = (userAnswers[qi] === true || userAnswers[qi] === 'true');
+    isCorrect = chosen === q.correct;
+    const correctId = q.correct ? `opt-${qi}-1` : `opt-${qi}-0`;
+    const wrongId = q.correct ? `opt-${qi}-0` : `opt-${qi}-1`;
+    document.getElementById(correctId).classList.add('correct-flash');
+    if(!isCorrect) document.getElementById(wrongId).classList.add('wrong-flash');
+  } else if(q.type === 'multi'){
+    const chosen = Array.isArray(userAnswers[qi]) ? userAnswers[qi].slice().sort() : [];
+    const correctSet = q.correctSet.slice().sort();
+    isCorrect = chosen.length === correctSet.length && chosen.every((v,i)=>v===correctSet[i]);
+    for(let i=0;i<options.length;i++){
+      const el = document.getElementById(`opt-${qi}-${i}`);
+      const shouldBeCorrect = q.correctSet.includes(i);
+      const wasChosen = chosen.includes(i);
+      if(shouldBeCorrect) el.classList.add('correct-flash');
+      else if(wasChosen) el.classList.add('wrong-flash');
+    }
+  } else if(q.type === 'fill'){
+    const val = (userAnswers[qi] || '').trim().toLowerCase();
+    isCorrect = q.accept.some(a => a.toLowerCase() === val || val.includes(a.toLowerCase()));
+    const input = document.getElementById('fill-'+qi);
+    input.style.borderColor = isCorrect ? 'var(--ok)' : 'var(--bad)';
+  }
+
+  checked[qi] = true;
+  if(isCorrect) score++;
+  fb.className = 'q-feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+  const correctTag = QUIZ_LANG==='en' ? '✅ <b>Correct!</b> ' : '✅ <b>إجابة صحيحة!</b> ';
+  const wrongTag = QUIZ_LANG==='en' ? '❌ <b>Not quite.</b> ' : '❌ <b>إجابة غير صحيحة.</b> ';
+  fb.innerHTML = (isCorrect ? correctTag : wrongTag) + explain;
+  document.getElementById('checkbtn-'+qi).disabled = true;
+  document.querySelectorAll(`#q-${qi} input`).forEach(inp => inp.disabled = true);
+
+  updateScoreBar();
+  if(checked.every(Boolean)) showFinalScore();
+}
+
+function updateScoreBar(){
+  document.getElementById('scoreNow').textContent = score;
+  const answered = checked.filter(Boolean).length;
+  const pct = QUIZ.length ? (answered / QUIZ.length) * 100 : 0;
+  document.getElementById('quizBarFill').style.width = pct + '%';
+}
+
+function showFinalScore(){
+  const el = document.getElementById('finalScore');
+  const pct = Math.round((score/QUIZ.length)*100);
+  document.getElementById('finalScoreText').textContent = `${score} / ${QUIZ.length} (${pct}%)`;
+  let msg = '';
+  if(QUIZ_LANG === 'en'){
+    if(pct >= 85) msg = 'Excellent! You\'re fully ready for Asymptotic Analysis and Big O. 🎉';
+    else if(pct >= 60) msg = 'Good! Review the questions you missed via the “Full Explanation” section.';
+    else msg = 'It\'s recommended to revisit the “Full Explanation” and “3 Levels” sections before trying again.';
+  } else {
+    if(pct >= 85) msg = 'ممتاز! أنت جاهز تمامًا لموضوع Asymptotic Analysis و Big O. 🎉';
+    else if(pct >= 60) msg = 'جيد! راجع الأسئلة التي أخطأت فيها من خلال الروابط في قسم "الشرح الكامل".';
+    else msg = 'يُنصح بمراجعة قسم "الشرح الكامل" و"3 مستويات" مرة أخرى قبل إعادة المحاولة.';
+  }
+  document.getElementById('finalScoreMsg').textContent = msg;
+  el.classList.add('show');
+}
+
+function resetQuiz(){
+  userAnswers = new Array(QUIZ.length).fill(null);
+  checked = new Array(QUIZ.length).fill(false);
+  score = 0;
+  document.getElementById('finalScore').classList.remove('show');
+  renderQuiz(true);
+  document.getElementById('quiz').scrollIntoView({behavior:'smooth'});
+}
+
+renderQuiz(false);
+</script>
+
+</body>
+</html>

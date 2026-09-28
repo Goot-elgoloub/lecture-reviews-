@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>مراجعات المحاضرات</title>
+<style>
+  :root{
+    --bg:#0f1117; --card:#171a23; --text:#e8e9ee; --muted:#9aa0ac;
+    --accent:#7c9eff; --border:#262a36;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; font-family:"Segoe UI", Tahoma, sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.6;
+    padding:24px 16px 60px;
+  }
+  header{ text-align:center; margin-bottom:32px; }
+  header h1{ margin:0 0 6px; font-size:1.6rem; }
+  header p{ margin:0; color:var(--muted); font-size:.95rem; }
+  .grid{
+    display:grid; gap:16px; max-width:880px; margin:0 auto;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  }
+  .course{
+    background:var(--card); border:1px solid var(--border);
+    border-radius:14px; padding:18px 20px;
+  }
+  .course h2{
+    margin:0 0 10px; font-size:1.05rem; color:var(--accent);
+  }
+  .lectures{ list-style:none; margin:0; padding:0; }
+  .lectures li{ margin:6px 0; }
+  .lectures a{
+    color:var(--text); text-decoration:none; font-size:.92rem;
+    display:block; padding:6px 8px; border-radius:8px;
+  }
+  .lectures a:hover{ background:#1f2330; color:var(--accent); }
+  .empty, .error{ color:var(--muted); font-size:.85rem; }
+  footer{ text-align:center; color:var(--muted); font-size:.8rem; margin-top:40px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>مراجعات المحاضرات</h1>
+  <p>ملفات مراجعة مرتبة حسب المادة والمحاضرة</p>
+</header>
+
+<div class="grid" id="grid"></div>
+
+<footer>يتم تحديث القائمة تلقائيًا عند رفع ملفات جديدة</footer>
+
+<script>
+const OWNER = "Goot-elgoloub";
+const REPO  = "lecture-reviews-";
+
+const courses = [
+  { name: "هندسة تطبيقات الويب",                       slug: "web-engineering" },
+  { name: "أمن المعلومات",                              slug: "information-security" },
+  { name: "تحليل وتصميم الخوارزميات",                   slug: "algorithms" },
+  { name: "اختبار جودة البرمجيات",                      slug: "software-testing" },
+  { name: "تنقيب البيانات",                             slug: "data-mining" },
+  { name: "ريادة الأعمال والإبداع في تقانة المعلومات", slug: "entrepreneurship" },
+];
+
+const grid = document.getElementById("grid");
+
+function titleFromFilename(name){
+  return name.replace(/\.html?$/i, "").replace(/[-_]/g, " ");
+}
+
+async function loadCourse(course){
+  const card = document.createElement("div");
+  card.className = "course";
+  card.innerHTML = `<h2>${course.name}</h2><p class="empty">جاري التحميل...</p>`;
+  grid.appendChild(card);
+
+  try{
+    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${course.slug}`);
+    if(!res.ok) throw new Error("no-folder");
+    const files = (await res.json())
+      .filter(f => f.type === "file" && /\.html?$/i.test(f.name))
+      .sort((a,b) => a.name.localeCompare(b.name, "ar"));
+
+    if(files.length === 0){
+      card.innerHTML = `<h2>${course.name}</h2><p class="empty">لا توجد محاضرات بعد</p>`;
+      return;
+    }
+
+    const list = document.createElement("ul");
+    list.className = "lectures";
+    files.forEach(f => {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = `${course.slug}/${f.name}`;
+      a.textContent = titleFromFilename(f.name);
+      li.appendChild(a);
+      list.appendChild(li);
+    });
+    card.innerHTML = `<h2>${course.name}</h2>`;
+    card.appendChild(list);
+  }catch(e){
+    card.innerHTML = `<h2>${course.name}</h2><p class="empty">لا توجد محاضرات بعد</p>`;
+  }
+}
+
+courses.forEach(loadCourse);
+</script>
+
+</body>
+</html>

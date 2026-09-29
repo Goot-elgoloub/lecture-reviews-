@@ -1,112 +1,209 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>مراجعات المحاضرات</title>
-<style>
-  :root{
-    --bg:#0f1117; --card:#171a23; --text:#e8e9ee; --muted:#9aa0ac;
-    --accent:#7c9eff; --border:#262a36;
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0; font-family:"Segoe UI", Tahoma, sans-serif;
-    background:var(--bg); color:var(--text); line-height:1.6;
-    padding:24px 16px 60px;
-  }
-  header{ text-align:center; margin-bottom:32px; }
-  header h1{ margin:0 0 6px; font-size:1.6rem; }
-  header p{ margin:0; color:var(--muted); font-size:.95rem; }
-  .grid{
-    display:grid; gap:16px; max-width:880px; margin:0 auto;
-    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-  }
-  .course{
-    background:var(--card); border:1px solid var(--border);
-    border-radius:14px; padding:18px 20px;
-  }
-  .course h2{
-    margin:0 0 10px; font-size:1.05rem; color:var(--accent);
-  }
-  .lectures{ list-style:none; margin:0; padding:0; }
-  .lectures li{ margin:6px 0; }
-  .lectures a{
-    color:var(--text); text-decoration:none; font-size:.92rem;
-    display:block; padding:6px 8px; border-radius:8px;
-  }
-  .lectures a:hover{ background:#1f2330; color:var(--accent); }
-  .empty, .error{ color:var(--muted); font-size:.85rem; }
-  footer{ text-align:center; color:var(--muted); font-size:.8rem; margin-top:40px; }
-</style>
-</head>
-<body>
-
-<header>
-  <h1>مراجعات المحاضرات</h1>
-  <p>ملفات مراجعة مرتبة حسب المادة والمحاضرة</p>
-</header>
-
-<div class="grid" id="grid"></div>
-
-<footer>يتم تحديث القائمة تلقائيًا عند رفع ملفات جديدة</footer>
-
-<script>
-const OWNER = "Goot-elgoloub";
-const REPO  = "lecture-reviews-";
-
-const courses = [
-  { name: "هندسة تطبيقات الويب",                       slug: "web-engineering" },
-  { name: "أمن المعلومات",                              slug: "information-security" },
-  { name: "تحليل وتصميم الخوارزميات",                   slug: "algorithms" },
-  { name: "اختبار جودة البرمجيات",                      slug: "software-testing" },
-  { name: "تنقيب البيانات",                             slug: "data-mining" },
-  { name: "ريادة الأعمال والإبداع في تقانة المعلومات", slug: "entrepreneurship" },
-];
-
-const grid = document.getElementById("grid");
-
-function titleFromFilename(name){
-  return name.replace(/\.html?$/i, "").replace(/[-_]/g, " ");
-}
-
-async function loadCourse(course){
-  const card = document.createElement("div");
-  card.className = "course";
-  card.innerHTML = `<h2>${course.name}</h2><p class="empty">جاري التحميل...</p>`;
-  grid.appendChild(card);
-
-  try{
-    const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${course.slug}`);
-    if(!res.ok) throw new Error("no-folder");
-    const files = (await res.json())
-      .filter(f => f.type === "file" && /\.html?$/i.test(f.name))
-      .sort((a,b) => a.name.localeCompare(b.name, "ar"));
-
-    if(files.length === 0){
-      card.innerHTML = `<h2>${course.name}</h2><p class="empty">لا توجد محاضرات بعد</p>`;
-      return;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1020" />
+  <title>مراجعات المحاضرات</title>
+  <style>
+    :root {
+      --bg: #080c17;
+      --surface: #101728;
+      --surface-2: #151e32;
+      --surface-3: #1b2740;
+      --text: #f5f7ff;
+      --muted: #93a0bb;
+      --line: rgba(151, 169, 209, .16);
+      --primary: #8b7cff;
+      --primary-2: #5eead4;
+      --blue: #62a8ff;
+      --danger: #ff8b9e;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .32);
     }
 
-    const list = document.createElement("ul");
-    list.className = "lectures";
-    files.forEach(f => {
-      const li = document.createElement("li");
-      const a = document.createElement("a");
-      a.href = `${course.slug}/${f.name}`;
-      a.textContent = titleFromFilename(f.name);
-      li.appendChild(a);
-      list.appendChild(li);
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      line-height: 1.6;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(139, 124, 255, .18), transparent 32rem),
+        radial-gradient(circle at 92% 10%, rgba(94, 234, 212, .10), transparent 26rem),
+        var(--bg);
+    }
+
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .container { width: min(1120px, calc(100% - 32px)); margin: auto; }
+
+    header { padding: 34px 0 20px; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 18px; }
+    .brand { display: flex; align-items: center; gap: 13px; }
+    .brand-mark {
+      display: grid; place-items: center; width: 46px; height: 46px; border-radius: 15px;
+      color: #fff; font-size: 1.35rem; font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), #4c7dff);
+      box-shadow: 0 10px 26px rgba(109, 96, 255, .3);
+    }
+    .brand strong { display: block; font-size: 1.05rem; letter-spacing: .2px; }
+    .brand span { display: block; color: var(--muted); font-size: .78rem; }
+    .status { color: var(--primary-2); font-size: .78rem; display: flex; gap: 7px; align-items: center; }
+    .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--primary-2); box-shadow: 0 0 12px var(--primary-2); }
+
+    .hero { padding: 44px 0 32px; max-width: 700px; }
+    .eyebrow { color: var(--primary-2); font-size: .82rem; font-weight: 700; margin: 0 0 10px; }
+    h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.8rem); line-height: 1.15; letter-spacing: -1.5px; }
+    .hero p { color: var(--muted); margin: 18px 0 0; font-size: 1.02rem; max-width: 570px; }
+
+    .toolbar { display: flex; align-items: center; gap: 16px; margin: 6px 0 26px; flex-wrap: wrap; }
+    .search { flex: 1 1 280px; position: relative; }
+    .search input {
+      width: 100%; border: 1px solid var(--line); border-radius: 14px; padding: 14px 45px 14px 16px;
+      color: var(--text); outline: none; background: rgba(16, 23, 40, .75); transition: .2s;
+    }
+    .search input:focus { border-color: rgba(139, 124, 255, .8); box-shadow: 0 0 0 4px rgba(139, 124, 255, .12); }
+    .search span { position: absolute; right: 16px; top: 11px; font-size: 1.2rem; color: var(--muted); }
+    .hint { color: var(--muted); font-size: .82rem; }
+
+    .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 17px; }
+    .course { border: 1px solid var(--line); border-radius: 20px; overflow: hidden; background: linear-gradient(145deg, rgba(21, 30, 50, .94), rgba(12, 17, 30, .96)); box-shadow: var(--shadow); transition: transform .22s, border-color .22s; }
+    .course:hover { transform: translateY(-4px); border-color: rgba(139, 124, 255, .42); }
+    .course.open { border-color: rgba(94, 234, 212, .45); }
+    .course-head { width: 100%; text-align: right; border: 0; color: inherit; padding: 22px; background: transparent; }
+    .course-head:focus-visible { outline: 2px solid var(--primary-2); outline-offset: -3px; }
+    .course-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .icon { display: grid; place-items: center; width: 43px; height: 43px; border-radius: 13px; font-size: 1.2rem; background: rgba(139, 124, 255, .16); }
+    .course:nth-child(2n) .icon { background: rgba(98, 168, 255, .16); }
+    .course:nth-child(3n) .icon { background: rgba(94, 234, 212, .14); }
+    .arrow { color: var(--muted); transition: transform .25s; font-size: 1.15rem; }
+    .course.open .arrow { transform: rotate(180deg); color: var(--primary-2); }
+    .course h2 { margin: 0 0 7px; font-size: 1.08rem; line-height: 1.45; }
+    .course-desc { margin: 0; color: var(--muted); font-size: .82rem; }
+    .course-content { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .28s ease; }
+    .course.open .course-content { grid-template-rows: 1fr; }
+    .course-inner { overflow: hidden; min-height: 0; }
+    .lectures { border-top: 1px solid var(--line); padding: 14px 17px 17px; }
+    .lectures-title { display: flex; justify-content: space-between; color: var(--muted); font-size: .75rem; margin: 0 5px 9px; }
+    .lecture { list-style: none; }
+    .lecture a { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-size: .88rem; padding: 10px 9px; border-radius: 10px; transition: .18s; }
+    .lecture a:hover { color: var(--primary-2); background: rgba(94, 234, 212, .08); }
+    .lecture a::before { content: "↗"; color: var(--primary-2); font-weight: 700; }
+    .empty { color: var(--muted); text-align: center; font-size: .84rem; margin: 5px 0 2px; }
+    .loading { display: flex; justify-content: center; padding: 12px; color: var(--muted); font-size: .84rem; }
+    .spinner { width: 15px; height: 15px; border: 2px solid var(--line); border-top-color: var(--primary-2); border-radius: 50%; animation: spin .8s linear infinite; margin-left: 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .no-results { display: none; color: var(--muted); text-align: center; grid-column: 1 / -1; padding: 35px; }
+    footer { color: var(--muted); text-align: center; font-size: .78rem; padding: 42px 0 28px; }
+
+    @media (max-width: 850px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) {
+      .container { width: min(100% - 22px, 500px); }
+      header { padding-top: 22px; }
+      .topbar { align-items: flex-start; }
+      .status { display: none; }
+      .hero { padding-top: 35px; }
+      .grid { grid-template-columns: 1fr; gap: 13px; }
+      .course:hover { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="container">
+    <div class="topbar">
+      <div class="brand">
+        <div class="brand-mark">م</div>
+        <div><strong>مراجعات المحاضرات</strong><span>مساحتك الذكية للمذاكرة</span></div>
+      </div>
+      <div class="status">المحتوى محدث تلقائيًا</div>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">مكتبة المراجعة الرقمية</p>
+      <h1>ذاكر بتركيز،<br><span style="color:var(--primary-2)">واوصل للمعلومة أسرع.</span></h1>
+      <p>اختار المادة التي تريد مراجعتها، وستظهر لك كل المحاضرات والمحتوى الخاص بها في مكان واحد.</p>
+    </section>
+  </header>
+
+  <main class="container">
+    <div class="toolbar">
+      <label class="search"><span>⌕</span><input id="search" type="search" placeholder="ابحث عن مادة..." aria-label="ابحث عن مادة" /></label>
+      <div class="hint"><b id="courseCount">6</b> مواد متاحة</div>
+    </div>
+    <section class="grid" id="grid" aria-live="polite"></section>
+    <div class="no-results" id="noResults">لم يتم العثور على مادة بهذا الاسم.</div>
+  </main>
+
+  <footer>يتم تحديث القائمة تلقائيًا عند رفع ملفات جديدة · بالتوفيق في المراجعة</footer>
+
+  <script>
+    const OWNER = "Goot-elgoloub";
+    const REPO = "lecture-reviews-";
+    const courses = [
+      { name: "هندسة تطبيقات الويب", slug: "web-engineering", icon: "⌘", desc: "تطوير وبناء تطبيقات الويب الحديثة" },
+      { name: "أمن المعلومات", slug: "information-security", icon: "◈", desc: "مفاهيم الحماية وأمن الأنظمة" },
+      { name: "تحليل وتصميم الخوارزميات", slug: "algorithms", icon: "⌁", desc: "حل المشكلات بكفاءة وذكاء" },
+      { name: "اختبار جودة البرمجيات", slug: "software-testing", icon: "✓", desc: "ضمان جودة البرمجيات واختبارها" },
+      { name: "تنقيب البيانات", slug: "data-mining", icon: "⌬", desc: "اكتشاف الأنماط والمعرفة من البيانات" },
+      { name: "ريادة الأعمال والإبداع في تقانة المعلومات", slug: "entrepreneurship", icon: "✦", desc: "حوّل فكرتك إلى مشروع مبتكر" }
+    ];
+
+    const grid = document.getElementById("grid");
+    const loaded = new Set();
+
+    function titleFromFilename(name) {
+      return name.replace(/\.html?$/i, "").replace(/[-_]/g, " ");
+    }
+
+    function createCourse(course, index) {
+      const card = document.createElement("article");
+      card.className = "course";
+      card.dataset.name = course.name.toLowerCase();
+      card.innerHTML = `
+        <button class="course-head" type="button" aria-expanded="false" aria-controls="content-${index}">
+          <div class="course-meta"><span class="icon">${course.icon}</span><span class="arrow">⌄</span></div>
+          <h2>${course.name}</h2><p class="course-desc">${course.desc}</p>
+        </button>
+        <div class="course-content" id="content-${index}"><div class="course-inner"><div class="lectures" data-slug="${course.slug}"><p class="empty">اضغط لعرض المحاضرات</p></div></div></div>`;
+
+      const button = card.querySelector(".course-head");
+      button.addEventListener("click", () => {
+        const open = card.classList.toggle("open");
+        button.setAttribute("aria-expanded", String(open));
+        if (open && !loaded.has(course.slug)) loadCourse(course, card.querySelector(".lectures"));
+      });
+      return card;
+    }
+
+    async function loadCourse(course, target) {
+      loaded.add(course.slug);
+      target.innerHTML = '<div class="loading"><span class="spinner"></span>جاري تحميل المحاضرات...</div>';
+      try {
+        const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${course.slug}`);
+        if (!res.ok) throw new Error("no-folder");
+        const files = (await res.json()).filter(f => f.type === "file" && /\.html?$/i.test(f.name)).sort((a, b) => a.name.localeCompare(b.name, "ar"));
+        if (!files.length) { target.innerHTML = '<p class="empty">لا توجد محاضرات بعد</p>'; return; }
+        target.innerHTML = `<div class="lectures-title"><span>المحاضرات المتاحة</span><span>${files.length} ملفات</span></div><ul style="padding:0;margin:0">${files.map(f => `<li class="lecture"><a href="${course.slug}/${encodeURIComponent(f.name)}">${titleFromFilename(f.name)}</a></li>`).join("")}</ul>`;
+      } catch (error) {
+        target.innerHTML = '<p class="empty">تعذر تحميل المحتوى حاليًا</p>';
+      }
+    }
+
+    courses.forEach((course, index) => grid.appendChild(createCourse(course, index)));
+    document.getElementById("courseCount").textContent = courses.length;
+
+    document.getElementById("search").addEventListener("input", (event) => {
+      const query = event.target.value.trim().toLowerCase();
+      let visible = 0;
+      document.querySelectorAll(".course").forEach(card => {
+        const match = card.dataset.name.includes(query);
+        card.style.display = match ? "block" : "none";
+        if (match) visible++;
+      });
+      document.getElementById("noResults").style.display = visible ? "none" : "block";
+      document.getElementById("courseCount").textContent = visible;
     });
-    card.innerHTML = `<h2>${course.name}</h2>`;
-    card.appendChild(list);
-  }catch(e){
-    card.innerHTML = `<h2>${course.name}</h2><p class="empty">لا توجد محاضرات بعد</p>`;
-  }
-}
-
-courses.forEach(loadCourse);
-</script>
-
+  </script>
 </body>
 </html>

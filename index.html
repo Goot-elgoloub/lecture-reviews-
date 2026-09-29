@@ -138,8 +138,6 @@
   <footer>يتم تحديث القائمة تلقائيًا عند رفع ملفات جديدة · بالتوفيق في المراجعة</footer>
 
   <script>
-    const OWNER = "Goot-elgoloub";
-    const REPO = "lecture-reviews-";
     const courses = [
       { name: "هندسة تطبيقات الويب", slug: "web-engineering", icon: "⌘", desc: "تطوير وبناء تطبيقات الويب الحديثة" },
       { name: "أمن المعلومات", slug: "information-security", icon: "◈", desc: "مفاهيم الحماية وأمن الأنظمة" },
@@ -151,9 +149,20 @@
 
     const grid = document.getElementById("grid");
     const loaded = new Set();
+    let dataPromise = null;
 
     function titleFromFilename(name) {
       return name.replace(/\.html?$/i, "").replace(/[-_]/g, " ");
+    }
+
+    function getData() {
+      if (!dataPromise) {
+        dataPromise = fetch("data.json").then(res => {
+          if (!res.ok) throw new Error("no-data");
+          return res.json();
+        });
+      }
+      return dataPromise;
     }
 
     function createCourse(course, index) {
@@ -180,11 +189,10 @@
       loaded.add(course.slug);
       target.innerHTML = '<div class="loading"><span class="spinner"></span>جاري تحميل المحاضرات...</div>';
       try {
-        const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${course.slug}`);
-        if (!res.ok) throw new Error("no-folder");
-        const files = (await res.json()).filter(f => f.type === "file" && /\.html?$/i.test(f.name)).sort((a, b) => a.name.localeCompare(b.name, "ar"));
+        const data = await getData();
+        const files = (data[course.slug] || []).slice().sort((a, b) => a.localeCompare(b, "ar"));
         if (!files.length) { target.innerHTML = '<p class="empty">لا توجد محاضرات بعد</p>'; return; }
-        target.innerHTML = `<div class="lectures-title"><span>المحاضرات المتاحة</span><span>${files.length} ملفات</span></div><ul style="padding:0;margin:0">${files.map(f => `<li class="lecture"><a href="${course.slug}/${encodeURIComponent(f.name)}">${titleFromFilename(f.name)}</a></li>`).join("")}</ul>`;
+        target.innerHTML = `<div class="lectures-title"><span>المحاضرات المتاحة</span><span>${files.length} ملفات</span></div><ul style="padding:0;margin:0">${files.map(f => `<li class="lecture"><a href="${course.slug}/${encodeURIComponent(f)}">${titleFromFilename(f)}</a></li>`).join("")}</ul>`;
       } catch (error) {
         target.innerHTML = '<p class="empty">تعذر تحميل المحتوى حاليًا</p>';
       }

@@ -176,29 +176,25 @@
       return card;
     }
 
-    let repoTreePromise;
-    function getRepoFiles() {
-      if (!repoTreePromise) {
-        repoTreePromise = fetch(`https://api.github.com/repos/${OWNER}/${REPO}/git/trees/main?recursive=1`)
-          .then(res => { if (!res.ok) throw new Error("github-api"); return res.json(); })
-          .then(data => (data.tree || []).filter(item => item.type === "blob" && /\.html?$/i.test(item.path)));
-      }
-      return repoTreePromise;
-    }
+    const courseFiles = new Map();
 
     async function loadCourse(course, target) {
       loaded.add(course.slug);
       target.innerHTML = '<div class="loading"><span class="spinner"></span>جاري تحميل المحاضرات...</div>';
       try {
-        const allFiles = await getRepoFiles();
-        const files = allFiles
-          .filter(f => f.path.startsWith(course.slug + "/"))
-          .map(f => ({ name: f.path.slice(course.slug.length + 1) }))
-          .sort((a, b) => a.name.localeCompare(b.name, "ar"));
+        let files = courseFiles.get(course.slug);
+        if (!files) {
+          const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${course.slug}?ref=main`);
+          if (!res.ok) throw new Error("no-folder");
+          files = (await res.json())
+            .filter(f => f.type === "file" && /\.html?$/i.test(f.name))
+            .sort((a, b) => a.name.localeCompare(b.name, "ar"));
+          courseFiles.set(course.slug, files);
+        }
         if (!files.length) { target.innerHTML = '<p class="empty">لا توجد محاضرات مضافة لهذه المادة بعد</p>'; return; }
         target.innerHTML = `<div class="lectures-title"><span>المحاضرات المتاحة</span><span>${files.length} ملفات</span></div><ul style="padding:0;margin:0">${files.map(f => `<li class="lecture"><a href="${course.slug}/${encodeURIComponent(f.name)}">${titleFromFilename(f.name)}</a></li>`).join("")}</ul>`;
       } catch (error) {
-        target.innerHTML = '<p class="empty">تعذر الوصول إلى ملفات GitHub حاليًا، حاول تحديث الصفحة</p>';
+        target.innerHTML = '<p class="empty">لا توجد محاضرات مضافة لهذه المادة بعد</p>';
       }
     }
 

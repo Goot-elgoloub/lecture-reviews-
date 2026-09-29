@@ -1,1 +1,19 @@
-{"web-engineering":[],"information-security":[],"algorithms":[],"software-testing":[],"data-mining":[],"entrepreneurship":[]}
+{
+  "web-engineering": [],
+  "information-security": [
+    "CH1_info-network-security-concepts-review.html",
+    "CH2_malware-social-engineering-review.html"
+  ],
+  "algorithms": [
+    "lec2_asymptotic-analysis-big-o-review.html",
+    "lec3_time-space-complexity-review.html",
+    "lec4_space-complexity-memory-review.html",
+    "lec5_Divide and Conquer-review.html",
+    "مراجعة_تحليل_التعقيد_الزمني.html"
+  ],
+  "software-testing": [],
+  "data-mining": [
+    "datamining-ch1-ch2-combined-review.html"
+  ],
+  "entrepreneurship": []
+}

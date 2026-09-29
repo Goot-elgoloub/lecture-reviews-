@@ -176,25 +176,17 @@
       return card;
     }
 
-    const courseFiles = new Map();
-
     async function loadCourse(course, target) {
       loaded.add(course.slug);
       target.innerHTML = '<div class="loading"><span class="spinner"></span>جاري تحميل المحاضرات...</div>';
       try {
-        let files = courseFiles.get(course.slug);
-        if (!files) {
-          const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${course.slug}?ref=main`);
-          if (!res.ok) throw new Error("no-folder");
-          files = (await res.json())
-            .filter(f => f.type === "file" && /\.html?$/i.test(f.name))
-            .sort((a, b) => a.name.localeCompare(b.name, "ar"));
-          courseFiles.set(course.slug, files);
-        }
-        if (!files.length) { target.innerHTML = '<p class="empty">لا توجد محاضرات مضافة لهذه المادة بعد</p>'; return; }
+        const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${course.slug}`);
+        if (!res.ok) throw new Error("no-folder");
+        const files = (await res.json()).filter(f => f.type === "file" && /\.html?$/i.test(f.name)).sort((a, b) => a.name.localeCompare(b.name, "ar"));
+        if (!files.length) { target.innerHTML = '<p class="empty">لا توجد محاضرات بعد</p>'; return; }
         target.innerHTML = `<div class="lectures-title"><span>المحاضرات المتاحة</span><span>${files.length} ملفات</span></div><ul style="padding:0;margin:0">${files.map(f => `<li class="lecture"><a href="${course.slug}/${encodeURIComponent(f.name)}">${titleFromFilename(f.name)}</a></li>`).join("")}</ul>`;
       } catch (error) {
-        target.innerHTML = '<p class="empty">لا توجد محاضرات مضافة لهذه المادة بعد</p>';
+        target.innerHTML = '<p class="empty">تعذر تحميل المحتوى حاليًا</p>';
       }
     }
 

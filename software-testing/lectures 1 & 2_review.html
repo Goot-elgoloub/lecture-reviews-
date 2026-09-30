@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مرجع المراجعة | Software Quality and Testing (Lectures 1 &amp; 2)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e16; --card:#121a2b; --card2:#0f1524; --border:#212b40; --border-soft:#1a2336;
+    --text:#e7ecf5; --text-dim:#93a1bd; --text-faint:#5c6a89; --accent:#38bdf8; --accent-soft:#38bdf822;
+    --c-qa:#38bdf8; --c-qc:#34d399; --c-static:#a78bfa; --c-dynamic:#fb923c; --c-warn:#f87171; --c-gold:#fbbf24;
+    --ok:#34d399; --bad:#f87171; --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:radial-gradient(1200px 600px at 85% -10%, #12203a55, transparent 60%), radial-gradient(900px 500px at -10% 20%, #1a123655, transparent 55%), var(--bg); color:var(--text); font-family:'Tajawal', sans-serif; line-height:1.75;}
+  html[dir="ltr"] body{font-family:'Fira Code','Tajawal',sans-serif;}
+  code, .mono, .eq, .term-en{font-family:'Fira Code', monospace; direction:ltr; unicode-bidi:isolate;}
+  h1,h2,h3,h4{font-weight:800; margin:0 0 .5em;}
+  p{margin:0 0 1em; color:var(--text);}
+  .container{max-width:1080px; margin:0 auto; padding:0 20px;}
+  .lang-toggle{position:fixed; top:16px; z-index:200; inset-inline-end:16px; display:flex; background:#0d1524ee; border:1px solid var(--border); border-radius:999px; padding:4px; backdrop-filter:blur(8px); box-shadow:0 4px 18px #00000055;}
+  .lang-toggle button{border:none; background:transparent; color:var(--text-dim); font-family:'Fira Code',monospace; font-weight:600; font-size:.78rem; padding:7px 14px; border-radius:999px; cursor:pointer;}
+  .lang-toggle button.active{background:var(--accent); color:#04121c;}
+  .hero{position:relative; padding:70px 0 50px; overflow:hidden; border-bottom:1px solid var(--border-soft);}
+  .hero-bg{position:absolute; inset:0; opacity:.3; pointer-events:none;}
+  .hero .kicker{display:inline-block; font-family:'Fira Code',monospace; font-size:.78rem; letter-spacing:.12em; color:var(--accent); background:var(--accent-soft); border:1px solid #38bdf844; padding:5px 12px; border-radius:999px; margin-bottom:18px;}
+  .hero h1{font-size:2.3rem; line-height:1.25; max-width:800px;}
+  .hero h1 .glow{color:var(--accent); text-shadow:0 0 30px #38bdf866;}
+  .hero p.sub{font-size:1.05rem; color:var(--text-dim); max-width:660px;}
+  @media(max-width:640px){ .hero h1{font-size:1.6rem;} .lang-toggle{top:10px;} }
+  .nav-wrap{position:sticky; top:0; z-index:50; background:#0a0e16dd; backdrop-filter:blur(10px); border-bottom:1px solid var(--border-soft);}
+  .nav-scroll{display:flex; gap:6px; overflow-x:auto; padding:10px 20px; max-width:1080px; margin:0 auto; scrollbar-width:none;}
+  .nav-scroll::-webkit-scrollbar{display:none;}
+  .nav-scroll a{flex:none; white-space:nowrap; font-size:.84rem; font-weight:500; color:var(--text-dim); text-decoration:none; padding:8px 14px; border-radius:999px; border:1px solid transparent;}
+  .nav-scroll a:hover{color:var(--text); border-color:var(--border);}
+  .nav-scroll a.active{color:#04121c; background:var(--accent); font-weight:700;}
+  section{padding:56px 0; border-bottom:1px solid var(--border-soft);}
+  section:last-of-type{border-bottom:none;}
+  .eyebrow{font-family:'Fira Code',monospace; font-size:.75rem; color:var(--accent); letter-spacing:.1em; margin-bottom:8px; display:block;}
+  section > .container > h2{font-size:1.65rem; margin-bottom:.25em;}
+  section > .container > p.lead{color:var(--text-dim); max-width:720px; margin-bottom:2em; font-size:1.02rem;}
+  .part-divider{display:flex; align-items:center; gap:14px; margin:36px 0 20px;}
+  .part-divider:first-child{margin-top:0;}
+  .part-divider .pd-badge{font-family:'Fira Code',monospace; font-size:.78rem; font-weight:700; padding:6px 14px; border-radius:999px; white-space:nowrap;}
+  .pd-l1{color:var(--c-qa); background:#38bdf81a; border:1px solid #38bdf855;}
+  .pd-l2{color:var(--c-dynamic); background:#fb923c1a; border:1px solid #fb923c55;}
+  .part-divider .pd-line{height:1px; background:var(--border); flex:1;}
+  .part-divider h3{margin:0; font-size:1.2rem;}
+  .grid{display:grid; gap:16px;}
+  .grid-2{grid-template-columns:repeat(2,1fr);} .grid-3{grid-template-columns:repeat(3,1fr);} .grid-4{grid-template-columns:repeat(4,1fr);}
+  @media(max-width:860px){ .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;} }
+  .card{background:linear-gradient(180deg, var(--card), var(--card2)); border:1px solid var(--border); border-radius:var(--radius); padding:22px;}
+  .card h3{font-size:1.08rem; margin-bottom:.4em;}
+  .card h3 .num{color:var(--accent); font-family:'Fira Code',monospace; margin-left:6px;}
+  .card.tinted{border-color:#38bdf844; background:linear-gradient(180deg,#0f1a2c,#0d1524);}
+  .badge{display:inline-flex; align-items:center; font-size:.72rem; font-weight:700; font-family:'Fira Code',monospace; padding:3px 10px; border-radius:999px;}
+  .b-qa{color:var(--c-qa); background:#38bdf81a; border:1px solid #38bdf855;}
+  .b-qc{color:var(--c-qc); background:#34d3991a; border:1px solid #34d39955;}
+  .b-static{color:var(--c-static); background:#a78bfa1a; border:1px solid #a78bfa55;}
+  .b-dynamic{color:var(--c-dynamic); background:#fb923c1a; border:1px solid #fb923c55;}
+  .b-warn{color:var(--c-warn); background:#f871711a; border:1px solid #f8717155;}
+  .b-gold{color:var(--c-gold); background:#fbbf241a; border:1px solid #fbbf2455;}
+  pre{background:#080b12; border:1px solid var(--border); border-radius:10px; padding:16px 18px; overflow-x:auto; direction:ltr; text-align:left; font-family:'Fira Code',monospace; font-size:.86rem; color:#c9e6ff; margin:12px 0; line-height:1.6;}
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:.94rem;}
+  th,td{padding:10px 12px; text-align:start; border-bottom:1px solid var(--border-soft);}
+  th{color:var(--accent); font-family:'Fira Code',monospace; font-size:.76rem; border-bottom:1px solid var(--border);}
+  tr:hover td{background:#ffffff05;}
+  .note{border-radius:10px; border:1px solid #fbbf2444; background:#fbbf240d; padding:14px 16px; font-size:.94rem; color:#f3e2b0;}
+  .note.good{border-color:#34d39944; background:#34d3990d; color:#bdf3da;}
+  .note.info{border-color:#38bdf844; background:#38bdf80d; color:#bfe6fb;}
+  .note.warn{border-color:#f8717144; background:#f871710d; color:#fbd7d7;}
+  .diagram-block{border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:22px; background:var(--card);}
+  .diagram-head{padding:16px 20px; border-bottom:1px solid var(--border-soft); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;}
+  .diagram-head h3{margin:0;}
+  .diagram-body{padding:20px;}
+  .flow-wrap{display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; margin:16px 0; direction:ltr;}
+  .flow-box{border:1px solid var(--border); background:#0d1524; border-radius:10px; padding:14px 18px; text-align:center; font-weight:700; min-width:130px;}
+  .flow-box small{display:block; font-weight:400; color:var(--text-faint); margin-top:4px; font-size:.78rem;}
+  .flow-arrow{font-size:1.4rem; color:var(--text-faint);}
+  .tree-wrap{display:flex; flex-direction:column; align-items:center; gap:16px; margin:18px 0;}
+  .tree-root{background:var(--c-gold); color:#04121c; font-weight:800; padding:10px 22px; border-radius:999px;}
+  .tree-branches{display:flex; gap:40px; flex-wrap:wrap; justify-content:center;}
+  .tree-branch{display:flex; flex-direction:column; align-items:center; gap:10px;}
+  .tree-branch-label{font-weight:800; padding:8px 18px; border-radius:999px; font-family:'Fira Code',monospace; font-size:.85rem;}
+  .tree-leaves{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:280px;}
+  .tree-leaf{background:#0d1524; border:1px solid var(--border); border-radius:8px; padding:6px 12px; font-size:.82rem; color:var(--text-dim);}
+  .level-tabs{display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;}
+  .level-tab{padding:9px 16px; border-radius:10px; border:1px solid var(--border); background:var(--card2); color:var(--text-dim); cursor:pointer; font-family:'Tajawal',sans-serif; font-weight:700; font-size:.9rem;}
+  .level-tab.active{background:var(--accent); color:#04121c; border-color:var(--accent);}
+  .level-panel{display:none;} .level-panel.active{display:block;}
+  .quickref-list{list-style:none; padding:0; margin:0; font-family:'Fira Code',monospace; direction:ltr; text-align:left;}
+  .quickref-list li{padding:10px 14px; margin-bottom:6px; border-radius:8px; background:#0d1524; border:1px solid var(--border-soft); font-size:.85rem; color:#d7e6f7;}
+  .quiz-progress{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 18px; gap:14px; flex-wrap:wrap;}
+  .quiz-score{font-family:'Fira Code',monospace; font-weight:600; color:var(--accent); font-size:1.05rem;}
+  .quiz-bar{flex:1; min-width:140px; height:8px; border-radius:99px; background:#1a2336; overflow:hidden;}
+  .quiz-bar-fill{height:100%; width:0%; background:linear-gradient(90deg,#38bdf8,#34d399); transition:width .3s;}
+  .q-card{border:1px solid var(--border); background:var(--card); border-radius:var(--radius); padding:20px 22px; margin-bottom:16px;}
+  .q-meta{margin-bottom:10px;}
+  .q-type-tag{font-family:'Fira Code',monospace; font-size:.7rem; color:var(--text-faint); border:1px solid var(--border); padding:2px 9px; border-radius:999px;}
+  .q-prompt{font-weight:700; font-size:1.02rem; margin-bottom:14px;}
+  .opt-list{display:flex; flex-direction:column; gap:8px;}
+  .opt{display:flex; align-items:center; gap:10px; padding:11px 14px; border-radius:10px; border:1px solid var(--border); background:var(--card2); cursor:pointer; font-size:.95rem;}
+  .opt:hover{border-color:#38bdf866;}
+  .opt input{accent-color:var(--accent); width:16px; height:16px; flex:none;}
+  .opt.correct-flash{border-color:var(--ok); background:#34d3991a;}
+  .opt.wrong-flash{border-color:var(--bad); background:#f871711a;}
+  .fill-input{width:100%; max-width:320px; background:#0d1524; border:1px solid var(--border); border-radius:9px; padding:11px 14px; color:var(--text); font-family:'Fira Code',monospace; font-size:.95rem; direction:ltr; text-align:left;}
+  .fill-input:focus{outline:none; border-color:var(--accent);}
+  .check-btn{margin-top:14px; background:var(--accent); color:#04121c; border:none; padding:9px 20px; border-radius:9px; font-weight:700; cursor:pointer; font-family:'Tajawal',sans-serif;}
+  .check-btn:disabled{opacity:.5; cursor:default;}
+  .q-feedback{margin-top:12px; padding:12px 14px; border-radius:10px; font-size:.9rem; display:none;}
+  .q-feedback.show{display:block;}
+  .q-feedback.correct{background:#34d3991a; border:1px solid #34d39955; color:#c8f5e2;}
+  .q-feedback.incorrect{background:#f871711a; border:1px solid #f8717155; color:#fbd7d7;}
+  .final-score{text-align:center; padding:30px 20px; border-radius:var(--radius); border:1px solid var(--accent); background:linear-gradient(180deg,#0f1a2c,#0d1524); margin-top:20px; display:none;}
+  .final-score.show{display:block;}
+  .final-score .big{font-size:2.4rem; font-weight:800; color:var(--accent); font-family:'Fira Code',monospace;}
+  .reset-btn{margin-top:14px; background:transparent; border:1px solid var(--border); color:var(--text); padding:9px 20px; border-radius:9px; cursor:pointer; font-family:'Tajawal',sans-serif; font-weight:700;}
+  .match-wrap{display:flex; flex-direction:column; gap:10px;}
+  .match-row{display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:10px; border:1px solid var(--border); background:var(--card2); flex-wrap:wrap;}
+  .match-row .match-a{flex:1; min-width:160px; font-size:.95rem;}
+  .match-row select{background:#0d1524; color:var(--text); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-family:'Tajawal',sans-serif; font-size:.88rem; min-width:220px; max-width:100%;}
+  .match-row select:focus{outline:none; border-color:var(--accent);}
+  .match-row.correct-flash{border-color:var(--ok); background:#34d3991a;}
+  .match-row.wrong-flash{border-color:var(--bad); background:#f871711a;}
+  .tip-item, .mistake-item{display:flex; gap:12px; padding:14px 0; border-top:1px solid var(--border-soft);}
+  .tip-item:first-child, .mistake-item:first-child{border-top:none;}
+  .tip-icon, .mistake-icon{flex:none; font-size:1.2rem;}
+  footer{padding:30px 0 60px; text-align:center; color:var(--text-faint); font-size:.85rem;}
+</style>
+</head>
+<body>
+
+<div class="lang-toggle">
+  <button id="btnAr" class="active" onclick="setLang('ar')">AR · عربي</button>
+  <button id="btnEn" onclick="setLang('en')">EN</button>
+</div>
+
+<header class="hero">
+  <svg class="hero-bg" viewBox="0 0 1080 260" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="300" cy="90" r="8" fill="#38bdf8"/><circle cx="360" cy="70" r="8" fill="#38bdf8"/>
+    <path d="M300,90 L360,70" stroke="#2c3650"/>
+    <rect x="620" y="40" width="120" height="34" rx="6" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+    <rect x="540" y="110" width="100" height="34" rx="6" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+    <rect x="720" y="110" width="100" height="34" rx="6" fill="none" stroke="#fb923c" stroke-width="1.5"/>
+    <line x1="680" y1="74" x2="590" y2="110" stroke="#2c3650"/><line x1="680" y1="74" x2="770" y2="110" stroke="#2c3650"/>
+  </svg>
+  <div class="container">
+    <span class="kicker">SOFTWARE TESTING COURSE · LECTURES 1 &amp; 2 · COMBINED REVIEW SHEET</span>
+    <h1><span class="i18n" data-en="Software Quality">Software Quality</span> <span class="glow i18n" data-en="and Testing">and Testing</span></h1>
+    <p class="sub i18n" data-en="A complete interactive review covering Lecture 1 (what testing is, QA vs QC, verification vs validation, errors/bugs/failures, root causes) and Lecture 2 (the seven testing principles, human psychology in testing, static vs dynamic testing, and the four dynamic testing types) — nothing from either lecture skipped.">مرجع مراجعة تفاعلي كامل يغطي المحاضرة 1 (ما هو الاختبار، QA مقابل QC، التحقق مقابل التصديق، الأخطاء/العيوب/الإخفاقات، الأسباب الجذرية) والمحاضرة 2 (مبادئ الاختبار السبعة، سيكولوجية الإنسان في الاختبار، الاختبار الساكن مقابل الديناميكي، وأنواع الاختبار الديناميكي الأربعة) — دون تخطي أي جزء من المحاضرتين.</p>
+  </div>
+</header>
+
+<div class="nav-wrap">
+  <nav class="nav-scroll" id="navScroll">
+    <a href="#overview" class="i18n" data-en="Overview">نظرة عامة</a>
+    <a href="#explain" class="i18n" data-en="Full Explanation">الشرح الكامل</a>
+    <a href="#diagrams" class="i18n" data-en="Diagrams">الرسومات والمخططات</a>
+    <a href="#summary" class="i18n" data-en="Summary Table">جدول التلخيص</a>
+    <a href="#levels" class="i18n" data-en="3 Levels">3 مستويات</a>
+    <a href="#quiz" class="i18n" data-en="Interactive Quiz">الاختبار التفاعلي</a>
+    <a href="#tips" class="i18n" data-en="Pro Tips">نصائح احترافية</a>
+  </nav>
+</div>
+
+<!-- ============ OVERVIEW ============ -->
+<section id="overview">
+  <div class="container">
+    <span class="eyebrow">01 / OVERVIEW</span>
+    <h2 class="i18n" data-en="Combined Overview">نظرة عامة موحّدة</h2>
+    <p class="lead i18n" data-en="Lecture 1 lays the conceptual foundation: what software testing actually is, how it differs from QA and QC, why we test at all (with real-world failure case studies), the formal distinction between verification and validation, and the precise chain from human error to defect to failure. Lecture 2 builds on this with the seven guiding principles every tester should know, the psychological side of testing (why it's perceived as criticism, and how to communicate well), and a full breakdown of testing types — static vs. dynamic, and the four dynamic testing categories.">
+      تضع المحاضرة 1 الأساس المفاهيمي: ما هو اختبار البرمجيات فعليًا، كيف يختلف عن QA وQC، لماذا نختبر أصلًا (مع دراسات حالة واقعية لإخفاقات فعلية)، التمييز الرسمي بين التحقق (Verification) والتصديق (Validation)، والسلسلة الدقيقة من الخطأ البشري إلى العيب إلى الإخفاق. تبني المحاضرة 2 على هذا الأساس بالمبادئ السبعة التوجيهية التي يجب أن يعرفها كل مُختبِر، والجانب النفسي للاختبار (لماذا يُنظَر إليه كنقد، وكيف نتواصل بشكل جيد)، وتفصيل كامل لأنواع الاختبار — الساكن مقابل الديناميكي، وفئات الاختبار الديناميكي الأربع.
+    </p>
+    <div class="grid grid-2">
+      <div class="card tinted">
+        <h3 class="i18n" data-en="📘 Lecture 1 — Fundamentals of Testing">📘 المحاضرة 1 — أساسيات الاختبار</h3>
+        <ul style="margin:0; padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="Definition of Software Testing &amp; Software Quality">تعريف اختبار البرمجيات وجودة البرمجيات</li>
+          <li class="i18n" data-en="QA vs. QC vs. Software Test">QA مقابل QC مقابل Software Test</li>
+          <li class="i18n" data-en="Why we test + real-world failure examples">لماذا نختبر + أمثلة إخفاقات واقعية</li>
+          <li class="i18n" data-en="Verification vs. Validation">التحقق مقابل التصديق</li>
+          <li class="i18n" data-en="Error, Bug/Defect, and Failure + why errors occur">الخطأ، العيب، والإخفاق + لماذا تحدث الأخطاء</li>
+          <li class="i18n" data-en="Defects, Root Causes and Effects">العيوب والأسباب الجذرية والآثار</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:#fb923c44;">
+        <h3 class="i18n" data-en="📗 Lecture 2 — Principles, Psychology &amp; Testing Types">📗 المحاضرة 2 — المبادئ، السيكولوجية، وأنواع الاختبار</h3>
+        <ul style="margin:0; padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="The Seven Principles of Testing">مبادئ الاختبار السبعة</li>
+          <li class="i18n" data-en="Human Psychology: confirmation bias &amp; good communication">سيكولوجية الإنسان: الانحياز التأكيدي والتواصل الجيد</li>
+          <li class="i18n" data-en="Developer's Mindset vs. Tester's Mindset">عقلية المطوّر مقابل عقلية المُختبِر</li>
+          <li class="i18n" data-en="Static Testing vs. Dynamic Testing">الاختبار الساكن مقابل الديناميكي</li>
+          <li class="i18n" data-en="Functional, Structural, Non-Functional, Change-Related Testing">الوظيفي، البنيوي، غير الوظيفي، والمرتبط بالتغيير</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FULL EXPLANATION ============ -->
+<section id="explain">
+  <div class="container">
+    <span class="eyebrow">02 / FULL EXPLANATION</span>
+    <h2 class="i18n" data-en="Full Explanation of Every Section">الشرح الكامل لكل قسم</h2>
+    <p class="lead i18n" data-en="Each card covers one part of the lectures in order, without dropping information from the slides.">كل بطاقة تغطي جزءًا من المحاضرتين بالترتيب، دون تجاوز أي معلومة من الشرائح.</p>
+
+    <div class="part-divider"><span class="pd-badge pd-l1">LECTURE 1</span><span class="pd-line"></span><h3 class="i18n" data-en="Fundamentals of Testing">أساسيات الاختبار</h3></div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.1</span> <span class="i18n" data-en="What Is Software Testing? + Software Quality">ما هو اختبار البرمجيات؟ + جودة البرمجيات</span></h3>
+      <p class="i18n" data-en="<b>Software testing</b> is the process of evaluating a software application by executing it to identify defects, verify that it meets the specified requirements, and ensure it functions correctly, reliably, and securely."><b>اختبار البرمجيات</b> هو عملية تقييم تطبيق برمجي بتنفيذه لتحديد العيوب، والتحقق من أنه يفي بالمتطلبات المحدَّدة، وضمان أنه يعمل بشكل صحيح وموثوق وآمن.</p>
+      <div class="note info"><b class="i18n" data-en="According to IEEE:">وفقًا لـIEEE:</b> <span class="i18n" data-en="the process of operating a system or component under specified conditions, observing or recording the results, and making an evaluation of some aspect of the system or component.">عملية تشغيل نظام أو مكوّن تحت شروط محدَّدة، ورصد أو تسجيل النتائج، وتقييم جانب من جوانب النظام أو المكوّن.</span></div>
+      <div class="note good"><b class="i18n" data-en="Simply:">ببساطة:</b> <span class="i18n" data-en="at its core, testing is the process of comparing “what is” with “what ought to be.”">في جوهره، الاختبار هو عملية مقارنة "ما هو كائن" بـ"ما ينبغي أن يكون".</span></div>
+      <p style="margin-top:8px;"><b class="i18n" data-en="Software Quality:">جودة البرمجيات:</b> <span class="i18n" data-en="is the degree to which a software product meets specified requirements, satisfies user needs, and conforms to established standards.">هي الدرجة التي يفي بها منتج برمجي بالمتطلبات المحدَّدة، ويُلبّي احتياجات المستخدم، ويتوافق مع المعايير المُقرَّرة.</span></p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.2</span> <span class="i18n" data-en="The Differences Between QA, QC, and Testing">الفروق بين QA وQC والاختبار</span></h3>
+      <table>
+        <tr><th class="i18n" data-en="Term">المصطلح</th><th class="i18n" data-en="Definition">التعريف</th></tr>
+        <tr><td><span class="badge b-qa">Quality Assurance (QA)</span></td><td class="i18n" data-en="Typically focused on adherence to proper processes, in order to provide confidence that the appropriate levels of quality will be achieved.">تُركّز عادةً على الالتزام بالعمليات الصحيحة، لتوفير الثقة بأن مستويات الجودة المناسبة ستُحقَّق.</td></tr>
+        <tr><td><span class="badge b-qc">Quality Control (QC)</span></td><td class="i18n" data-en="A set of activities designed to evaluate the quality of a component or system, supporting the achievement of appropriate levels of quality.">مجموعة أنشطة مُصمَّمة لتقييم جودة مكوّن أو نظام، تدعم تحقيق مستويات الجودة المناسبة.</td></tr>
+        <tr><td><span class="badge b-gold">Software Test (ST)</span></td><td class="i18n" data-en="The process of executing software to identify defects, verify functionality, and ensure the software behaves as expected under specified conditions.">عملية تنفيذ البرمجية لتحديد العيوب، والتحقق من الوظائف، وضمان أن البرمجية تتصرف كما هو متوقع تحت شروط محدَّدة.</td></tr>
+      </table>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.3</span> <span class="i18n" data-en="Why Should We Test Software?">لماذا يجب أن نختبر البرمجيات؟</span></h3>
+      <p class="i18n" data-en="Most people have had an experience with software that did not work as expected. Software that does not work correctly can lead to many problems, including loss of money, time, or business reputation, and even injury or death. Software testing is a way to assess the quality of the software and to reduce the risk of software failure in operation.">معظم الناس مرّوا بتجربة مع برمجية لم تعمل كما هو متوقع. البرمجية التي لا تعمل بشكل صحيح قد تؤدي لمشاكل كثيرة، منها خسارة المال أو الوقت أو سمعة الأعمال، وحتى الإصابة أو الموت. اختبار البرمجيات وسيلة لتقييم جودة البرمجية وتقليل مخاطر إخفاقها أثناء التشغيل.</p>
+      <div class="grid grid-4">
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Avoid Defects">تجنّب العيوب</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Which cause software failures.">التي تُسبّب إخفاقات البرمجية.</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Improve Quality">تحسين الجودة</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Improving overall quality.">تحسين الجودة الشاملة.</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Prevent Loss">منع الخسائر</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Preventing financial and operational loss.">منع الخسائر المالية والتشغيلية.</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Reduce Vulnerabilities">تقليل الثغرات</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Reducing security vulnerabilities.">تقليل الثغرات الأمنية.</p></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.4</span> <span class="i18n" data-en="Real-World Examples of Software Failures">أمثلة واقعية لإخفاقات برمجية</span></h3>
+      <table>
+        <tr><th class="i18n" data-en="Case">الحالة</th><th class="i18n" data-en="Problem">المشكلة</th><th class="i18n" data-en="Impact">الأثر</th><th class="i18n" data-en="Cause">السبب</th></tr>
+        <tr><td class="i18n" data-en="Google Cloud &amp; AWS Outages (2019–2024)">انقطاعات Google Cloud وAWS (2019-2024)</td><td class="i18n" data-en="Software bugs in load balancing and configuration systems.">عيوب برمجية في موازنة الحمل وأنظمة الإعدادات.</td><td class="i18n" data-en="Downtime for major websites and services.">توقّف مواقع وخدمات رئيسية.</td><td class="i18n" data-en="Configuration and deployment errors.">أخطاء إعدادات ونشر.</td></tr>
+        <tr><td class="i18n" data-en="Autonomous Vehicle Software Failures (2018–2024)">إخفاقات برمجيات المركبات ذاتية القيادة (2018-2024)</td><td class="i18n" data-en="Incorrect object detection and decision-making.">كشف أجسام واتخاذ قرارات خاطئ.</td><td class="i18n" data-en="Accidents during testing or real-world use.">حوادث أثناء الاختبار أو الاستخدام الفعلي.</td><td class="i18n" data-en="Insufficient validation of AI/ML systems.">تصديق غير كافٍ لأنظمة الذكاء الاصطناعي/التعلّم الآلي.</td></tr>
+        <tr><td class="i18n" data-en="COVID-19 Tracking Apps Issues (2020)">مشاكل تطبيقات تتبّع كوفيد-19 (2020)</td><td class="i18n" data-en="Bugs, privacy flaws, and incorrect data handling.">عيوب، ثغرات خصوصية، ومعالجة بيانات خاطئة.</td><td class="i18n" data-en="Inaccurate exposure alerts and loss of public trust.">تنبيهات تعرّض غير دقيقة وفقدان ثقة الجمهور.</td><td class="i18n" data-en="Rushed development and insufficient testing.">تطوير متسرّع واختبار غير كافٍ.</td></tr>
+      </table>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.5</span> <span class="i18n" data-en="Verification and Validation">التحقق والتصديق (Verification and Validation)</span></h3>
+      <p class="i18n" data-en="Two similar concepts related to software testing, frequently used by practitioners. Both are abstract in nature, and each can be realized by a set of concrete, executable activities.">مفهومان متشابهان مرتبطان باختبار البرمجيات، يستخدمهما الممارسون بكثرة. كلاهما مجرّد بطبيعته، ويمكن تحقيق كل منهما بمجموعة من الأنشطة الملموسة القابلة للتنفيذ.</p>
+      <table>
+        <tr><th class="i18n" data-en="Concept">المفهوم</th><th class="i18n" data-en="Definition">التعريف</th><th class="i18n" data-en="Key Question">السؤال المحوري</th></tr>
+        <tr><td><b>Verification</b></td><td class="i18n" data-en="The process of evaluating work products (documents, design, code, etc.) to ensure they meet the specified requirements and standards. It checks whether the software is being built correctly according to the process.">عملية تقييم منتجات العمل (المستندات، التصميم، الكود، إلخ) للتأكد من أنها تفي بالمتطلبات والمعايير المحدَّدة. تفحص ما إذا كانت البرمجية تُبنى بشكل صحيح وفقًا للعملية.</td><td class="i18n" data-en="“Are we building the product right?”">"هل نبني المنتج بالطريقة الصحيحة؟"</td></tr>
+        <tr><td><b>Validation</b></td><td class="i18n" data-en="The process of evaluating the final software product to ensure it meets user needs, expectations, and requirements. It checks whether the right product has been built.">عملية تقييم المنتج البرمجي النهائي للتأكد من أنه يُلبّي احتياجات المستخدم وتوقعاته ومتطلباته. تفحص ما إذا كان المنتج الصحيح قد بُني.</td><td class="i18n" data-en="“Are we building the right product?”">"هل نبني المنتج الصحيح؟"</td></tr>
+      </table>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.6</span> <span class="i18n" data-en="The Differences Between Error, Bug, and Failure">الفروق بين الخطأ والعيب والإخفاق</span></h3>
+      <table>
+        <tr><th class="i18n" data-en="Term">المصطلح</th><th class="i18n" data-en="Definition">التعريف</th></tr>
+        <tr><td><b class="i18n" data-en="Error">الخطأ (Error)</b></td><td class="i18n" data-en="A mistake made in the code. Can occur due to the developer's coding error, misunderstanding the requirement, or the requirement not being defined correctly. An error is also called a mistake.">خطأ يُرتكب في الكود. قد يحدث بسبب خطأ برمجة المطوّر، أو سوء فهم المتطلب، أو عدم تعريف المتطلب بشكل صحيح. يُسمّى الخطأ أيضًا مغالطة (mistake).</td></tr>
+        <tr><td><b class="i18n" data-en="Bug">العيب (Bug)</b></td><td class="i18n" data-en="The difference between the actual outcomes and expected outputs. A bug is also called a defect or fault.">الفرق بين النتائج الفعلية والمُخرَجات المتوقعة. يُسمّى العيب أيضًا defect أو fault.</td></tr>
+        <tr><td><b class="i18n" data-en="Failure">الإخفاق (Failure)</b></td><td class="i18n" data-en="The result of having many defects in the software which prevent it from accomplishing its essential function.">نتيجة وجود عيوب كثيرة في البرمجية تمنعها من أداء وظيفتها الأساسية.</td></tr>
+      </table>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.7</span> <span class="i18n" data-en="Examples: The Error → Defect → Failure Chain">أمثلة: سلسلة الخطأ ← العيب ← الإخفاق</span></h3>
+      <p class="i18n" data-en="A requirements elicitation error can lead to a requirements defect, which then results in a programming error that leads to a defect in the code. If a defect in the code is executed, this may cause a failure.">خطأ في استخلاص المتطلبات قد يؤدي لعيب في المتطلبات، مما ينتج عنه خطأ برمجي يؤدي لعيب في الكود. إذا نُفِّذ عيب في الكود، فقد يُسبّب هذا إخفاقًا.</p>
+      <div class="note warn"><b class="i18n" data-en="Note — Not necessarily in all circumstances:">ملاحظة — ليس بالضرورة في كل الظروف:</b> <span class="i18n" data-en="Some defects require very specific inputs or preconditions to trigger a failure, which may occur rarely or never.">بعض العيوب تتطلب مدخلات أو شروطًا مسبقة محدَّدة جدًا لإحداث إخفاق، وقد يحدث هذا نادرًا أو أبدًا.</span></div>
+      <p style="margin-top:8px; color:var(--text-dim); font-size:.9rem;" class="i18n" data-en="See “Figure 1” below in Diagrams for the visual chain: Error/Mistake → Defect/Fault/Bug → Failure.">انظر "Figure 1" أدناه في قسم الرسومات للسلسلة المُصوَّرة: Error/Mistake ← Defect/Fault/Bug ← Failure.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.8</span> <span class="i18n" data-en="Why Do Errors Occur?">لماذا تحدث الأخطاء؟</span></h3>
+      <ul style="color:var(--text-dim); padding-inline-start:20px;">
+        <li class="i18n" data-en="Time pressure">ضغط الوقت</li>
+        <li class="i18n" data-en="Human fallibility">قابلية الإنسان للخطأ</li>
+        <li class="i18n" data-en="Inexperienced or insufficiently skilled project participants">مشاركون في المشروع قليلو الخبرة أو المهارة</li>
+        <li class="i18n" data-en="Miscommunication between project participants, including about requirements and design">سوء تواصل بين المشاركين، بما في ذلك حول المتطلبات والتصميم</li>
+        <li class="i18n" data-en="Misunderstandings about intra-system and inter-system interfaces, especially when numerous">سوء فهم لواجهات داخل النظام وبينه وبين أنظمة أخرى، خصوصًا عند كثرتها</li>
+        <li class="i18n" data-en="Complexity of the code, design, architecture, the underlying problem, and/or the technologies used">تعقيد الكود أو التصميم أو المعمارية أو المسألة الأساسية أو التقنيات المُستخدَمة</li>
+        <li class="i18n" data-en="New, unfamiliar technologies">تقنيات جديدة غير مألوفة</li>
+      </ul>
+      <div class="note info" style="margin-top:8px;" class="i18n" data-en="In addition to failures caused by defects in the code, failures can also be caused by environmental conditions. For example, radiation, electromagnetic fields, and pollution can cause defects in firmware or influence software execution by changing hardware conditions.">بالإضافة إلى الإخفاقات الناتجة عن عيوب في الكود، يمكن أن تنتج الإخفاقات أيضًا عن ظروف بيئية. مثلًا، الإشعاع والحقول الكهرومغناطيسية والتلوّث قد تُسبّب عيوبًا في البرمجية الثابتة (firmware) أو تؤثر على تنفيذ البرمجية بتغيير ظروف العتاد.</div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;">
+      <h3><span class="num">1.9</span> <span class="i18n" data-en="Defects, Root Causes and Effects">العيوب والأسباب الجذرية والآثار</span></h3>
+      <p class="i18n" data-en="The root causes of defects are the earliest actions or conditions that contributed to creating the defects. Defects can be analyzed to identify their root causes, so as to reduce the occurrence of similar defects in the future. By focusing on the most significant root causes, root cause analysis can lead to process improvements that prevent a significant number of future defects from being introduced.">الأسباب الجذرية للعيوب هي أقدم الأفعال أو الظروف التي أسهمت في نشوء العيوب. يمكن تحليل العيوب لتحديد أسبابها الجذرية، لتقليل حدوث عيوب مماثلة مستقبلًا. بالتركيز على الأسباب الجذرية الأكثر أهمية، يمكن لتحليل السبب الجذري أن يؤدي لتحسينات في العملية تمنع إدخال عدد كبير من العيوب المستقبلية.</p>
+      <div class="note good" style="margin-top:8px;"><b class="i18n" data-en="Worked Example — Incorrect Interest Payments:">مثال محلول — دفعات فوائد خاطئة:</b>
+        <p style="margin-top:6px;" class="i18n" data-en="Suppose incorrect interest payments, due to a single line of incorrect code, result in customer complaints. Breakdown:">لنفترض أن دفعات فوائد خاطئة، بسبب سطر كود واحد غير صحيح، تؤدي لشكاوى عملاء. التفصيل:</p>
+        <table style="margin-top:8px;">
+          <tr><th class="i18n" data-en="Level">المستوى</th><th class="i18n" data-en="What it is in this example">ما هو في هذا المثال</th></tr>
+          <tr><td class="i18n" data-en="Effect">الأثر</td><td class="i18n" data-en="The customer complaints.">شكاوى العملاء.</td></tr>
+          <tr><td class="i18n" data-en="Failure">الإخفاق</td><td class="i18n" data-en="The incorrect interest payments.">دفعات الفوائد الخاطئة.</td></tr>
+          <tr><td class="i18n" data-en="Defect">العيب</td><td class="i18n" data-en="The improper calculation in the code.">الحساب غير الصحيح في الكود.</td></tr>
+          <tr><td class="i18n" data-en="Original Defect">العيب الأصلي</td><td class="i18n" data-en="The ambiguity in the user story.">الغموض في قصة المستخدم (user story).</td></tr>
+          <tr><td class="i18n" data-en="Root Cause">السبب الجذري</td><td class="i18n" data-en="A lack of knowledge on the part of the product owner, which resulted in the product owner making an error while writing the user story.">نقص معرفة لدى مالك المنتج (product owner)، مما أدى لارتكابه خطأً أثناء كتابة قصة المستخدم.</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="part-divider"><span class="pd-badge pd-l2">LECTURE 2</span><span class="pd-line"></span><h3 class="i18n" data-en="Principles, Psychology &amp; Testing Types">المبادئ، السيكولوجية، وأنواع الاختبار</h3></div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.1</span> <span class="i18n" data-en="The Seven Principles of Testing — 1, 2 &amp; 3">مبادئ الاختبار السبعة — 1 و2 و3</span></h3>
+      <p class="i18n" data-en="A number of testing principles have been suggested over the past 50 years and offer general guidelines common to all testing.">اقتُرح عدد من مبادئ الاختبار على مدى الخمسين عامًا الماضية، وتُقدّم إرشادات عامة مشتركة لكل الاختبار.</p>
+      <table>
+        <tr><th>#</th><th class="i18n" data-en="Principle">المبدأ</th><th class="i18n" data-en="Explanation">الشرح</th></tr>
+        <tr><td>1</td><td class="i18n" data-en="Testing shows the presence of defects, not their absence">الاختبار يُظهر وجود العيوب، لا غيابها</td><td class="i18n" data-en="Testing can show that defects are present, but cannot prove there are no defects. It reduces the probability of undiscovered defects remaining, but even if none are found, testing is not proof of correctness.">يمكن للاختبار إظهار وجود عيوب، لكن لا يمكنه إثبات عدم وجودها. يُقلّل احتمالية بقاء عيوب غير مُكتشَفة، لكن حتى لو لم توجد، الاختبار ليس إثباتًا للصحة.</td></tr>
+        <tr><td>2</td><td class="i18n" data-en="Exhaustive testing is impossible">الاختبار الشامل مستحيل</td><td class="i18n" data-en="Testing everything (all combinations of inputs and preconditions) is not feasible except for trivial cases. Use risk analysis, test techniques, and priorities to focus test efforts instead.">اختبار كل شيء (كل تركيبات المدخلات والشروط المسبقة) غير ممكن عمليًا إلا في الحالات البسيطة جدًا. استخدم تحليل المخاطر وتقنيات الاختبار والأولويات لتركيز جهود الاختبار بدلًا من ذلك.</td></tr>
+        <tr><td>3</td><td class="i18n" data-en="Early testing saves time and money">الاختبار المبكر يوفّر الوقت والمال</td><td class="i18n" data-en="To find defects early, both static and dynamic test activities should start as early as possible in the software development lifecycle. Often called “shift left” — it helps reduce or eliminate costly changes.">للعثور على العيوب مبكرًا، يجب أن تبدأ أنشطة الاختبار الساكن والديناميكي في أبكر وقت ممكن من دورة حياة تطوير البرمجية. يُسمّى غالبًا "shift left" — يساعد على تقليل أو إزالة التغييرات المكلفة.</td></tr>
+      </table>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.2</span> <span class="i18n" data-en="The Seven Principles of Testing — 4, 5 &amp; 6">مبادئ الاختبار السبعة — 4 و5 و6</span></h3>
+      <table>
+        <tr><th>#</th><th class="i18n" data-en="Principle">المبدأ</th><th class="i18n" data-en="Explanation">الشرح</th></tr>
+        <tr><td>4</td><td class="i18n" data-en="Defects cluster together">العيوب تتجمّع معًا</td><td class="i18n" data-en="A small number of modules usually contains most of the defects discovered during pre-release testing, or is responsible for most operational failures. Predicted and actual defect clusters are an important input into risk analysis (see principle 2).">عدد صغير من الوحدات (modules) يحتوي عادةً معظم العيوب المُكتشَفة أثناء اختبار ما قبل الإصدار، أو مسؤول عن معظم الإخفاقات التشغيلية. تجمعات العيوب المُتوقَّعة والفعلية مُدخَل مهم لتحليل المخاطر (انظر المبدأ 2).</td></tr>
+        <tr><td>5</td><td class="i18n" data-en="Beware of the pesticide paradox">احذر مفارقة المبيد الحشري</td><td class="i18n" data-en="If the same tests are repeated over and over, eventually they no longer find new defects. Existing tests may need changing and new tests writing. In automated regression testing this paradox can be beneficial — relatively few regression defects.">إذا تُكرِّرت نفس الاختبارات مرارًا، ستتوقف في النهاية عن إيجاد عيوب جديدة. قد تحتاج الاختبارات الحالية للتغيير وكتابة اختبارات جديدة. في اختبار الانحدار الآلي، قد تكون هذه المفارقة مفيدة — عدد قليل نسبيًا من عيوب الانحدار.</td></tr>
+        <tr><td>6</td><td class="i18n" data-en="Testing is context dependent">الاختبار يعتمد على السياق</td><td class="i18n" data-en="Testing is done differently in different contexts. Safety-critical industrial control software is tested differently from an e-commerce mobile app; Agile testing differs from sequential lifecycle testing.">يُنفَّذ الاختبار بشكل مختلف في سياقات مختلفة. تُختبَر برمجية التحكم الصناعي الحرجة أمنيًا بشكل مختلف عن تطبيق تجارة إلكترونية؛ ويختلف الاختبار في مشروع Agile عن دورة حياة تسلسلية.</td></tr>
+      </table>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.3</span> <span class="i18n" data-en="The Seven Principles of Testing — 7">مبادئ الاختبار السبعة — 7</span></h3>
+      <div class="note warn"><b class="i18n" data-en="7. Absence-of-errors is a fallacy">7. غياب الأخطاء مغالطة</b>
+        <p style="margin-top:6px;" class="i18n" data-en="Some organizations expect that testers can run all possible tests and find all possible defects, but principles 2 and 1 tell us this is impossible. Further, it is a fallacy (a mistaken belief) to expect that just finding and fixing a large number of defects will ensure a system's success. For example, thoroughly testing all specified requirements and fixing all defects found could still produce a system that is difficult to use, does not fulfill users' needs and expectations, or is inferior to competing systems.">تتوقع بعض المؤسسات أن يستطيع المُختبِرون تشغيل كل الاختبارات الممكنة وإيجاد كل العيوب الممكنة، لكن المبدأين 2 و1 يخبراننا أن هذا مستحيل. علاوةً على ذلك، من المغالطة توقّع أن مجرد إيجاد وإصلاح عدد كبير من العيوب سيضمن نجاح النظام. مثلًا، اختبار كل المتطلبات المحدَّدة بدقّة وإصلاح كل العيوب المُكتشَفة قد ينتج مع ذلك نظامًا صعب الاستخدام، أو لا يُلبّي احتياجات المستخدمين وتوقعاتهم، أو أدنى من أنظمة منافسة.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.4</span> <span class="i18n" data-en="Human Psychology and Testing — Confirmation Bias">سيكولوجية الإنسان والاختبار — الانحياز التأكيدي</span></h3>
+      <p class="i18n" data-en="Identifying defects during a static test (like a requirement review) or identifying failures during dynamic test execution may be perceived as criticism of the product and its author.">تحديد العيوب أثناء اختبار ساكن (مثل مراجعة متطلب) أو تحديد الإخفاقات أثناء تنفيذ اختبار ديناميكي قد يُنظَر إليه كنقد للمنتج ومؤلفه.</p>
+      <div class="note warn"><b class="i18n" data-en="Confirmation bias">الانحياز التأكيدي</b> <span class="i18n" data-en="can make it difficult to accept information that disagrees with currently held beliefs. Example: developers expect their code to be correct, so they have a confirmation bias that makes it difficult to accept the code is incorrect. As a result, some people may perceive testing as a destructive activity, even though it contributes greatly to project progress and product quality.">قد يجعل من الصعب قبول معلومات تتعارض مع المعتقدات الحالية. مثال: يتوقع المطورون أن يكون كودهم صحيحًا، فلديهم انحياز تأكيدي يجعل من الصعب قبول أن الكود غير صحيح. نتيجة لذلك، قد يرى البعض الاختبار كنشاط هدّام، رغم أنه يُسهم كثيرًا في تقدّم المشروع وجودة المنتج.</span></div>
+      <p style="margin-top:8px;" class="i18n" data-en="To try to reduce these perceptions, information about defects and failures should be communicated in a constructive way.">لتقليل هذه التصوّرات، يجب توصيل المعلومات عن العيوب والإخفاقات بطريقة بنّاءة.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.5</span> <span class="i18n" data-en="Ways to Communicate Well">طرق التواصل الجيد</span></h3>
+      <p class="i18n" data-en="Testers and test managers need good interpersonal skills to communicate effectively about defects, failures, test results, test progress, and risks, and to build positive relationships with colleagues.">يحتاج المُختبِرون ومديرو الاختبار مهارات تعامل شخصي جيدة للتواصل بفعالية حول العيوب والإخفاقات ونتائج الاختبار وتقدّمه والمخاطر، ولبناء علاقات إيجابية مع الزملاء.</p>
+      <ol style="color:var(--text-dim); padding-inline-start:20px;">
+        <li class="i18n" data-en="Start with collaboration rather than battles — remind everyone of the common goal of better quality systems.">ابدأ بالتعاون لا بالمعارك — ذكّر الجميع بالهدف المشترك: أنظمة ذات جودة أفضل.</li>
+        <li class="i18n" data-en="Emphasize the benefits of testing — for authors, defect information can help improve their work and skills.">أكّد على فوائد الاختبار — بالنسبة للمؤلفين، معلومات العيوب تساعد على تحسين عملهم ومهاراتهم.</li>
+        <li class="i18n" data-en="Communicate test results and findings in a neutral, fact-focused way without criticizing the person who created the defective item.">أبلغ نتائج الاختبار والملاحظات بطريقة محايدة تركّز على الحقائق دون انتقاد من أنشأ العنصر المعيب.</li>
+        <li class="i18n" data-en="Try to understand how the other person feels and why they may react negatively.">حاول فهم شعور الطرف الآخر ولماذا قد يتفاعل سلبًا.</li>
+        <li class="i18n" data-en="Confirm that the other person has understood what has been said, and vice versa.">تأكّد أن الطرف الآخر فهم ما قيل، والعكس صحيح.</li>
+      </ol>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.6</span> <span class="i18n" data-en="Tester's and Developer's Mindsets">عقلية المُختبِر والمطوّر</span></h3>
+      <p class="i18n" data-en="A mindset reflects an individual's assumptions and preferred methods for decision making and problem solving.">العقلية تعكس افتراضات الفرد وأساليبه المفضَّلة لاتخاذ القرار وحل المشكلات.</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="A Developer's Mindset">عقلية المطوّر</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="The primary objective of development is to design and build a product. A developer's mindset may include some elements of a tester's mindset, but successful developers are often more interested in designing and building solutions.">الهدف الأساسي للتطوير هو تصميم وبناء منتج. قد تتضمن عقلية المطوّر بعض عناصر عقلية المُختبِر، لكن المطورين الناجحين غالبًا أكثر اهتمامًا بتصميم وبناء الحلول.</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="A Tester's Mindset">عقلية المُختبِر</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Should include curiosity, professional pessimism, a critical eye, attention to detail, and a motivation for good and positive communications and relationships. It tends to grow and mature as the tester gains experience.">يجب أن تشمل الفضول، والتشاؤم المهني، وعينًا نقدية، والانتباه للتفاصيل، ودافعًا للتواصل والعلاقات الجيدة والإيجابية. تنمو وتنضج عادةً مع اكتساب المُختبِر للخبرة.</p></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.7</span> <span class="i18n" data-en="Static Testing">الاختبار الساكن (Static Testing)</span></h3>
+      <p class="i18n" data-en="A type of software testing in which the software application is tested without code execution. It involves manual or automated reviews of documents, done during an initial phase of testing to catch defects early in the STLC. It examines work documents and provides review comments. Also called non-execution testing or verification testing.">نوع من اختبار البرمجيات يُختبَر فيه التطبيق البرمجي دون تنفيذ الكود. يشمل مراجعات يدوية أو آلية للمستندات، تُجرى في مرحلة مبكرة من الاختبار لاكتشاف العيوب مبكرًا في دورة حياة الاختبار (STLC). يفحص مستندات العمل ويُقدّم تعليقات مراجعة. يُسمّى أيضًا اختبار عدم التنفيذ (non-execution testing) أو اختبار التحقق (verification testing).</p>
+      <div class="note info"><b class="i18n" data-en="Objective:">الهدف:</b> <span class="i18n" data-en="to improve the quality of software applications by finding errors in early stages of the software development process.">تحسين جودة التطبيقات البرمجية بإيجاد الأخطاء في المراحل المبكرة من عملية التطوير.</span></div>
+      <p style="margin-top:8px;"><b class="i18n" data-en="Examples of work documents:">أمثلة مستندات العمل:</b> <span class="i18n" data-en="Requirement specifications, Help or User document, Test Plans, Design document, Web Page content, Source Code, Test Cases, Test Scripts.">مواصفات المتطلبات، مستند المساعدة أو المستخدم، خطط الاختبار، مستند التصميم، محتوى صفحة ويب، الكود المصدري، حالات الاختبار، سكربتات الاختبار.</span></p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.8</span> <span class="i18n" data-en="Dynamic Testing">الاختبار الديناميكي (Dynamic Testing)</span></h3>
+      <p class="i18n" data-en="A type of software testing in which the software application is tested with code execution. It executes the software and validates the output against the expected outcome. Performed at all levels of testing, and can be either black-box or white-box testing.">نوع من اختبار البرمجيات يُختبَر فيه التطبيق البرمجي بتنفيذ الكود. يُنفّذ البرمجية ويُصادِق على المُخرَج مقابل النتيجة المتوقعة. يُنفَّذ في كل مستويات الاختبار، ويمكن أن يكون اختبار صندوق أسود أو أبيض.</p>
+      <div class="note info"><b class="i18n" data-en="Objective:">الهدف:</b> <span class="i18n" data-en="to confirm that the software product works in conformance with business requirements. Also called an execution technique or validation testing.">تأكيد أن المنتج البرمجي يعمل بما يتوافق مع متطلبات الأعمال. يُسمّى أيضًا تقنية تنفيذ (execution technique) أو اختبار تصديق (validation testing).</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.9</span> <span class="i18n" data-en="Testing Types Overview (Figure 2)">نظرة عامة على أنواع الاختبار (الشكل 2)</span></h3>
+      <p class="i18n" data-en="The slide classifies testing techniques under Static and Dynamic. See “Figure 2” below in Diagrams for the full breakdown: Static branches into Inspection, Review, and Structured Walkthroughs; Dynamic branches into Functional, Structural (White Box), Non-Functional, and Change-Related Test.">تُصنِّف الشريحة تقنيات الاختبار تحت Static وDynamic. انظر "Figure 2" أدناه في قسم الرسومات للتفصيل الكامل: يتفرّع Static إلى Inspection وReview وStructured Walkthroughs؛ ويتفرّع Dynamic إلى Functional وStructural (White Box) وNon-Functional وChange-Related Test.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.10</span> <span class="i18n" data-en="Functional Testing">الاختبار الوظيفي (Functional Testing)</span></h3>
+      <p class="i18n" data-en="A type of Software Testing in which the system is tested against the functional requirements and specifications.">نوع من اختبار البرمجيات يُختبَر فيه النظام مقابل المتطلبات والمواصفات الوظيفية.</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Knowledge to be Considered">المعرفة الواجب مراعاتها</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="May involve special skills or knowledge of the particular business problem the software solves (e.g. geological modelling software for the oil and gas industries).">قد تتطلب مهارات خاصة أو معرفة بمسألة الأعمال المحدَّدة التي تحلّها البرمجية (مثل برمجية النمذجة الجيولوجية لصناعات النفط والغاز).</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Thoroughness Measurement">قياس الشمولية</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Measured through functional coverage — the extent to which functionality has been exercised by tests, expressed as a percentage of the type(s) of element covered.">تُقاس عبر التغطية الوظيفية (functional coverage) — مدى ممارسة الاختبارات للوظائف، مُعبَّرًا عنها كنسبة مئوية من نوع (أنواع) العنصر المُغطّى.</p></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.11</span> <span class="i18n" data-en="Structural Testing">الاختبار البنيوي (Structural Testing)</span></h3>
+      <p class="i18n" data-en="A type of software testing which uses the internal design of the software for testing.">نوع من اختبار البرمجيات يستخدم التصميم الداخلي للبرمجية للاختبار.</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Knowledge to be Considered">المعرفة الواجب مراعاتها</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="White-box test design and execution may involve knowledge of how code is built, how data is stored (e.g. to evaluate database queries), and how to use coverage tools and interpret their results.">قد يتطلب تصميم وتنفيذ اختبار الصندوق الأبيض معرفة بكيفية بناء الكود، وكيفية تخزين البيانات (مثل تقييم استعلامات قاعدة البيانات)، وكيفية استخدام أدوات التغطية وتفسير نتائجها.</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Thoroughness Measurement">قياس الشمولية</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Measured through structural coverage — the extent to which a structural element type has been exercised by tests, expressed as a percentage of the element type covered.">تُقاس عبر التغطية البنيوية (structural coverage) — مدى ممارسة الاختبارات لنوع عنصر بنيوي، مُعبَّرًا عنها كنسبة مئوية من نوع العنصر المُغطّى.</p></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.12</span> <span class="i18n" data-en="Non-Functional Testing">الاختبار غير الوظيفي (Non-Functional Testing)</span></h3>
+      <p class="i18n" data-en="A type of Software Testing that is performed to verify the non-functional requirements of the application.">نوع من اختبار البرمجيات يُنفَّذ للتحقق من المتطلبات غير الوظيفية للتطبيق.</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Knowledge to be Considered">المعرفة الواجب مراعاتها</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="May involve knowledge of the inherent weaknesses of a design or technology (e.g. security vulnerabilities associated with particular programming languages).">قد تتطلب معرفة بنقاط الضعف المتأصلة في تصميم أو تقنية (مثل الثغرات الأمنية المرتبطة بلغات برمجة معينة).</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Thoroughness Measurement">قياس الشمولية</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Measured through non-functional coverage — e.g. using traceability between tests and supported devices for a mobile application.">تُقاس عبر التغطية غير الوظيفية — مثل استخدام إمكانية التتبّع بين الاختبارات والأجهزة المدعومة لتطبيق جوال.</p></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;">
+      <h3><span class="num">2.13</span> <span class="i18n" data-en="Change-Related Testing">الاختبار المرتبط بالتغيير (Change-Related Testing)</span></h3>
+      <p class="i18n" data-en="A type of Software Testing performed when changes are made to a system, either to correct a defect or because of new or changing functionality.">نوع من اختبار البرمجيات يُنفَّذ عند إجراء تغييرات على نظام، إما لتصحيح عيب أو بسبب وظيفة جديدة أو متغيّرة.</p>
+      <table>
+        <tr><th class="i18n" data-en="Type">النوع</th><th class="i18n" data-en="Description">الوصف</th></tr>
+        <tr><td><b class="i18n" data-en="Confirmation Testing">اختبار التأكيد (Confirmation Testing)</b></td><td class="i18n" data-en="Performed after a defect is fixed — the software may be tested with all test cases that failed due to the defect, which should be re-executed on the new version. New tests may also be added to cover the fix.">يُنفَّذ بعد إصلاح عيب — قد تُختبَر البرمجية بكل حالات الاختبار التي فشلت بسبب العيب، والتي يجب إعادة تنفيذها على النسخة الجديدة. قد تُضاف اختبارات جديدة أيضًا لتغطية الإصلاح.</td></tr>
+        <tr><td><b>Regression Testing</b></td><td class="i18n" data-en="The process of testing the modified parts of the code and the parts that might be affected by the modifications, to ensure no new errors have been introduced after the modifications.">عملية اختبار الأجزاء المُعدَّلة من الكود والأجزاء التي قد تتأثر بالتعديلات، للتأكد من عدم إدخال أخطاء جديدة بعد التعديلات.</td></tr>
+      </table>
+      <div class="note info" style="margin-top:8px;" class="i18n" data-en="Assignments from the slides (for practice): (1) List the differences between Static Testing and Dynamic Testing. (2) List three types of software testing that have not been mentioned (i.e., beyond Functional, Structural, Non-Functional, and Change-Related).">تمارين من الشرائح (للتدريب): (1) عدِّد الفروق بين الاختبار الساكن والديناميكي. (2) عدِّد ثلاثة أنواع من اختبار البرمجيات لم تُذكَر (أي بخلاف الوظيفي والبنيوي وغير الوظيفي والمرتبط بالتغيير).</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DIAGRAMS (text descriptions) ============ -->
+<section id="diagrams">
+  <div class="container">
+    <span class="eyebrow">03 / DIAGRAMS</span>
+    <h2 class="i18n" data-en="Explaining the Diagrams">شرح الرسومات والمخططات</h2>
+    <p class="lead i18n" data-en="A precise text description of every diagram in the two lectures, tied to the theory behind it.">وصف نصي دقيق لكل مخطط في المحاضرتين، مرتبط بالنظرية خلفه.</p>
+
+    <div class="diagram-block">
+      <div class="diagram-head"><h3 class="i18n" data-en="⛓️ Figure 1 — Error → Defect → Failure (Lecture 1, slide 10)">⛓️ الشكل 1 — الخطأ ← العيب ← الإخفاق (المحاضرة 1، شريحة 10)</h3><span class="badge b-warn">Chain Diagram</span></div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="Three small circular “z” icons are placed above three text labels connected by arrows in a straight left-to-right chain: “Error/Mistake” → “Defect/Fault/Bug” → “Failure”, with each arrow captioned “Leads to”. It is a minimal, three-node causal chain — the entire visual point is that one thing leads to the next in a single direction, matching the definitions given earlier: a human Error can create a Defect in the software, and if that defective code actually executes, it can cause a Failure.">ثلاث أيقونات دائرية صغيرة "z" فوق ثلاث تسميات نصية متصلة بأسهم في سلسلة مستقيمة من اليسار لليمين: "Error/Mistake" ← "Defect/Fault/Bug" ← "Failure"، وكل سهم مُعنوَن بـ"Leads to". إنها سلسلة سببية بسيطة من ثلاث عُقد — والنقطة البصرية الكاملة هي أن كل شيء يقود للتالي في اتجاه واحد، مُطابقًا التعريفات المُعطاة سابقًا: يمكن أن يخلق الخطأ البشري عيبًا في البرمجية، وإذا نُفِّذ ذلك الكود المعيب فعليًا، فقد يُسبّب إخفاقًا.</p>
+        <div class="flow-wrap">
+          <div class="flow-box">Error<small>Mistake</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">Defect<small>Fault / Bug</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">Failure</div>
+        </div>
+        <div class="note warn" class="i18n" data-en="Remember the caveat from card 1.7: this chain is not guaranteed in all circumstances — some defects need very specific inputs/preconditions to trigger a failure, which may happen rarely or never.">تذكّر التحفّظ من البطاقة 1.7: هذه السلسلة ليست مضمونة في كل الظروف — بعض العيوب تحتاج مدخلات/شروطًا مسبقة محدَّدة جدًا لإحداث إخفاق، وقد يحدث هذا نادرًا أو أبدًا.</div>
+      </div>
+    </div>
+
+    <div class="diagram-block">
+      <div class="diagram-head"><h3 class="i18n" data-en="🌳 Figure 2 — Testing Types (Lecture 2, slide 13)">🌳 الشكل 2 — أنواع الاختبار (المحاضرة 2، شريحة 13)</h3><span class="badge b-static">Classification Tree</span></div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="A two-branch classification tree titled “Testing Types”. The left branch is headed “Static” and lists three techniques beneath it: Inspection, Review, and Structured Walkthroughs — all non-execution techniques performed on documents. The right branch is headed “Dynamic” and lists four techniques beneath it: Functional, Structural (White Box), Non-Functional, and Change-Related Test — all techniques that require running the code, matching the four dynamic testing types detailed later in the lecture.">شجرة تصنيف بفرعين بعنوان "Testing Types". الفرع الأيسر بعنوان "Static" ويسرد تحته ثلاث تقنيات: Inspection وReview وStructured Walkthroughs — كلها تقنيات عدم تنفيذ تُجرى على المستندات. الفرع الأيمن بعنوان "Dynamic" ويسرد تحته أربع تقنيات: Functional وStructural (White Box) وNon-Functional وChange-Related Test — كلها تقنيات تتطلب تشغيل الكود، مُطابقة أنواع الاختبار الديناميكي الأربعة المُفصَّلة لاحقًا في المحاضرة.</p>
+        <div class="tree-wrap">
+          <div class="tree-root">Testing Types</div>
+          <div class="tree-branches">
+            <div class="tree-branch">
+              <div class="tree-branch-label" style="background:var(--c-static); color:#04121c;">Static</div>
+              <div class="tree-leaves">
+                <div class="tree-leaf">Inspection</div>
+                <div class="tree-leaf">Review</div>
+                <div class="tree-leaf">Structured Walkthroughs</div>
+              </div>
+            </div>
+            <div class="tree-branch">
+              <div class="tree-branch-label" style="background:var(--c-dynamic); color:#04121c;">Dynamic</div>
+              <div class="tree-leaves">
+                <div class="tree-leaf">Functional</div>
+                <div class="tree-leaf">White Box (Structural)</div>
+                <div class="tree-leaf">Non-Functional</div>
+                <div class="tree-leaf">Change-Related Test</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SUMMARY ============ -->
+<section id="summary">
+  <div class="container">
+    <span class="eyebrow">04 / SUMMARY</span>
+    <h2 class="i18n" data-en="Comprehensive Summary — Key Concepts and Definitions">تلخيص شامل — المفاهيم والتعريفات الجوهرية</h2>
+    <div class="part-divider"><span class="pd-badge pd-l1">LECTURE 1</span><span class="pd-line"></span></div>
+    <table>
+      <tr><th class="i18n" data-en="Term">المصطلح</th><th class="i18n" data-en="Definition">التعريف</th></tr>
+      <tr><td class="mono">Software Testing</td><td class="i18n" data-en="Evaluating software by executing it to find defects, verify requirements, and ensure correct, reliable, secure behavior.">تقييم البرمجية بتنفيذها لإيجاد العيوب، والتحقق من المتطلبات، وضمان سلوك صحيح وموثوق وآمن.</td></tr>
+      <tr><td class="mono">Software Quality</td><td class="i18n" data-en="The degree to which a product meets requirements, satisfies user needs, and conforms to standards.">الدرجة التي يفي بها المنتج بالمتطلبات، ويُلبّي احتياجات المستخدم، ويتوافق مع المعايير.</td></tr>
+      <tr><td><span class="badge b-qa">QA</span> / <span class="badge b-qc">QC</span> / ST</td><td class="i18n" data-en="QA = process adherence; QC = evaluating quality of a component/system; ST = executing software to find defects.">QA = الالتزام بالعمليات؛ QC = تقييم جودة مكوّن/نظام؛ ST = تنفيذ البرمجية لإيجاد العيوب.</td></tr>
+      <tr><td><b>Verification</b> / <b>Validation</b></td><td class="i18n" data-en="Verification: “are we building the product right?” Validation: “are we building the right product?”">Verification: "هل نبني المنتج بالطريقة الصحيحة؟" Validation: "هل نبني المنتج الصحيح؟"</td></tr>
+      <tr><td><b class="i18n" data-en="Error / Bug / Failure">الخطأ / العيب / الإخفاق</b></td><td class="i18n" data-en="Error: a mistake in the code. Bug (defect/fault): the gap between actual and expected output. Failure: the software can't perform its essential function.">الخطأ: مغالطة في الكود. العيب (defect/fault): الفجوة بين المُخرَج الفعلي والمتوقع. الإخفاق: عجز البرمجية عن أداء وظيفتها الأساسية.</td></tr>
+      <tr><td><b class="i18n" data-en="Root Cause">السبب الجذري</b></td><td class="i18n" data-en="The earliest action/condition that contributed to creating a defect; root cause analysis prevents future defects.">أقدم فعل/ظرف أسهم في خلق عيب؛ تحليل السبب الجذري يمنع عيوبًا مستقبلية.</td></tr>
+    </table>
+    <div class="part-divider" style="margin-top:32px;"><span class="pd-badge pd-l2">LECTURE 2</span><span class="pd-line"></span></div>
+    <table>
+      <tr><th class="i18n" data-en="Term">المصطلح</th><th class="i18n" data-en="Definition">التعريف</th></tr>
+      <tr><td><b class="i18n" data-en="7 Principles">المبادئ السبعة</b></td><td class="i18n" data-en="Testing shows presence not absence of defects; exhaustive testing is impossible; early testing saves time/money; defects cluster; pesticide paradox; testing is context dependent; absence-of-errors is a fallacy.">الاختبار يُظهر الوجود لا الغياب؛ الشمولية مستحيلة؛ الاختبار المبكر يوفّر؛ العيوب تتجمّع؛ مفارقة المبيد الحشري؛ الاختبار يعتمد على السياق؛ غياب الأخطاء مغالطة.</td></tr>
+      <tr><td><b class="i18n" data-en="Confirmation Bias">الانحياز التأكيدي</b></td><td class="i18n" data-en="Difficulty accepting info that disagrees with current beliefs — e.g. developers resisting the idea their code is wrong.">صعوبة قبول معلومات تتعارض مع المعتقدات الحالية — مثل مقاومة المطورين لفكرة أن كودهم خاطئ.</td></tr>
+      <tr><td><b class="i18n" data-en="Developer's vs. Tester's Mindset">عقلية المطوّر مقابل المُختبِر</b></td><td class="i18n" data-en="Developer: focused on designing/building. Tester: curiosity, professional pessimism, critical eye, attention to detail.">المطوّر: يركّز على التصميم/البناء. المُختبِر: فضول، تشاؤم مهني، عين نقدية، انتباه للتفاصيل.</td></tr>
+      <tr><td><span class="badge b-static">Static Testing</span></td><td class="i18n" data-en="No code execution; reviews documents; also called non-execution/verification testing.">بلا تنفيذ كود؛ يراجع المستندات؛ يُسمّى أيضًا non-execution/verification testing.</td></tr>
+      <tr><td><span class="badge b-dynamic">Dynamic Testing</span></td><td class="i18n" data-en="Executes code; validates output vs. expected; also called execution/validation testing.">يُنفّذ الكود؛ يُصادِق المُخرَج مقابل المتوقع؛ يُسمّى أيضًا execution/validation testing.</td></tr>
+      <tr><td><b class="i18n" data-en="4 Dynamic Types">الأنواع الديناميكية الأربعة</b></td><td class="i18n" data-en="Functional (vs. requirements), Structural/White Box (internal design), Non-Functional (quality attributes), Change-Related (Confirmation + Regression testing).">الوظيفي (مقابل المتطلبات)، البنيوي/الصندوق الأبيض (التصميم الداخلي)، غير الوظيفي (خصائص الجودة)، المرتبط بالتغيير (اختبار التأكيد + الانحدار).</td></tr>
+      <tr><td><b class="i18n" data-en="Confirmation vs. Regression Testing">اختبار التأكيد مقابل الانحدار</b></td><td class="i18n" data-en="Confirmation: re-run failed cases after a fix. Regression: test modified + potentially-affected parts to catch new errors.">التأكيد: إعادة تشغيل الحالات الفاشلة بعد إصلاح. الانحدار: اختبار الأجزاء المُعدَّلة والمُحتمَل تأثّرها لرصد أخطاء جديدة.</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============ LEVELS ============ -->
+<section id="levels">
+  <div class="container">
+    <span class="eyebrow">05 / THREE LEVELS</span>
+    <h2 class="i18n" data-en="Simplified at 3 Levels">تبسيط على 3 مستويات</h2>
+    <div class="level-tabs">
+      <button class="level-tab active" data-level="beginner"><span class="i18n" data-en="🌱 Beginner">🌱 للمبتدئين</span></button>
+      <button class="level-tab" data-level="intermediate"><span class="i18n" data-en="🎓 University Level">🎓 مستوى جامعي</span></button>
+      <button class="level-tab" data-level="quick"><span class="i18n" data-en="⚡ Quick Review">⚡ مراجعة سريعة</span></button>
+    </div>
+    <div class="level-panel active" id="panel-beginner">
+      <div class="card">
+        <p class="i18n" data-en="Think of baking a cake for a customer:">تخيّل خبز كعكة لعميل:</p>
+        <ul style="padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="An <b>Error</b> is you misreading the recipe (a human mistake). A <b>Bug/Defect</b> is the cake coming out too salty because of that misreading. A <b>Failure</b> is the customer unable to eat the cake at all."><b>الخطأ</b> هو سوء قراءتك للوصفة (مغالطة بشرية). <b>العيب</b> هو خروج الكعكة مالحة جدًا بسبب سوء القراءة. <b>الإخفاق</b> هو عجز العميل عن أكل الكعكة إطلاقًا.</li>
+          <li class="i18n" data-en="<b>Verification</b> is checking the recipe was followed exactly (“did I bake it right?”). <b>Validation</b> is the customer actually tasting it and confirming it's what they wanted (“did I bake the right cake?”)."><b>Verification</b> هو التحقق من اتّباع الوصفة بالضبط ("هل خبزتها بشكل صحيح؟"). <b>Validation</b> هو تذوّق العميل الفعلي وتأكيده أنها ما أراده ("هل خبزت الكعكة الصحيحة؟").</li>
+          <li class="i18n" data-en="<b>Static testing</b> is checking the recipe on paper before you even turn on the oven. <b>Dynamic testing</b> is actually baking it and tasting the result."><b>Static testing</b> هو فحص الوصفة على الورق قبل تشغيل الفرن حتى. <b>Dynamic testing</b> هو خبزها فعليًا وتذوّق النتيجة.</li>
+          <li class="i18n" data-en="The <b>pesticide paradox</b> is like always tasting the same single bite of cake to check quality — eventually you stop noticing new problems elsewhere in the cake."><b>مفارقة المبيد الحشري</b> مثل تذوّق نفس القضمة الواحدة من الكعكة دائمًا لفحص الجودة — في النهاية تتوقف عن ملاحظة مشاكل جديدة في باقي الكعكة.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="level-panel" id="panel-intermediate">
+      <div class="card i18n" data-en="<p>Lecture 1 establishes a precise vocabulary that later lectures build on: testing is not the same as QA (process-focused) or QC (broader quality evaluation) — testing is the concrete execution activity. The Error → Defect → Failure chain is causal but probabilistic, not deterministic: a defect only becomes a failure if the defective code path is actually executed with the right (wrong) inputs, which is why some defects can sit dormant in production for years. Root cause analysis pushes this chain one step further back, past the defect and even past the “original defect,” to the human or process condition that made the original defect possible — this is the level at which process improvement actually prevents future defects, rather than just fixing symptoms.</p><p>Lecture 2's seven principles are best understood as five that describe testing's inherent limits (1, 2, 5, 6, 7 — testing can't prove correctness, can't be exhaustive, loses effectiveness if unchanged, is context-dependent, and success isn't just “zero known defects”) and two that describe practical strategy (3: shift left; 4: use defect clustering to prioritize risk-based testing). The static/dynamic split maps directly onto the verification/validation split from Lecture 1: static testing (reviews, inspections, walkthroughs) is fundamentally a verification activity performed on documents, while dynamic testing (functional, structural, non-functional, change-related) is fundamentally a validation activity performed by executing code. Within dynamic testing, functional vs. structural is a black-box vs. white-box distinction (what the system does vs. how it's built), non-functional covers quality attributes orthogonal to both, and change-related testing (confirmation + regression) is unique in being triggered by a prior fix rather than by the initial requirements.</p>">
+        <p>تُرسي المحاضرة 1 مفردات دقيقة تبني عليها المحاضرات اللاحقة: الاختبار ليس نفس QA (يُركّز على العملية) أو QC (تقييم جودة أوسع) — الاختبار هو نشاط التنفيذ الملموس. سلسلة الخطأ ← العيب ← الإخفاق سببية لكنها احتمالية وليست حتمية: العيب لا يصبح إخفاقًا إلا إذا نُفِّذ فعليًا مسار الكود المعيب بالمدخلات (الخاطئة) الصحيحة، وهذا سبب بقاء بعض العيوب كامنة في الإنتاج لسنوات. يدفع تحليل السبب الجذري هذه السلسلة خطوة أبعد للخلف، متجاوزًا العيب وحتى "العيب الأصلي"، إلى الظرف البشري أو الإجرائي الذي جعل العيب الأصلي ممكنًا — هذا هو المستوى الذي يمنع فيه تحسين العملية فعليًا عيوبًا مستقبلية، بدلًا من مجرد إصلاح الأعراض.</p>
+        <p>أفضل فهم لمبادئ المحاضرة 2 السبعة هو كخمسة تصف حدود الاختبار الجوهرية (1، 2، 5، 6، 7 — لا يمكن للاختبار إثبات الصحة، ولا يمكن أن يكون شاملًا، ويفقد فعاليته إن لم يتغيّر، ويعتمد على السياق، والنجاح ليس مجرد "صفر عيوب معروفة") واثنين يصفان استراتيجية عملية (3: shift left؛ 4: استخدام تجمّع العيوب لترتيب أولوية الاختبار القائم على المخاطر). ينطبق التقسيم الساكن/الديناميكي مباشرة على تقسيم Verification/Validation من المحاضرة 1: الاختبار الساكن (المراجعات، الفحوصات، الاستعراضات) نشاط تحقق (verification) أساسًا يُنفَّذ على المستندات، بينما الاختبار الديناميكي (الوظيفي، البنيوي، غير الوظيفي، المرتبط بالتغيير) نشاط تصديق (validation) أساسًا يُنفَّذ بتشغيل الكود. ضمن الاختبار الديناميكي، الوظيفي مقابل البنيوي تمييز صندوق أسود مقابل أبيض (ماذا يفعل النظام مقابل كيف بُني)، وغير الوظيفي يغطي خصائص جودة عمودية على كليهما، والاختبار المرتبط بالتغيير (التأكيد + الانحدار) فريد كونه يُحفَّز بإصلاح سابق لا بالمتطلبات الأولية.</p>
+      </div>
+    </div>
+    <div class="level-panel" id="panel-quick">
+      <div class="card">
+        <ul class="quickref-list">
+          <li>Testing = executing software to find defects, verify requirements, ensure correctness.</li>
+          <li>QA = process adherence. QC = quality evaluation activities. ST = execution to find defects.</li>
+          <li>Verification: "building it right?" Validation: "building the right thing?"</li>
+          <li>Error (mistake) -> Defect/Bug/Fault (actual vs expected gap) -> Failure (can't perform function).</li>
+          <li>Root cause = earliest condition behind a defect; analysis prevents future defects.</li>
+          <li>7 Principles: (1) shows presence not absence, (2) exhaustive impossible, (3) early testing saves $, (4) defects cluster, (5) pesticide paradox, (6) context dependent, (7) absence-of-errors fallacy.</li>
+          <li>Confirmation bias: developers resist "my code is wrong."</li>
+          <li>Static = no execution (reviews/inspections/walkthroughs) = verification. Dynamic = execution = validation.</li>
+          <li>Dynamic types: Functional (requirements/black-box), Structural (internal design/white-box), Non-Functional (quality attributes), Change-Related (confirmation + regression).</li>
+          <li>Confirmation testing: re-run failed cases after a fix. Regression testing: test modified + affected parts for new errors.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section id="quiz">
+  <div class="container">
+    <span class="eyebrow">06 / INTERACTIVE QUIZ</span>
+    <h2 class="i18n" data-en="Interactive Quiz">اختبار تفاعلي</h2>
+    <p class="lead i18n" data-en="Covers both lectures, including two matching questions. Answer each question, then press “Check Answer” — your final score appears at the bottom.">يغطي المحاضرتين، بما فيها سؤالا مطابقة. أجب عن كل سؤال ثم اضغط "تحقق من الإجابة" — النتيجة النهائية تظهر أسفل الصفحة.</p>
+    <div class="quiz-progress">
+      <div class="quiz-score"><span class="i18n" data-en="Score:">النتيجة:</span> <span id="scoreNow">0</span> / <span id="scoreTotal">0</span></div>
+      <div class="quiz-bar"><div class="quiz-bar-fill" id="quizBarFill"></div></div>
+    </div>
+    <div id="quizContainer"></div>
+    <div class="final-score" id="finalScore">
+      <div class="big" id="finalScoreText">0 / 0</div>
+      <p id="finalScoreMsg" style="margin-top:8px; color:var(--text-dim);"></p>
+      <button class="reset-btn" onclick="resetQuiz()"><span class="i18n" data-en="🔄 Try Again">🔄 إعادة المحاولة</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TIPS ============ -->
+<section id="tips">
+  <div class="container">
+    <span class="eyebrow">07 / PRO TIPS</span>
+    <h2 class="i18n" data-en="Pro Tips">نصائح احترافية</h2>
+    <div class="grid grid-2" style="align-items:start;">
+      <div class="card">
+        <h3 class="i18n" data-en="💡 How to Understand Instead of Memorize">💡 كيف تفهم بدلًا من الحفظ</h3>
+        <div class="tip-item"><span class="tip-icon">🔍</span><div class="i18n" data-en="Link Verification to Static testing and Validation to Dynamic testing — “right process” (verify) is checked on paper (static), “right product” (validate) is checked by running it (dynamic).">اربط Verification بالاختبار الساكن وValidation بالاختبار الديناميكي — "العملية الصحيحة" (verify) تُفحَص على الورق (ساكن)، "المنتج الصحيح" (validate) يُفحَص بتشغيله (ديناميكي).</div></div>
+        <div class="tip-item"><span class="tip-icon">✍️</span><div class="i18n" data-en="For Error/Bug/Failure, follow the chain in order: a human Error creates a Defect in an artifact; only if that defective code actually runs does it become a Failure.">للخطأ/العيب/الإخفاق، اتبع السلسلة بالترتيب: الخطأ البشري يخلق عيبًا في منتج؛ فقط إذا شُغِّل ذلك الكود المعيب فعليًا يصبح إخفاقًا.</div></div>
+        <div class="tip-item"><span class="tip-icon">📐</span><div class="i18n" data-en="Group the 7 principles into “limits of testing” (1,2,5,6,7) vs. “practical strategy” (3,4) — it's easier to recall 5+2 than 7 flat items.">جمّع المبادئ السبعة في "حدود الاختبار" (1، 2، 5، 6، 7) مقابل "استراتيجية عملية" (3، 4) — أسهل لتذكّر 5+2 من 7 عناصر مسطّحة.</div></div>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="🏋️ Suggested Hands-On Practice">🏋️ تدريب عملي مقترح</h3>
+        <div class="tip-item"><span class="tip-icon">1️⃣</span><div class="i18n" data-en="Answer both slide assignments yourself in writing: list differences between static/dynamic testing, and name 3 testing types beyond the 4 covered.">أجب عن تمريني الشرائح بنفسك كتابيًا: عدِّد فروق الاختبار الساكن/الديناميكي، وسمِّ 3 أنواع اختبار بخلاف الأربعة المذكورة.</div></div>
+        <div class="tip-item"><span class="tip-icon">2️⃣</span><div class="i18n" data-en="Take one of the three real-world failure examples and map it onto the Error → Defect → Failure chain in your own words.">خذ أحد أمثلة الإخفاقات الواقعية الثلاثة واربطه بسلسلة الخطأ ← العيب ← الإخفاق بكلماتك الخاصة.</div></div>
+        <div class="tip-item"><span class="tip-icon">3️⃣</span><div class="i18n" data-en="Write one sentence each for how you would communicate a defect “constructively” per the 5-point list — practice it before your next code review.">اكتب جملة واحدة لكل نقطة من قائمة النقاط الخمس حول كيفية إبلاغ عيب "بشكل بنّاء" — تدرّب عليها قبل مراجعة الكود القادمة.</div></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <h3 class="i18n" data-en="⚠️ Common Mistakes Students Make on This Exact Topic">⚠️ أخطاء شائعة يقع فيها الطلاب في هذا الموضوع تحديدًا</h3>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Swapping Verification and Validation:</b> Verification = “right process” (are we building the product right?). Validation = “right product” (are we building the right product?) — easy to mix up under exam pressure."><b>الخلط بين Verification وValidation:</b> Verification = "العملية الصحيحة" (هل نبني المنتج بالطريقة الصحيحة؟). Validation = "المنتج الصحيح" (هل نبني المنتج الصحيح؟) — يسهل الخلط تحت ضغط الامتحان.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Using “Bug” and “Failure” interchangeably:</b> a Bug/Defect is a gap between actual and expected output; a Failure is when defects prevent the software from performing its essential function. Not every bug causes a failure."><b>استخدام "Bug" و"Failure" بالتبادل:</b> العيب هو فجوة بين المُخرَج الفعلي والمتوقع؛ الإخفاق هو عندما تمنع العيوب البرمجية من أداء وظيفتها الأساسية. ليس كل عيب يُسبّب إخفاقًا.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Thinking Principle 1 means “no defects found = correct software”:</b> the principle explicitly says testing can show presence of defects but never prove their absence — zero found defects is not proof of correctness."><b>الاعتقاد بأن المبدأ 1 يعني "لا عيوب مُكتشَفة = برمجية صحيحة":</b> ينص المبدأ صراحةً على أن الاختبار يمكنه إظهار وجود عيوب لكن لا يثبت غيابها أبدًا — صفر عيوب مُكتشَفة ليس إثباتًا للصحة.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Confusing Confirmation Testing with Regression Testing:</b> Confirmation testing re-runs the SAME failed test cases after a specific fix. Regression testing checks the modified area PLUS other parts that might have been affected — a broader net cast after any change."><b>الخلط بين اختبار التأكيد واختبار الانحدار:</b> اختبار التأكيد يُعيد تشغيل نفس حالات الاختبار الفاشلة بعد إصلاح محدَّد. اختبار الانحدار يفحص المنطقة المُعدَّلة بالإضافة لأجزاء أخرى قد تتأثر — شبكة أوسع تُلقى بعد أي تغيير.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="i18n" data-en="Interactive review sheet — Software Quality and Testing, Lectures 1 &amp; 2">مرجع مراجعة تفاعلي — Software Quality and Testing، المحاضرتان 1 و2</footer>
+
+<script>
+let currentLang = 'ar';
+function setLang(lang){
+  currentLang = lang;
+  document.getElementById('htmlRoot').setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  document.getElementById('htmlRoot').setAttribute('lang', lang);
+  document.getElementById('btnAr').classList.toggle('active', lang === 'ar');
+  document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+  document.querySelectorAll('.i18n').forEach(el => {
+    if(!el.hasAttribute('data-ar-cache')){ el.setAttribute('data-ar-cache', el.innerHTML); }
+    const ar = el.getAttribute('data-ar-cache');
+    const en = el.getAttribute('data-en');
+    el.innerHTML = (lang === 'en' && en) ? en : ar;
+  });
+  QUIZ_LANG = lang;
+  renderQuiz(true);
+}
+(function(){
+  const links = document.querySelectorAll('.nav-scroll a');
+  const sections = Array.from(links).map(a => document.querySelector(a.getAttribute('href')));
+  function onScroll(){
+    let idx = 0;
+    const y = window.scrollY + 120;
+    sections.forEach((s,i) => { if(s && s.offsetTop <= y) idx = i; });
+    links.forEach((l,i) => l.classList.toggle('active', i===idx));
+    const active = links[idx];
+    if(active){
+      const wrap = document.getElementById('navScroll');
+      wrap.scrollTo({left: active.offsetLeft - wrap.clientWidth/2 + active.clientWidth/2, behavior:'smooth'});
+    }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+document.querySelectorAll('.level-tab').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.level-tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.level-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.level).classList.add('active');
+  });
+});
+
+let QUIZ_LANG = 'ar';
+const QUIZ = [
+  {type:'mcq', prompt:'وفقًا لتعريف IEEE، الاختبار هو:', promptEn:'Per the IEEE definition, testing is:',
+   options:['عملية كتابة كود جديد فقط','عملية تشغيل نظام أو مكوّن تحت شروط محدَّدة، ورصد النتائج، وتقييم جانب منه','عملية حذف كل العيوب المعروفة','عملية توثيق المتطلبات فقط'],
+   optionsEn:['A process of only writing new code','The process of operating a system/component under specified conditions, recording results, and evaluating some aspect of it','A process of deleting all known defects','A process of only documenting requirements'],
+   correct:1, explain:'وفقًا لـIEEE: عملية تشغيل نظام أو مكوّن تحت شروط محدَّدة، ورصد أو تسجيل النتائج، وتقييم جانب من جوانب النظام أو المكوّن.', explainEn:'Per IEEE: the process of operating a system or component under specified conditions, observing/recording results, and evaluating some aspect of the system or component.'},
+  {type:'tf', prompt:'QA وQC وSoftware Testing مصطلحات مترادفة تمامًا.', promptEn:'QA, QC, and Software Testing are exactly synonymous terms.',
+   correct:false, explain:'خاطئ. QA يُركّز على الالتزام بالعمليات، QC مجموعة أنشطة لتقييم الجودة، وSoftware Test تنفيذ فعلي للبرمجية لإيجاد العيوب — ثلاثة مفاهيم متمايزة.', explainEn:'False. QA focuses on process adherence, QC is a set of activities to evaluate quality, and Software Test is the actual execution to find defects — three distinct concepts.'},
+  {type:'mcq', prompt:'أي مما يلي ليس من الأسباب الأربعة المذكورة "لماذا نختبر البرمجيات"؟', promptEn:'Which is NOT one of the four reasons given for "why we test software"?',
+   options:['تجنّب العيوب المُسبِّبة للإخفاقات','تحسين الجودة الشاملة','زيادة عدد المطورين في الفريق','تقليل الثغرات الأمنية'],
+   optionsEn:['Avoiding defects that cause failures','Improving overall quality','Increasing the number of developers on the team','Reducing security vulnerabilities'],
+   correct:2, explain:'الأسباب الأربعة: تجنّب العيوب، تحسين الجودة، منع الخسائر المالية/التشغيلية، وتقليل الثغرات الأمنية. زيادة عدد المطورين ليست من بينها.', explainEn:'The four reasons: avoiding defects, improving quality, preventing financial/operational loss, and reducing security vulnerabilities. Team size is not among them.'},
+  {type:'mcq', prompt:'ما السؤال المحوري الذي يجيب عنه "Verification"؟', promptEn:'What is the key question that "Verification" answers?',
+   options:['هل نبني المنتج الصحيح؟','هل نبني المنتج بالطريقة الصحيحة؟','هل العميل راضٍ؟','هل الميزانية كافية؟'],
+   optionsEn:['Are we building the right product?','Are we building the product right?','Is the customer satisfied?','Is the budget sufficient?'],
+   correct:1, explain:'Verification تسأل "هل نبني المنتج بالطريقة الصحيحة؟" — بينما Validation تسأل "هل نبني المنتج الصحيح؟".', explainEn:'Verification asks "are we building the product right?" — while Validation asks "are we building the right product?".'},
+  {type:'fill', prompt:'أكمل: الفرق بين المُخرَج الفعلي والمُخرَج المتوقع يُسمى ______ (أو defect أو fault).', promptEn:'Fill in: the difference between actual and expected output is called a ______ (or defect or fault).',
+   accept:['bug','عيب'], explain:'الإجابة: Bug. يُسمى أيضًا defect أو fault.', explainEn:'Answer: Bug. Also called a defect or fault.'},
+  {type:'mcq', prompt:'وفقًا للمبدأ الأول من مبادئ الاختبار السبعة، الاختبار:', promptEn:'Per the first of the seven testing principles, testing:',
+   options:['يُثبت خلو البرمجية من العيوب تمامًا','يُظهر وجود العيوب، لكن لا يُثبت غيابها','غير ضروري إن لم تُوجَد عيوب في أول اختبار','يضمن نجاح المشروع دائمًا'],
+   optionsEn:['Proves the software is completely defect-free','Shows the presence of defects, but cannot prove their absence','Is unnecessary if no defects appear in the first test','Always guarantees project success'],
+   correct:1, explain:'الاختبار يمكنه إظهار وجود عيوب، لكن لا يمكنه إثبات عدم وجودها، حتى لو لم تُكتشَف أي عيوب.', explainEn:'Testing can show that defects are present, but cannot prove there are none — even if no defects are found.'},
+  {type:'mcq', prompt:'أي مبدأ من المبادئ السبعة يرتبط بمصطلح "shift left"؟', promptEn:'Which of the seven principles is associated with the term "shift left"?',
+   options:['العيوب تتجمّع معًا','الاختبار المبكر يوفّر الوقت والمال','مفارقة المبيد الحشري','الاختبار يعتمد على السياق'],
+   optionsEn:['Defects cluster together','Early testing saves time and money','The pesticide paradox','Testing is context dependent'],
+   correct:1, explain:'"Early testing saves time and money" يُشار إليه أحيانًا بـ"shift left" — بدء أنشطة الاختبار الساكن والديناميكي في أبكر وقت ممكن.', explainEn:'"Early testing saves time and money" is sometimes referred to as "shift left" — starting static and dynamic test activities as early as possible.'},
+  {type:'mcq', prompt:'"مفارقة المبيد الحشري" (Pesticide Paradox) تعني:', promptEn:'The "Pesticide Paradox" means:',
+   options:['تكرار نفس الاختبارات يُقلّل فعاليتها في إيجاد عيوب جديدة مع الوقت','يجب استخدام مبيدات حشرية حقيقية أثناء الاختبار','العيوب تختفي تلقائيًا بعد فترة','الاختبار المتكرر يزيد عدد العيوب في الكود'],
+   optionsEn:['Repeating the same tests reduces their effectiveness at finding new defects over time','Real pesticides should be used during testing','Defects disappear automatically after a while','Repeated testing increases the number of defects in the code'],
+   correct:0, explain:'إذا تُكرِّرت نفس الاختبارات مرارًا، ستتوقف في النهاية عن إيجاد عيوب جديدة، تمامًا مثل توقّف المبيدات عن قتل الحشرات بعد مقاومتها لها.', explainEn:'If the same tests are repeated over and over, they eventually stop finding new defects — just like pesticides losing effectiveness against resistant insects.'},
+  {type:'tf', prompt:'"غياب الأخطاء" (Absence-of-errors) يعني أن إصلاح كل العيوب المُكتشَفة يضمن نجاح النظام.', promptEn:'"Absence-of-errors" means fixing all discovered defects guarantees a system\'s success.',
+   correct:false, explain:'خاطئ. هذا بالضبط المغالطة (fallacy) التي يصفها المبدأ السابع — نظام خالٍ من العيوب المعروفة قد يظل صعب الاستخدام أو لا يُلبّي احتياجات المستخدمين.', explainEn:'False. This is exactly the fallacy the seventh principle describes — a system with no known defects can still be hard to use or fail to meet user needs.'},
+  {type:'mcq', prompt:'"الانحياز التأكيدي" (Confirmation Bias) لدى المطورين يجعل من الصعب عليهم:', promptEn:'"Confirmation Bias" in developers makes it difficult for them to:',
+   options:['كتابة كود جديد','قبول أن كودهم قد يكون غير صحيح','حضور اجتماعات الفريق','استخدام أدوات الاختبار الآلي'],
+   optionsEn:['Write new code','Accept that their code might be incorrect','Attend team meetings','Use automated testing tools'],
+   correct:1, explain:'يتوقع المطورون أن يكون كودهم صحيحًا، فلديهم انحياز تأكيدي يجعل من الصعب قبول أن الكود غير صحيح.', explainEn:'Developers expect their code to be correct, giving them a confirmation bias that makes it difficult to accept the code is incorrect.'},
+  {type:'multi', prompt:'أي مما يلي من عناصر "عقلية المُختبِر" المذكورة في المحاضرة؟ (اختر كل ما ينطبق)', promptEn:'Which of the following are elements of the "Tester\'s Mindset" mentioned in the lecture? (select all)',
+   options:['الفضول (Curiosity)','التشاؤم المهني (Professional Pessimism)','الرغبة في بناء الحلول فقط','الانتباه للتفاصيل'],
+   optionsEn:['Curiosity','Professional Pessimism','A desire to only build solutions','Attention to detail'],
+   correctSet:[0,1,3], explain:'عناصر عقلية المُختبِر: الفضول، التشاؤم المهني، عين نقدية، الانتباه للتفاصيل، ودافع للتواصل الجيد. "الرغبة في بناء الحلول فقط" أقرب لعقلية المطوّر.', explainEn:'Tester\'s mindset elements: curiosity, professional pessimism, a critical eye, attention to detail, and motivation for good communication. "Only wanting to build solutions" is closer to a developer\'s mindset.'},
+  {type:'mcq', prompt:'الاختبار الساكن (Static Testing) يُسمى أيضًا:', promptEn:'Static Testing is also called:',
+   options:['Validation testing','Non-execution testing','Load testing','Black-box testing'], optionsEn:['Validation testing','Non-execution testing','Load testing','Black-box testing'],
+   correct:1, explain:'الاختبار الساكن يُسمى أيضًا non-execution testing أو verification testing — يُجرى بدون تنفيذ الكود.', explainEn:'Static testing is also called non-execution testing or verification testing — performed without code execution.'},
+  {type:'mcq', prompt:'أي مما يلي مثال على مستند يُفحَص في الاختبار الساكن؟', promptEn:'Which of the following is an example of a document examined in static testing?',
+   options:['نتائج تشغيل البرنامج فعليًا فقط','مواصفات المتطلبات (Requirement specifications)','سجلات الخادم أثناء الإنتاج فقط','بيانات المستخدمين الحقيقية فقط'],
+   optionsEn:['Only actual program execution results','Requirement specifications','Only production server logs','Only real user data'],
+   correct:1, explain:'من أمثلة مستندات العمل في الاختبار الساكن: مواصفات المتطلبات، مستند المستخدم، خطط الاختبار، مستند التصميم، الكود المصدري، حالات وسكربتات الاختبار.', explainEn:'Examples of static testing work documents: requirement specifications, user documents, test plans, design documents, source code, test cases, and test scripts.'},
+  {type:'mcq', prompt:'الاختبار الديناميكي (Dynamic Testing) يُمكن أن يكون:', promptEn:'Dynamic Testing can be either:',
+   options:['اختبار صندوق أسود أو أبيض فقط','اختبار ساكن فقط','مراجعة مستندات فقط','فحص متطلبات فقط'],
+   optionsEn:['Either black-box or white-box testing','Only static testing','Only a document review','Only a requirements check'],
+   correct:0, explain:'يُنفَّذ الاختبار الديناميكي في كل مستويات الاختبار، ويمكن أن يكون اختبار صندوق أسود أو أبيض.', explainEn:'Dynamic testing is performed at all levels of testing, and can be either black-box or white-box testing.'},
+  {type:'mcq', prompt:'الاختبار البنيوي (Structural/White-Box Testing) يستخدم:', promptEn:'Structural (White-Box) Testing uses:',
+   options:['المتطلبات الوظيفية فقط','التصميم الداخلي للبرمجية','آراء المستخدمين فقط','أسعار السوق'], optionsEn:['Functional requirements only','The internal design of the software','User opinions only','Market prices'],
+   correct:1, explain:'الاختبار البنيوي يستخدم التصميم الداخلي للبرمجية للاختبار (اختبار الصندوق الأبيض).', explainEn:'Structural testing uses the internal design of the software for testing (white-box testing).'},
+  {type:'mcq', prompt:'قياس شمولية الاختبار الوظيفي (Functional Testing) يتم عبر:', promptEn:'The thoroughness of Functional Testing is measured through:',
+   options:['Structural coverage','Functional coverage','Non-functional coverage','لا يمكن قياسها'], optionsEn:['Structural coverage','Functional coverage','Non-functional coverage','It cannot be measured'],
+   correct:1, explain:'تُقاس شمولية الاختبار الوظيفي عبر التغطية الوظيفية (functional coverage) — مدى ممارسة الاختبارات للوظائف كنسبة مئوية.', explainEn:'Functional testing thoroughness is measured through functional coverage — the extent functionality has been exercised by tests, as a percentage.'},
+  {type:'mcq', prompt:'اختبار الانحدار (Regression Testing) يهدف إلى:', promptEn:'Regression Testing aims to:',
+   options:['اختبار الأجزاء المُعدَّلة والأجزاء المُحتمَل تأثّرها لضمان عدم ظهور أخطاء جديدة','اختبار المتطلبات الأصلية فقط قبل أي تعديل','حذف الكود القديم بالكامل','تدريب المطورين الجدد'],
+   optionsEn:['Testing the modified parts and potentially affected parts to ensure no new errors appear','Testing only the original requirements before any modification','Deleting all old code','Training new developers'],
+   correct:0, explain:'اختبار الانحدار يختبر الأجزاء المُعدَّلة من الكود والأجزاء التي قد تتأثر بالتعديلات، لضمان عدم إدخال أخطاء جديدة.', explainEn:'Regression testing tests the modified parts of the code and the parts that might be affected, to ensure no new errors were introduced.'},
+  {type:'mcq', prompt:'اختبار التأكيد (Confirmation Testing) يُنفَّذ:', promptEn:'Confirmation Testing is performed:',
+   options:['قبل اكتشاف أي عيب','بعد إصلاح عيب، لإعادة تشغيل حالات الاختبار التي فشلت بسببه','بدلًا من الاختبار الوظيفي','مرة واحدة فقط في بداية المشروع'],
+   optionsEn:['Before any defect is discovered','After a defect is fixed, to re-run the test cases that failed because of it','Instead of functional testing','Only once at the project\'s start'],
+   correct:1, explain:'يُنفَّذ اختبار التأكيد بعد إصلاح عيب — تُعاد حالات الاختبار التي فشلت بسبب العيب على النسخة الجديدة.', explainEn:'Confirmation testing is performed after a defect is fixed — the test cases that failed due to it are re-executed on the new version.'},
+  {type:'match', prompt:'طابق كل مصطلح من مصطلحات الخطأ/العيب/الإخفاق بتعريفه الصحيح:', promptEn:'Match each Error/Bug/Failure term to its correct definition:',
+   listA:['Error','Bug (Defect/Fault)','Failure'],
+   listB:['نتيجة وجود عيوب كثيرة تمنع البرمجية من أداء وظيفتها الأساسية','مغالطة تُرتكب في الكود','الفرق بين المُخرَج الفعلي والمُخرَج المتوقع'],
+   listBEn:['The result of many defects preventing the software from performing its essential function','A mistake made in the code','The difference between the actual output and the expected output'],
+   correctMap:[1,2,0],
+   explain:'Error = مغالطة في الكود (الخيار b)؛ Bug/Defect = الفرق بين الفعلي والمتوقع (الخيار c)؛ Failure = نتيجة عيوب كثيرة تمنع الوظيفة الأساسية (الخيار a).',
+   explainEn:'Error = a mistake in the code (option b); Bug/Defect = the gap between actual and expected (option c); Failure = the result of many defects preventing the essential function (option a).'},
+  {type:'match', prompt:'طابق كل نوع اختبار ديناميكي بتعريفه الصحيح:', promptEn:'Match each dynamic testing type to its correct definition:',
+   listA:['Functional Testing','Structural Testing','Non-Functional Testing','Change-Related Testing'],
+   listB:['يُختبَر النظام مقابل المتطلبات والمواصفات الوظيفية','يُنفَّذ عند تعديل النظام، إما لإصلاح عيب أو لتغيير وظيفي','يستخدم التصميم الداخلي للبرمجية للاختبار','يتحقق من المتطلبات غير الوظيفية للتطبيق'],
+   listBEn:['The system is tested against functional requirements and specifications','Performed when the system is changed, either to fix a defect or for functionality change','Uses the internal design of the software for testing','Verifies the non-functional requirements of the application'],
+   correctMap:[0,2,3,1],
+   explain:'Functional = مقابل المتطلبات الوظيفية (a)؛ Structural = التصميم الداخلي (c)؛ Non-Functional = المتطلبات غير الوظيفية (d)؛ Change-Related = عند التعديل (b).',
+   explainEn:'Functional = against functional requirements (a); Structural = internal design (c); Non-Functional = non-functional requirements (d); Change-Related = upon modification (b).'}
+];
+
+let userAnswers = new Array(QUIZ.length).fill(null);
+let checked = new Array(QUIZ.length).fill(false);
+let score = 0;
+const TYPE_LABELS = { ar: {mcq:'اختيار من متعدد', tf:'صح / خطأ', multi:'اختيار متعدد الإجابات', fill:'إكمال الفراغ', match:'مطابقة قوائم'}, en: {mcq:'Multiple Choice', tf:'True / False', multi:'Multiple Select', fill:'Fill in the Blank', match:'Match the Lists'} };
+
+function renderQuiz(preserveState){
+  const c = document.getElementById('quizContainer');
+  c.innerHTML = '';
+  document.getElementById('scoreTotal').textContent = QUIZ.length;
+  QUIZ.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'q-card'; card.id = 'q-'+qi;
+    const typeLabel = TYPE_LABELS[QUIZ_LANG][q.type];
+    const prompt = (QUIZ_LANG === 'en' && q.promptEn) ? q.promptEn : q.prompt;
+    let optsHtml = '';
+    if(q.type === 'mcq'){
+      const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+      optsHtml = '<div class="opt-list">' + options.map((opt,oi)=>`<label class="opt" id="opt-${qi}-${oi}"><input type="radio" name="q${qi}" value="${oi}" onchange="selectAnswer(${qi}, ${oi})"><span>${opt}</span></label>`).join('') + '</div>';
+    } else if(q.type === 'tf'){
+      const trueLabel = QUIZ_LANG === 'en' ? '✅ True' : '✅ صح (True)';
+      const falseLabel = QUIZ_LANG === 'en' ? '❌ False' : '❌ خطأ (False)';
+      optsHtml = `<div class="opt-list"><label class="opt" id="opt-${qi}-1"><input type="radio" name="q${qi}" value="true" onchange="selectAnswer(${qi}, true)"><span>${trueLabel}</span></label><label class="opt" id="opt-${qi}-0"><input type="radio" name="q${qi}" value="false" onchange="selectAnswer(${qi}, false)"><span>${falseLabel}</span></label></div>`;
+    } else if(q.type === 'multi'){
+      const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+      optsHtml = '<div class="opt-list">' + options.map((opt,oi)=>`<label class="opt" id="opt-${qi}-${oi}"><input type="checkbox" name="q${qi}" value="${oi}" onchange="toggleMulti(${qi}, ${oi})"><span>${opt}</span></label>`).join('') + '</div>';
+    } else if(q.type === 'fill'){
+      const placeholder = QUIZ_LANG === 'en' ? 'Type your answer here…' : 'اكتب إجابتك هنا…';
+      optsHtml = `<input type="text" class="fill-input" id="fill-${qi}" placeholder="${placeholder}" oninput="userAnswers[${qi}] = this.value; document.getElementById('checkbtn-${qi}').disabled = !this.value.trim();">`;
+    } else if(q.type === 'match'){
+      const listA = q.listA;
+      const listB = (QUIZ_LANG === 'en' && q.listBEn) ? q.listBEn : q.listB;
+      const letters = 'abcdefgh';
+      optsHtml = '<div class="match-wrap">' + listA.map((a,ai)=>{
+        const opts = listB.map((b,bi)=>`<option value="${bi}">${letters[bi]}) ${b}</option>`).join('');
+        return `<div class="match-row" id="mrow-${qi}-${ai}"><div class="match-a"><b>${ai+1}.</b> ${a}</div><select id="msel-${qi}-${ai}" onchange="selectMatch(${qi})"><option value="" disabled selected>${QUIZ_LANG==='en'?'Choose a match…':'اختر التطابق…'}</option>${opts}</select></div>`;
+      }).join('') + '</div>';
+    }
+    const checkLabel = QUIZ_LANG === 'en' ? 'Check Answer' : 'تحقق من الإجابة';
+    const qLabel = QUIZ_LANG === 'en' ? 'Question' : 'سؤال';
+    const needsDisable = (q.type==='fill' || q.type==='match');
+    card.innerHTML = `<div class="q-meta"><span class="q-type-tag">${qLabel} ${qi+1} · ${typeLabel}</span></div><div class="q-prompt">${prompt}</div>${optsHtml}<button class="check-btn" id="checkbtn-${qi}" onclick="checkAnswer(${qi})" ${needsDisable ? 'disabled':''}>${checkLabel}</button><div class="q-feedback" id="feedback-${qi}"></div>`;
+    c.appendChild(card);
+  });
+  if(!preserveState){ userAnswers = new Array(QUIZ.length).fill(null); checked = new Array(QUIZ.length).fill(false); score = 0; }
+  updateScoreBar();
+  document.getElementById('finalScore').classList.remove('show');
+}
+function selectAnswer(qi, val){ userAnswers[qi] = val; }
+function toggleMulti(qi, oi){
+  if(!Array.isArray(userAnswers[qi])) userAnswers[qi] = [];
+  const idx = userAnswers[qi].indexOf(oi);
+  if(idx === -1) userAnswers[qi].push(oi); else userAnswers[qi].splice(idx,1);
+}
+function selectMatch(qi){
+  const q = QUIZ[qi];
+  const sels = q.listA.map((_,ai)=>document.getElementById(`msel-${qi}-${ai}`).value);
+  const allFilled = sels.every(v => v !== '');
+  userAnswers[qi] = sels.map(v=>Number(v));
+  document.getElementById('checkbtn-'+qi).disabled = !allFilled;
+}
+function checkAnswer(qi){
+  if(checked[qi]) return;
+  const q = QUIZ[qi];
+  let isCorrect = false;
+  const fb = document.getElementById('feedback-'+qi);
+  const explain = (QUIZ_LANG === 'en' && q.explainEn) ? q.explainEn : q.explain;
+  if(q.type === 'mcq'){
+    const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+    if(userAnswers[qi] === null){ alert(QUIZ_LANG==='en' ? 'Please choose an answer first' : 'من فضلك اختر إجابة أولًا'); return; }
+    isCorrect = Number(userAnswers[qi]) === q.correct;
+    for(let i=0;i<options.length;i++){ const el = document.getElementById(`opt-${qi}-${i}`); if(i === q.correct) el.classList.add('correct-flash'); else if(i === Number(userAnswers[qi])) el.classList.add('wrong-flash'); }
+  } else if(q.type === 'tf'){
+    if(userAnswers[qi] === null){ alert(QUIZ_LANG==='en' ? 'Please choose an answer first' : 'من فضلك اختر إجابة أولًا'); return; }
+    const chosen = (userAnswers[qi] === true || userAnswers[qi] === 'true');
+    isCorrect = chosen === q.correct;
+    document.getElementById(q.correct ? `opt-${qi}-1` : `opt-${qi}-0`).classList.add('correct-flash');
+    if(!isCorrect) document.getElementById(q.correct ? `opt-${qi}-0` : `opt-${qi}-1`).classList.add('wrong-flash');
+  } else if(q.type === 'multi'){
+    const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+    const chosen = Array.isArray(userAnswers[qi]) ? userAnswers[qi].slice().sort() : [];
+    const correctSet = q.correctSet.slice().sort();
+    isCorrect = chosen.length === correctSet.length && chosen.every((v,i)=>v===correctSet[i]);
+    for(let i=0;i<options.length;i++){ const el = document.getElementById(`opt-${qi}-${i}`); if(q.correctSet.includes(i)) el.classList.add('correct-flash'); else if(chosen.includes(i)) el.classList.add('wrong-flash'); }
+  } else if(q.type === 'fill'){
+    const val = (userAnswers[qi] || '').trim().toLowerCase();
+    isCorrect = q.accept.some(a => a.toLowerCase() === val || val.includes(a.toLowerCase()));
+    document.getElementById('fill-'+qi).style.borderColor = isCorrect ? 'var(--ok)' : 'var(--bad)';
+  } else if(q.type === 'match'){
+    const chosen = userAnswers[qi] || [];
+    isCorrect = chosen.length === q.correctMap.length && chosen.every((v,i)=>v===q.correctMap[i]);
+    q.listA.forEach((_,ai)=>{
+      const row = document.getElementById(`mrow-${qi}-${ai}`);
+      document.getElementById(`msel-${qi}-${ai}`).disabled = true;
+      if(chosen[ai] === q.correctMap[ai]) row.classList.add('correct-flash'); else row.classList.add('wrong-flash');
+    });
+  }
+  checked[qi] = true;
+  if(isCorrect) score++;
+  fb.className = 'q-feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+  const correctTag = QUIZ_LANG==='en' ? '✅ <b>Correct!</b> ' : '✅ <b>إجابة صحيحة!</b> ';
+  const wrongTag = QUIZ_LANG==='en' ? '❌ <b>Not quite.</b> ' : '❌ <b>إجابة غير صحيحة.</b> ';
+  fb.innerHTML = (isCorrect ? correctTag : wrongTag) + explain;
+  document.getElementById('checkbtn-'+qi).disabled = true;
+  document.querySelectorAll(`#q-${qi} input`).forEach(inp => inp.disabled = true);
+  updateScoreBar();
+  if(checked.every(Boolean)) showFinalScore();
+}
+function updateScoreBar(){
+  document.getElementById('scoreNow').textContent = score;
+  const answered = checked.filter(Boolean).length;
+  document.getElementById('quizBarFill').style.width = (QUIZ.length ? (answered / QUIZ.length) * 100 : 0) + '%';
+}
+function showFinalScore(){
+  const el = document.getElementById('finalScore');
+  const pct = Math.round((score/QUIZ.length)*100);
+  document.getElementById('finalScoreText').textContent = `${score} / ${QUIZ.length} (${pct}%)`;
+  let msg = '';
+  if(QUIZ_LANG === 'en'){
+    if(pct >= 85) msg = 'Excellent! You are fully ready for both lectures. 🎉';
+    else if(pct >= 60) msg = 'Good! Review the questions you missed via the Full Explanation section.';
+    else msg = 'It is recommended to revisit the Full Explanation and 3 Levels sections before trying again.';
+  } else {
+    if(pct >= 85) msg = 'ممتاز! أنت جاهز تمامًا للمحاضرتين. 🎉';
+    else if(pct >= 60) msg = 'جيد! راجع الأسئلة التي أخطأت فيها من قسم الشرح الكامل.';
+    else msg = 'يُنصح بمراجعة قسمي الشرح الكامل و3 مستويات قبل إعادة المحاولة.';
+  }
+  document.getElementById('finalScoreMsg').textContent = msg;
+  el.classList.add('show');
+}
+function resetQuiz(){
+  userAnswers = new Array(QUIZ.length).fill(null);
+  checked = new Array(QUIZ.length).fill(false);
+  score = 0;
+  document.getElementById('finalScore').classList.remove('show');
+  renderQuiz(true);
+  document.getElementById('quiz').scrollIntoView({behavior:'smooth'});
+}
+renderQuiz(false);
+</script>
+</body>
+</html>

@@ -11,7 +11,9 @@
     "lec5_Divide and Conquer-review.html",
     "مراجعة_تحليل_التعقيد_الزمني.html"
   ],
-  "software-testing": [],
+  "software-testing": [
+    "lectures 1 & 2_review.html"
+  ],
   "data-mining": [
     "Topic1&Topic2-1_combined-review.html",
     "Topic3-1_Data_Preprocessing_review.html",

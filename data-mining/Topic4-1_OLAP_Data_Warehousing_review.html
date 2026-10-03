@@ -1,0 +1,429 @@
+<!DOCTYPE html><html lang="ar" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Chapter 4 — OLAP & Data Warehousing | ورقة مراجعة تفاعلية</title><style>
+/* ============================================================
+   DESIGN SYSTEM — Chapter 3 Data Preprocessing review sheet
+   ============================================================ */
+:root{
+  --bg:#0a0e16;
+  --card-a:#121a2b;
+  --card-b:#0f1524;
+  --border:#212b40;
+  --text:#e7ecf5;
+  --dim:#93a1bd;
+  --accent:#38bdf8;
+
+  /* fixed palette — scale / severity classes (7 steps) */
+  --c1:#94a3b8;      /* gray   */
+  --clog:#a78bfa;    /* purple */
+  --cn:#38bdf8;      /* cyan   */
+  --cnlog:#34d399;   /* green  */
+  --cn2:#fbbf24;     /* amber  */
+  --cn3:#fb923c;     /* orange */
+  --c2n:#f87171;     /* red    */
+
+  /* semantic aliases */
+  --good:#34d399;
+  --warn:#fbbf24;
+  --bad:#f87171;
+  --info:#38bdf8;
+  --purple:#a78bfa;
+
+  --radius:18px;
+  --radius-sm:12px;
+  --shadow:0 18px 40px -22px rgba(0,0,0,.85);
+  --mono:'Fira Code',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --sans:'Tajawal',system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:96px}
+body{
+  margin:0;
+  font-family:var(--sans);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.85;
+  font-size:16.5px;
+  -webkit-font-smoothing:antialiased;
+  background-image:
+    radial-gradient(900px 520px at 88% -6%, rgba(56,189,248,.12), transparent 60%),
+    radial-gradient(760px 460px at 4% 4%, rgba(167,139,250,.10), transparent 62%),
+    radial-gradient(700px 520px at 50% 108%, rgba(52,211,153,.07), transparent 60%);
+  background-attachment:fixed;
+}
+img{max-width:100%}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.wrap{max-width:1140px;margin:0 auto;padding:0 18px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ---------- language toggle ---------- */
+#langPill{
+  position:fixed;top:14px;inset-inline-end:14px;z-index:120;
+  display:flex;align-items:center;gap:4px;
+  background:linear-gradient(180deg,var(--card-a),var(--card-b));
+  border:1px solid var(--border);
+  border-radius:999px;padding:5px 6px;
+  box-shadow:0 10px 30px -14px rgba(0,0,0,.9), 0 0 0 1px rgba(56,189,248,.10) inset;
+  backdrop-filter:blur(8px);
+}
+#langPill button{
+  font-family:var(--sans);font-weight:700;font-size:13.5px;letter-spacing:.3px;
+  border:0;border-radius:999px;padding:7px 15px;cursor:pointer;
+  background:transparent;color:var(--dim);transition:.22s;
+}
+#langPill button.on{
+  background:linear-gradient(135deg,var(--accent),#22d3ee);
+  color:#04121d;box-shadow:0 6px 18px -8px rgba(56,189,248,.9);
+}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;padding:64px 0 40px;border-bottom:1px solid var(--border)}
+.hero svg.curves{position:absolute;inset:0;width:100%;height:100%;opacity:.5;pointer-events:none}
+.hero .wrap{position:relative;z-index:2}
+.kicker{
+  display:inline-flex;align-items:center;gap:9px;
+  font-family:var(--mono);font-size:12.2px;letter-spacing:1.6px;text-transform:uppercase;
+  color:#bff0ff;background:rgba(56,189,248,.10);
+  border:1px solid rgba(56,189,248,.38);border-radius:999px;padding:7px 16px;
+}
+.kicker::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 12px var(--accent)}
+h1.hero-title{
+  font-size:clamp(30px,5.2vw,52px);line-height:1.22;margin:20px 0 10px;font-weight:800;letter-spacing:-.5px;
+  background:linear-gradient(96deg,#ffffff 4%,#9fdcff 42%,#a78bfa 96%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+p.hero-sub{color:var(--dim);font-size:clamp(15px,1.9vw,18.5px);max-width:820px;margin:0}
+.hero-chips{display:flex;flex-wrap:wrap;gap:9px;margin-top:22px}
+.chip{
+  font-family:var(--mono);font-size:12px;color:var(--dim);
+  border:1px solid var(--border);background:rgba(255,255,255,.02);
+  border-radius:999px;padding:6px 13px;
+}
+
+/* ---------- sticky nav ---------- */
+nav.sticky{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,14,22,.86);
+  border-bottom:1px solid var(--border);
+  backdrop-filter:blur(14px);
+}
+nav.sticky .navscroll{
+  display:flex;gap:8px;overflow-x:auto;padding:11px 18px;
+  scrollbar-width:none;max-width:1140px;margin:0 auto;
+}
+nav.sticky .navscroll::-webkit-scrollbar{display:none}
+nav a.nav-link{
+  flex:0 0 auto;font-size:13.6px;font-weight:600;color:var(--dim);
+  border:1px solid transparent;border-radius:999px;padding:7px 15px;white-space:nowrap;transition:.2s;
+}
+nav a.nav-link:hover{color:var(--text);background:rgba(255,255,255,.04);text-decoration:none}
+nav a.nav-link.active{
+  color:#08131f;background:linear-gradient(135deg,var(--accent),#22d3ee);
+  border-color:transparent;box-shadow:0 8px 20px -12px rgba(56,189,248,.95);
+}
+
+/* ---------- sections & headings ---------- */
+section{padding:52px 0 8px}
+.sec-head{display:flex;align-items:center;gap:14px;margin-bottom:8px;flex-wrap:wrap}
+.sec-num{
+  font-family:var(--mono);font-size:13px;font-weight:600;color:var(--accent);
+  border:1px solid rgba(56,189,248,.4);background:rgba(56,189,248,.08);
+  border-radius:10px;padding:5px 11px;letter-spacing:.6px;
+}
+h2.sec-title{font-size:clamp(21px,3.1vw,29px);margin:0;font-weight:800;letter-spacing:-.3px}
+p.sec-lead{color:var(--dim);margin:6px 0 24px;max-width:900px}
+
+/* ---------- cards ---------- */
+.card{
+  background:linear-gradient(160deg,var(--card-a),var(--card-b));
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:22px 24px;box-shadow:var(--shadow);
+}
+.card.tinted{
+  background:linear-gradient(160deg,rgba(56,189,248,.10),rgba(15,21,36,.95) 60%);
+  border-color:rgba(56,189,248,.30);
+}
+.card.tinted.purple{background:linear-gradient(160deg,rgba(167,139,250,.12),rgba(15,21,36,.95) 60%);border-color:rgba(167,139,250,.32)}
+.card.tinted.green{background:linear-gradient(160deg,rgba(52,211,153,.11),rgba(15,21,36,.95) 60%);border-color:rgba(52,211,153,.30)}
+.card.tinted.amber{background:linear-gradient(160deg,rgba(251,191,36,.11),rgba(15,21,36,.95) 60%);border-color:rgba(251,191,36,.30)}
+.card h3{margin:0 0 10px;font-size:19.5px}
+.card h4{margin:16px 0 8px;font-size:16.5px;color:#cfe4ff}
+.card p{margin:9px 0}
+.grid{display:grid;gap:16px}
+.grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:860px){.grid-3,.grid-4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+
+.mini{background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:var(--radius-sm);padding:15px 16px}
+.mini .mini-t{font-weight:700;font-size:15.5px;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.mini .mini-d{color:var(--dim);font-size:14.6px;line-height:1.75}
+.mini .ico{font-size:17px}
+
+/* ---------- numbered topic cards ---------- */
+.topic{
+  position:relative;background:linear-gradient(160deg,var(--card-a),var(--card-b));
+  border:1px solid var(--border);border-left:3px solid var(--accent);
+  border-radius:var(--radius);padding:24px 24px 20px;margin:0 0 22px;box-shadow:var(--shadow);
+}
+html[dir="rtl"] .topic{border-left:1px solid var(--border);border-right:3px solid var(--accent)}
+.topic > .tnum{
+  font-family:var(--mono);font-size:13px;font-weight:600;color:var(--accent);
+  background:rgba(56,189,248,.09);border:1px solid rgba(56,189,248,.32);
+  display:inline-block;border-radius:9px;padding:4px 11px;margin-bottom:9px;letter-spacing:.5px;
+}
+.topic > h3{margin:0 0 6px;font-size:21px;font-weight:800;letter-spacing:-.2px}
+
+/* ---------- badges ---------- */
+.badge{
+  display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11.4px;
+  border-radius:8px;padding:3px 10px;border:1px solid var(--border);color:var(--dim);
+  background:rgba(255,255,255,.03);vertical-align:middle;letter-spacing:.3px;
+}
+.badge.b-on{color:#c9f2ff;border-color:rgba(56,189,248,.45);background:rgba(56,189,248,.11)}
+.badge.b-on2{color:#d7f7ea;border-color:rgba(52,211,153,.45);background:rgba(52,211,153,.11)}
+.badge.b-purple{color:#e4dbff;border-color:rgba(167,139,250,.45);background:rgba(167,139,250,.12)}
+.badge.b-amber{color:#fde9b8;border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.11)}
+.badge.b-red{color:#ffd3d3;border-color:rgba(248,113,113,.45);background:rgba(248,113,113,.12)}
+.badge.b-off{color:#c9d3e6;border-color:#2b3650;background:rgba(148,163,184,.10)}
+
+/* ---------- notes ---------- */
+.note{
+  border-radius:var(--radius-sm);padding:14px 16px;margin:14px 0;font-size:15.2px;
+  border:1px solid rgba(251,191,36,.34);background:rgba(251,191,36,.09);color:#fbeecb;
+}
+.note::before{content:"⚠ ";font-weight:700}
+.note.good{border-color:rgba(52,211,153,.34);background:rgba(52,211,153,.09);color:#ccf5e6}
+.note.good::before{content:"✅ "}
+.note.info{border-color:rgba(56,189,248,.34);background:rgba(56,189,248,.09);color:#cdeeff}
+.note.info::before{content:"💡 "}
+.note.bad{border-color:rgba(248,113,113,.34);background:rgba(248,113,113,.09);color:#ffd6d6}
+.note.bad::before{content:"❌ "}
+
+/* ---------- text, terms, code ---------- */
+code,pre,.mono{font-family:var(--mono)}
+code{
+  direction:ltr;unicode-bidi:embed;display:inline-block;
+  font-size:13.6px;color:#8fe3ff;background:rgba(56,189,248,.10);
+  border:1px solid rgba(56,189,248,.22);border-radius:7px;padding:1px 7px;
+}
+.term-en{
+  direction:ltr;unicode-bidi:embed;display:inline-block;font-family:var(--mono);
+  font-size:13.6px;color:#bfe9ff;
+}
+pre{
+  direction:ltr;text-align:left;background:#080d16;border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:16px 18px;overflow-x:auto;font-size:13.6px;
+  line-height:1.75;color:#d6e3f5;margin:14px 0;
+}
+pre .cm{color:#5d7691}
+pre .kw{color:#c792ea}
+pre .fn{color:#7dd3fc}
+pre .st{color:#a5e8c0}
+pre .nm{color:#fbbf24}
+pre .op{color:#f78fb3}
+
+/* ---------- tables ---------- */
+.tbl-wrap{overflow-x:auto;margin:16px 0;border:1px solid var(--border);border-radius:var(--radius-sm)}
+table{width:100%;border-collapse:collapse;font-size:14.8px;min-width:440px}
+thead th{
+  font-family:var(--mono);font-size:12.4px;letter-spacing:.6px;text-transform:uppercase;
+  color:#a9e6ff;background:rgba(56,189,248,.09);text-align:start;padding:11px 13px;
+  border-bottom:1px solid var(--border);white-space:nowrap;
+}
+tbody td{padding:11px 13px;border-bottom:1px solid rgba(33,43,64,.75);vertical-align:top}
+tbody tr:last-child td{border-bottom:0}
+tbody tr:hover{background:rgba(56,189,248,.045)}
+td.num,th.num{font-family:var(--mono);text-align:center;direction:ltr}
+td.key{font-family:var(--mono);font-size:13.4px;color:#9fe1ff;direction:ltr;text-align:left}
+.hl{background:rgba(56,189,248,.10)}
+.hl-g{background:rgba(52,211,153,.10)}
+.hl-r{background:rgba(248,113,113,.10)}
+
+/* ---------- line-note (line by line breakdown) ---------- */
+.line-note{border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden;margin:14px 0;background:rgba(8,13,22,.6)}
+.line-note .ln-row{display:grid;grid-template-columns:minmax(180px,42%) 1fr;gap:0;border-bottom:1px solid rgba(33,43,64,.7)}
+.line-note .ln-row:last-child{border-bottom:0}
+.line-note .ln-code{
+  direction:ltr;text-align:left;font-family:var(--mono);font-size:13.2px;color:#8fe3ff;
+  padding:11px 13px;background:rgba(56,189,248,.05);border-inline-end:1px solid rgba(33,43,64,.7);
+  display:flex;align-items:center;overflow-x:auto;white-space:nowrap;
+}
+.line-note .ln-txt{padding:11px 14px;font-size:14.6px;color:#dbe5f4}
+@media(max-width:640px){.line-note .ln-row{grid-template-columns:1fr}.line-note .ln-code{border-inline-end:0;border-bottom:1px solid rgba(33,43,64,.7)}}
+
+/* ---------- 4-step strip ---------- */
+.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}
+@media(max-width:860px){.steps{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.steps{grid-template-columns:1fr}}
+.step{
+  background:linear-gradient(160deg,rgba(56,189,248,.09),rgba(15,21,36,.9));
+  border:1px solid rgba(56,189,248,.26);border-radius:var(--radius-sm);padding:13px 14px;
+}
+.step .s-n{font-family:var(--mono);font-size:11.4px;color:#08131f;background:var(--accent);border-radius:6px;padding:2px 8px;display:inline-block;margin-bottom:7px;font-weight:600}
+.step .s-t{font-weight:700;font-size:14.6px;margin-bottom:4px}
+.step .s-d{color:var(--dim);font-size:13.8px;line-height:1.7}
+
+/* ---------- comparison grid ✅ / ❌ ---------- */
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0}
+@media(max-width:640px){.cmp{grid-template-columns:1fr}}
+.cmp .col{border-radius:var(--radius-sm);padding:15px 17px;border:1px solid}
+.cmp .col.yes{border-color:rgba(52,211,153,.34);background:rgba(52,211,153,.08)}
+.cmp .col.no{border-color:rgba(248,113,113,.32);background:rgba(248,113,113,.07)}
+.cmp .col h4{margin:0 0 9px;font-size:16px}
+.cmp ul{margin:0;padding-inline-start:20px}
+.cmp li{margin:6px 0;font-size:15px}
+
+ul.clean{margin:10px 0;padding-inline-start:22px}
+ul.clean li{margin:7px 0}
+ul.check{list-style:none;margin:12px 0;padding:0}
+ul.check li{position:relative;padding-inline-start:32px;margin:9px 0;font-size:15.3px}
+ul.check li::before{
+  content:"✓";position:absolute;inset-inline-start:0;top:2px;width:21px;height:21px;
+  display:grid;place-items:center;font-size:12.5px;font-weight:700;color:#08131f;
+  background:linear-gradient(135deg,var(--good),#22d3ee);border-radius:6px;
+}
+
+/* ---------- diagram blocks ---------- */
+.diagram-block{
+  border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:22px 0;
+  background:linear-gradient(160deg,var(--card-a),var(--card-b));box-shadow:var(--shadow);
+}
+.diagram-block .db-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  padding:14px 20px;border-bottom:1px solid var(--border);background:rgba(56,189,248,.06);
+}
+.diagram-block .db-head h3{margin:0;font-size:18px}
+.diagram-block .db-body{padding:20px}
+.diagram-block .db-body h4{margin:14px 0 7px;font-size:15.6px;color:#cfe4ff}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin:14px 0;padding:13px 15px;border:1px dashed var(--border);border-radius:var(--radius-sm);background:rgba(255,255,255,.02)}
+.legend .lg{display:flex;align-items:center;gap:8px;font-size:14.2px;color:#dce6f5}
+.swatch{width:16px;height:16px;border-radius:5px;border:1px solid rgba(255,255,255,.22);flex:0 0 auto}
+.sw-gray{background:var(--c1)}.sw-purple{background:var(--clog)}.sw-cyan{background:var(--cn)}
+.sw-green{background:var(--cnlog)}.sw-amber{background:var(--cn2)}.sw-orange{background:var(--cn3)}.sw-red{background:var(--c2n)}
+.svgfig{width:100%;height:auto;display:block;border:1px solid var(--border);border-radius:var(--radius-sm);background:#080d16}
+
+/* ---------- tabs (section 05) ---------- */
+.tabs{display:flex;gap:9px;flex-wrap:wrap;margin:18px 0 16px}
+.tab{
+  font-family:var(--sans);font-weight:700;font-size:14.4px;cursor:pointer;
+  border:1px solid var(--border);background:rgba(255,255,255,.03);color:var(--dim);
+  border-radius:999px;padding:9px 18px;transition:.2s;
+}
+.tab.on{color:#08131f;background:linear-gradient(135deg,var(--accent),#22d3ee);border-color:transparent}
+.panel{display:none}
+.panel.on{display:block;animation:fade .32s ease}
+@keyframes fade{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+ul.mono-list{list-style:none;margin:12px 0;padding:0}
+ul.mono-list li{
+  direction:ltr;text-align:left;font-family:var(--mono);font-size:13.4px;color:#d6e3f5;
+  background:rgba(8,13,22,.7);border:1px solid var(--border);border-inline-start:3px solid var(--accent);
+  border-radius:9px;padding:9px 13px;margin:8px 0;line-height:1.7;
+}
+.timeline{position:relative;margin:18px 0;padding-inline-start:26px}
+.timeline::before{content:"";position:absolute;inset-inline-start:7px;top:6px;bottom:6px;width:2px;background:linear-gradient(180deg,var(--accent),var(--purple))}
+.timeline .tl-item{position:relative;margin:0 0 16px}
+.timeline .tl-item::before{content:"";position:absolute;inset-inline-start:-24px;top:8px;width:12px;height:12px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(56,189,248,.16)}
+.timeline .tl-t{font-weight:700}
+.timeline .tl-d{color:var(--dim);font-size:14.6px}
+
+/* ---------- quiz ---------- */
+.quiz-head{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;
+  background:linear-gradient(160deg,var(--card-a),var(--card-b));margin-bottom:8px;
+}
+.score-box{font-family:var(--mono);font-size:15px;color:#9fe1ff}
+.score-box b{color:#fff;font-size:19px}
+.prog{height:11px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;border:1px solid var(--border);margin:10px 0 22px}
+.prog .bar{
+  height:100%;width:0%;border-radius:999px;transition:width .45s cubic-bezier(.2,.9,.2,1);
+  background:linear-gradient(90deg,#38bdf8,#a78bfa,#34d399);background-size:200% 100%;
+  animation:slide 3.2s linear infinite;
+}
+@keyframes slide{0%{background-position:0 0}100%{background-position:200% 0}}
+.q{
+  border:1px solid var(--border);border-radius:var(--radius);padding:19px 21px;margin:0 0 16px;
+  background:linear-gradient(160deg,var(--card-a),var(--card-b));
+}
+.q.q-done{border-color:rgba(56,189,248,.34)}
+.q-head{display:flex;gap:12px;align-items:flex-start;margin-bottom:12px}
+.q-idx{
+  font-family:var(--mono);font-size:12.4px;font-weight:600;color:#08131f;flex:0 0 auto;
+  background:linear-gradient(135deg,var(--accent),#22d3ee);border-radius:8px;padding:3px 10px;margin-top:4px;
+}
+.q-prompt{font-weight:700;font-size:16.3px;flex:1}
+.q-type{flex:0 0 auto}
+.opts{display:grid;gap:9px}
+.opt{
+  display:flex;gap:11px;align-items:flex-start;cursor:pointer;
+  border:1px solid var(--border);border-radius:11px;padding:10px 13px;
+  background:rgba(255,255,255,.022);transition:.18s;font-size:15.1px;
+}
+.opt:hover{border-color:rgba(56,189,248,.4);background:rgba(56,189,248,.06)}
+.opt input{margin-top:4px;accent-color:var(--accent);flex:0 0 auto;width:16px;height:16px}
+.opt.correct{border-color:rgba(52,211,153,.65);background:rgba(52,211,153,.13)}
+.opt.wrong{border-color:rgba(248,113,113,.65);background:rgba(248,113,113,.13)}
+.opt.locked{cursor:default;opacity:.92}
+.mrow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.match-row{display:grid;grid-template-columns:1fr 220px;gap:12px;align-items:center;margin:9px 0}
+@media(max-width:640px){.match-row{grid-template-columns:1fr}}
+.match-a{border:1px solid var(--border);border-radius:11px;padding:9px 13px;background:rgba(255,255,255,.022);font-size:15px}
+select,.fin{
+  width:100%;font-family:var(--sans);font-size:14.8px;color:var(--text);
+  background:#0a1120;border:1px solid var(--border);border-radius:11px;padding:10px 12px;outline:none;
+}
+select:focus,.fin:focus{border-color:var(--accent)}
+.fin[dir="ltr"]{direction:ltr;text-align:left;font-family:var(--mono)}
+select.ok{border-color:rgba(52,211,153,.7)}select.no{border-color:rgba(248,113,113,.7)}
+.fb{margin-top:13px;border-radius:var(--radius-sm);padding:12px 15px;font-size:14.8px;display:none}
+.fb.show{display:block;animation:fade .3s ease}
+.fb.ok{border:1px solid rgba(52,211,153,.4);background:rgba(52,211,153,.10);color:#d3f7ea}
+.fb.no{border:1px solid rgba(248,113,113,.4);background:rgba(248,113,113,.10);color:#ffdede}
+.fb .fb-t{font-weight:700;display:block;margin-bottom:4px}
+.q-actions{margin-top:13px}
+.btn{
+  font-family:var(--sans);font-weight:700;font-size:14.6px;cursor:pointer;border-radius:11px;
+  padding:10px 20px;border:1px solid transparent;color:#04121d;
+  background:linear-gradient(135deg,var(--accent),#22d3ee);box-shadow:0 10px 26px -14px rgba(56,189,248,.95);
+  transition:.2s;
+}
+.btn:hover:not(:disabled){transform:translateY(-1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed;box-shadow:none}
+.btn.ghost{background:transparent;color:var(--dim);border-color:var(--border);box-shadow:none}
+.btn.ghost:hover{color:var(--text);background:rgba(255,255,255,.05)}
+.final{
+  display:none;border:1px solid rgba(56,189,248,.4);border-radius:var(--radius);padding:26px 24px;text-align:center;
+  background:linear-gradient(160deg,rgba(56,189,248,.12),rgba(15,21,36,.96));margin-top:22px;
+}
+.final.show{display:block;animation:fade .4s ease}
+.final .big{font-family:var(--mono);font-size:44px;font-weight:600;color:#fff;line-height:1.2}
+.final .pct{font-family:var(--mono);color:var(--accent);font-size:19px}
+.final .msg{margin:14px auto 6px;max-width:720px;font-size:17px;font-weight:700}
+.final .sub{color:var(--dim);font-size:14.6px;max-width:720px;margin:0 auto 18px}
+
+/* ---------- footer ---------- */
+footer{margin-top:60px;border-top:1px solid var(--border);padding:26px 0 40px;color:var(--dim);text-align:center;font-size:14.4px}
+footer .fname{font-family:var(--mono);color:#9fe1ff;font-size:13.6px}
+</style></head><body>
+<div id="langPill" role="group" aria-label="Language"><button id="btnAr" class="on" type="button">العربية</button><button id="btnEn" type="button">English</button></div>
+<header class="hero" id="hero"><svg class="curves" viewBox="0 0 1200 420" preserveAspectRatio="none" aria-hidden="true"><path d="M0,120 C300,60 520,300 1200,90" fill="none" stroke="#f87171" stroke-width="1.6" opacity=".55"/><path d="M0,180 C280,110 560,330 1200,140" fill="none" stroke="#fb923c" stroke-width="1.6" opacity=".5"/><path d="M0,240 C260,170 600,360 1200,190" fill="none" stroke="#fbbf24" stroke-width="1.6" opacity=".45"/><path d="M0,300 C240,230 640,390 1200,240" fill="none" stroke="#34d399" stroke-width="1.6" opacity=".4"/><path d="M0,350 C220,290 680,410 1200,290" fill="none" stroke="#38bdf8" stroke-width="1.6" opacity=".38"/><path d="M0,395 C200,340 720,430 1200,340" fill="none" stroke="#a78bfa" stroke-width="1.6" opacity=".34"/></svg><div class="wrap"><span class="kicker"><span class="i18n" data-en="LECTURE 4 · DATA MINING · REVIEW SHEET">المحاضرة ٤ · تنقيب البيانات · ورقة مراجعة</span></span><h1 class="hero-title i18n" data-en="OLAP & Data Warehousing: From Sources to Decision Support">OLAP ومستودعات البيانات: من المصادر إلى دعم القرار</h1><p class="hero-sub i18n" data-en="A complete slide-by-slide review of Data Warehouse properties, OLTP vs OLAP, architecture, ETL, and metadata.">مرجع شامل شريحةً شريحة عن خصائص Data Warehouse، والفرق بين OLTP وOLAP، والمعمارية، وETL، وMetadata.</p><div class="hero-chips"><span class="chip">Data Mining · Chapter 4</span><span class="chip">Slides 1 – 10</span><span class="chip">OLAP · ETL · Metadata</span><span class="chip">AR / EN</span></div></div></header>
+<nav class="sticky"><div class="navscroll" id="navscroll"><a class="nav-link" href="#hero" data-target="hero"><span class="i18n" data-en="Start">البداية</span></a><a class="nav-link" href="#overview" data-target="overview"><span class="i18n" data-en="01 · Overview">٠١ · نظرة عامة</span></a><a class="nav-link" href="#explain" data-target="explain"><span class="i18n" data-en="02 · Full Explanation">٠٢ · الشرح الكامل</span></a><a class="nav-link" href="#diagrams" data-target="diagrams"><span class="i18n" data-en="03 · Diagram">٠٣ · المخطط</span></a><a class="nav-link" href="#summary" data-target="summary"><span class="i18n" data-en="04 · Summary">٠٤ · الملخص</span></a><a class="nav-link" href="#levels" data-target="levels"><span class="i18n" data-en="05 · Three Levels">٠٥ · ثلاث مستويات</span></a><a class="nav-link" href="#quiz" data-target="quiz"><span class="i18n" data-en="06 · Quiz (30)">٠٦ · الاختبار (٣٠)</span></a><a class="nav-link" href="#tips" data-target="tips"><span class="i18n" data-en="07 · Study Plan">٠٧ · خطة المذاكرة</span></a></div></nav>
+<main class="wrap"><section id="overview"><div class="sec-head"><span class="sec-num">01</span><h2 class="sec-title i18n" data-en="Overview">نظرة عامة</h2></div><p class="sec-lead i18n" data-en="The lecture explains why analytical data needs a warehouse, how OLTP differs from OLAP, and how ETL and metadata make the environment usable.">المحاضرة تشرح لماذا نحتاج مستودع بيانات للتحليل، وكيف يختلف OLTP عن OLAP، وكيف تجعل ETL وMetadata البيئة قابلة للاستخدام.</p><div class="grid grid-4"><div class="card"><h3><span class="i18n" data-en="Core idea">الفكرة المركزية</span></h3><p><span class="i18n" data-en="A consolidated historical platform for decision support.">Data Warehouse منصة تاريخية مدمجة لدعم القرار.</span></p></div><div class="card"><h3><span class="i18n" data-en="Inmon’s four properties">خصائص Inmon الأربع</span></h3><p><span class="i18n" data-en="Subject-oriented · Integrated · Time-variant · Nonvolatile">Subject-oriented · Integrated · Time-variant · Nonvolatile</span></p></div><div class="card"><h3><span class="i18n" data-en="Data path">مسار البيانات</span></h3><p><span class="i18n" data-en="Sources → ETL → Warehouse/Data Marts → OLAP → Front-end Tools">Sources → ETL → Warehouse/Data Marts → OLAP → Front-end Tools</span></p></div><div class="card"><h3><span class="i18n" data-en="Exam skill">المهارة المطلوبة</span></h3><p><span class="i18n" data-en="Map each layer and term to its function in a scenario.">ميّز بين وظيفة كل طبقة وكل مصطلح في سيناريو عملي.</span></p></div></div></section>
+<section id="explain"><div class="sec-head"><span class="sec-num">02</span><h2 class="sec-title i18n" data-en="Full slide-by-slide explanation">الشرح الكامل شريحةً شريحة</h2></div><p class="sec-lead i18n" data-en="Every source point is preserved and expanded with reasoning, examples, and exam cues.">كل نقطة في المصدر محفوظة وموسعة بشرح منطقي وأمثلة وتنبيهات امتحانية.</p><article class="topic" id="slide-1"><span class="tnum">SLIDE 01</span><h3><span class="i18n" data-en="Data Mining — Chapter 4 — OLAP">Data Mining — Chapter 4 — OLAP</span></h3><p class="sec-lead"><span class="i18n" data-en="The lecture focuses on OLAP as a data-mining/data-warehousing component.">غلاف المحاضرة يحدد الجزء الخاص بـ OLAP داخل Data Mining.</span></p><div class="grid grid-2"><div class="card tinted"><h4>ما الفكرة؟</h4><p><span class="i18n" data-en="OLAP means Online Analytical Processing: interactive analytical processing over data, mainly for historical, multidimensional decision support.">OLAP تعني Online Analytical Processing، أي معالجة تحليلية تفاعلية للبيانات. لا نستخدمها لتسجيل كل عملية بيع لحظيًا، بل لتحليل تاريخي متعدد الأبعاد يساعد الإدارة في اتخاذ القرار.</span></p><p><span class="i18n" data-en="Data mining discovers patterns; OLAP supports queries, analysis, and reports over a warehouse.">احفظ العلاقة: Data Mining يبحث عن patterns، بينما OLAP يتيح الاستعلام والتحليل والتقارير على مستودع البيانات.</span></p></div><div class="card tinted purple"><h4>Technical reading</h4><p>The title places OLAP inside the broader Data Mining and Data Warehousing context.</p></div></div><div class="note info"><span class="i18n" data-en="Exam cue: ">للمراجعة: OLAP = analysis and decision support, not routine transaction entry.</span></div></article><article class="topic" id="slide-2"><span class="tnum">SLIDE 02</span><h3><span class="i18n" data-en="What is a Data Warehouse?">ما هو Data Warehouse؟</span></h3><p class="sec-lead"><span class="i18n" data-en="The slide gives practical and formal definitions and distinguishes a warehouse from an operational database.">الشريحة تقدم تعريفات متعددة، ثم تعريف Inmon الشهير، وتفرق بين المستودع وقاعدة البيانات التشغيلية.</span></p><div class="grid grid-2"><div class="card tinted"><h4>التعريف خطوة بخطوة</h4><p><span class="i18n" data-en="A data warehouse is a decision-support database maintained separately from the operational database so analytical workloads do not disrupt daily transactions.">Data Warehouse هو قاعدة بيانات مخصصة لدعم القرار، تُحفظ منفصلة عن Operational Database. السبب هو أن التحليل التاريخي الثقيل قد يبطئ المعاملات اليومية إذا أُجري على نفس النظام.</span></p><p><span class="i18n" data-en="Inmon’s definition: subject-oriented, integrated, time-variant, and nonvolatile. These four properties are the backbone of the chapter.">التعريف الرسمي: Subject-oriented, Integrated, Time-variant, Nonvolatile. أي أنه منظم حول موضوعات، يدمج مصادر متعددة، يحتفظ بالزمن والتاريخ، ولا يتغير مع كل معاملة تشغيلية.</span></p><p><span class="i18n" data-en="Data warehousing is the process of constructing and using data warehouses, not merely the database itself.">Data warehousing هو عملية بناء واستخدام Data Warehouses، وليس اسم قاعدة البيانات فقط.</span></p></div><div class="card tinted purple"><h4>Technical reading</h4><p>A separate, historical, consolidated platform for management decision-making.</p></div></div><div class="note info"><span class="i18n" data-en="Exam cue: ">للمراجعة: Remember the four adjectives: subject-oriented, integrated, time-variant, nonvolatile.</span></div></article><article class="topic" id="slide-3"><span class="tnum">SLIDE 03</span><h3><span class="i18n" data-en="Data Warehouse — Subject-Oriented">Data Warehouse — Subject-Oriented</span></h3><p class="sec-lead"><span class="i18n" data-en="The warehouse is organized around major business subjects rather than operational transaction steps.">المستودع يدور حول موضوعات الأعمال الرئيسية، لا حول تفاصيل تنفيذ المعاملات اليومية.</span></p><div class="grid grid-2"><div class="card tinted"><h4>كيف نعرف أنه Subject-Oriented؟</h4><ul class="clean"><li><span class="i18n" data-en="Choose a subject such as customer, product, or sales.">نختار موضوعًا مثل Customer أو Product أو Sales.</span></li><li><span class="i18n" data-en="Model and analyze data for decision makers.">نركز على أسئلة القرار والتحليل المتعلقة بالموضوع.</span></li><li><span class="i18n" data-en="Exclude data that is not useful for decision support.">نستبعد البيانات التي لا تساعد في Decision Support.</span></li></ul><p><span class="i18n" data-en="Operational systems record events; the warehouse supports questions such as sales trends by product category, branch, and year.">مثال: النظام التشغيلي يسجل “تم بيع المنتج X عند الساعة 10:03”. المستودع يتيح سؤالًا مثل “ما اتجاه مبيعات فئة المنتجات X في كل فرع خلال خمس سنوات؟”</span></p></div><div class="card tinted purple"><h4>Technical reading</h4><p>Subject-oriented means analysis is centered on business subjects and concise decision views.</p></div></div><div class="note info"><span class="i18n" data-en="Exam cue: ">للمراجعة: Do not confuse subject-oriented modeling with process-oriented transaction recording.</span></div></article><article class="topic" id="slide-4"><span class="tnum">SLIDE 04</span><h3><span class="i18n" data-en="Data Warehouse — Integrated">Data Warehouse — Integrated</span></h3><p class="sec-lead"><span class="i18n" data-en="Integration combines heterogeneous sources and makes their representations consistent in the warehouse.">التكامل يعني جمع مصادر مختلفة وغير متجانسة وتحويلها إلى تمثيل متسق داخل المستودع.</span></p><div class="grid grid-2"><div class="card tinted"><h4>لماذا نحتاج Data Cleaning وData Integration؟</h4><p><span class="i18n" data-en="Sources may be relational databases, flat files, or online transaction records. They may disagree on currencies, taxes, breakfast inclusion, names, encodings, or units.">المصادر قد تكون Relational Databases أو Flat Files أو Online Transaction Records. قد يكتب مصدرٌ السعر بالدولار وآخر بالجنيه، أو يشمل الضريبة/الإفطار وآخر لا يشملهما.</span></p><p><span class="i18n" data-en="Before loading, standardize naming conventions, encodings, and attribute measures. Data is converted when moved into the warehouse.">قبل التحميل يجب توحيد Naming Conventions وEncoding Structures وAttribute Measures. عند نقل البيانات إلى Warehouse تُحوّل إلى الصيغة المتفق عليها.</span></p><p><span class="i18n" data-en="Hotel example: “price = 100” is not comparable until currency, tax, and included services are normalized.">مثال الفندق: “السعر 100” بلا تحديد العملة والضريبة ليس قيمة قابلة للمقارنة حتى نعرف قواعد التحويل.</span></p></div><div class="card tinted purple"><h4>Technical reading</h4><p>Integration is about consistency across sources, not just copying tables.</p></div></div><div class="note info"><span class="i18n" data-en="Exam cue: ">للمراجعة: Cleaning and integration resolve semantic and format conflicts before analysis.</span></div></article><article class="topic" id="slide-5"><span class="tnum">SLIDE 05</span><h3><span class="i18n" data-en="Data Warehouse — Time-Variant">Data Warehouse — Time-Variant</span></h3><p class="sec-lead"><span class="i18n" data-en="A warehouse preserves a much longer historical perspective than an operational database.">المستودع يحتفظ بمنظور تاريخي أطول بكثير من Operational Database.</span></p><div class="grid grid-2"><div class="card tinted"><h4>الفرق الزمني</h4><p><span class="i18n" data-en="An operational database commonly emphasizes current values; a warehouse can retain five to ten years of history for trends and comparisons.">Operational Database غالبًا يعرض Current Value Data: السعر أو الرصيد الحالي. أما Warehouse فيحتفظ بتاريخ، مثل آخر 5–10 سنوات، حتى نحلل الاتجاهات والمقارنات.</span></p><p><span class="i18n" data-en="Every key structure in a warehouse contains a time element explicitly or implicitly, while an operational key may not.">كل Key Structure في المستودع يحتوي عنصر Time صراحة أو ضمنيًا. في البيانات التشغيلية قد لا يتضمن المفتاح الزمن أصلًا.</span></p><p><span class="i18n" data-en="When a product price changes, historical analysis needs the previous value rather than overwriting it.">إذا تغير سعر المنتج، لا نمسح السعر القديم في التحليل التاريخي؛ نحتاج معرفة ماذا كان السعر في فترة معينة.</span></p></div><div class="card tinted purple"><h4>Technical reading</h4><p>Historical time is part of the warehouse model.</p></div></div><div class="note info"><span class="i18n" data-en="Exam cue: ">للمراجعة: Time-variant enables “as-of” and trend questions.</span></div></article><article class="topic" id="slide-6"><span class="tnum">SLIDE 06</span><h3><span class="i18n" data-en="Data Warehouse — Nonvolatile">Data Warehouse — Nonvolatile</span></h3><p class="sec-lead"><span class="i18n" data-en="The warehouse is a physically separate, stable store loaded from the operational environment.">المستودع مخزن منفصل تُحمّل إليه البيانات، ولا تحدث فيه Operational Updates المعتادة.</span></p><div class="grid grid-2"><div class="card tinted"><h4>ما معنى Nonvolatile؟</h4><p><span class="i18n" data-en="Nonvolatile does not mean data can never be refreshed. It means routine operational updates do not occur directly in the warehouse; data arrives through controlled loading and refresh.">لا يعني أن البيانات لا تُحدّث أبدًا؛ المقصود أن المستخدمين لا ينفذون عليها تحديثات تشغيلية لحظية مثل INSERT/UPDATE لكل معاملة. تأتي البيانات عبر Initial Loading ثم Refresh مضبوط.</span></p><p><span class="i18n" data-en="Because of this stable model, it does not require the same transaction processing, recovery, and concurrency-control mechanisms as OLTP. The two key operations are initial loading and access.">لذلك لا يحتاج المستودع بنفس الدرجة إلى Transaction Processing وRecovery وConcurrency Control الخاصة بالأنظمة التشغيلية. عمليتا الوصول الأساسيتان هما Initial Loading وData Access.</span></p></div><div class="card tinted purple"><h4>Technical reading</h4><p>Nonvolatile = stable analytical store, not a live transaction register.</p></div></div><div class="note info"><span class="i18n" data-en="Exam cue: ">للمراجعة: Do not interpret nonvolatile as “never refreshed”; refresh is explicitly part of the architecture.</span></div></article><article class="topic" id="slide-7"><span class="tnum">SLIDE 07</span><h3><span class="i18n" data-en="OLTP vs. OLAP">OLTP vs. OLAP</span></h3><p class="sec-lead"><span class="i18n" data-en="This slide contrasts transaction processing with analytical processing.">هذه الشريحة تقارن بين النظام الذي يسجل المعاملات والنظام الذي يحلل البيانات.</span></p><div class="grid grid-2"><div class="card tinted"><h4>الفكرة المقارنة</h4><p><span class="i18n" data-en="OLTP handles short, current, write-heavy transactions with many concurrent users.">OLTP = Online Transaction Processing: معاملات قصيرة، بيانات حالية، عمليات إدخال وتعديل كثيرة، وعدد كبير من المستخدمين المتزامنين.</span></p><p><span class="i18n" data-en="OLAP handles complex, read-heavy analytical queries, aggregation across time and dimensions, reports, and data mining.">OLAP = Online Analytical Processing: استعلامات طويلة ومعقدة، قراءة وتجميع عبر تاريخ وم dimensions متعددة، وتقارير وData Mining.</span></p><div class="tbl-wrap"><table><thead><tr><th>OLTP</th><th>OLAP</th></tr></thead><tbody><tr><td>Current operational data</td><td>Historical consolidated data</td></tr><tr><td>Insert/update transactions</td><td>Read, aggregate, analyze</td></tr><tr><td>Fast small transactions</td><td>Complex analytical queries</td></tr></tbody></table></div></div><div class="card tinted purple"><h4>Technical reading</h4><p>OLTP optimizes transaction throughput; OLAP optimizes analysis and decision support.</p></div></div><div class="note info"><span class="i18n" data-en="Exam cue: ">للمراجعة: The separate warehouse protects OLTP performance from analytical workloads.</span></div></article><article class="topic" id="slide-8"><span class="tnum">SLIDE 08</span><h3><span class="i18n" data-en="Data Warehouse: A Multi-Tiered Architecture">Data Warehouse: A Multi-Tiered Architecture</span></h3><p class="sec-lead"><span class="i18n" data-en="The architecture diagram shows the flow from sources through storage and OLAP to user-facing tools.">المخطط يوضح طبقات تدفق البيانات من المصادر إلى التخزين ثم التحليل والأدوات الأمامية.</span></p><div class="grid grid-2"><div class="card tinted"><h4>وصف الرسم بالتفصيل</h4><p><span class="i18n" data-en="At the far left are data sources. Data moves into data storage, where the warehouse and data marts reside. Data marts are smaller department- or subject-oriented subsets.">في أقصى اليسار توجد Data Sources. تنتقل البيانات إلى Data Storage في الطبقة السفلية/الوسطى، حيث يوجد Data Warehouse وData Marts. Data Marts أجزاء أصغر موجهة لقسم أو موضوع محدد.</span></p><p><span class="i18n" data-en="The monitor and integrator supervises and integrates the flow; metadata describes the data and its lineage. The OLAP server/engine provides multidimensional analysis over the warehouse.">في الوسط يوجد Monitor & Integrator، وهو مسؤول عن مراقبة التدفق ودمج البيانات، ومعه Metadata التي تصف البيانات ومساراتها. يوجد OLAP Server/Engine فوق المستودع لتنفيذ التحليل متعدد الأبعاد.</span></p><p><span class="i18n" data-en="On the right, front-end tools provide analysis, queries, reports, and data mining. Users normally consume the governed analytical layer rather than raw operational sources.">في اليمين Front-End Tools مثل Analysis وQuery وReports وData Mining. أي أن المستخدم لا يتعامل عادةً مع مصادر التشغيل مباشرة، بل مع طبقة تحليلية منظمة.</span></p></div><div class="card tinted purple"><h4>Technical reading</h4><p>Read the diagram left-to-right: sources → integration/metadata → warehouse/data marts → OLAP → front-end tools.</p></div></div><div class="note info"><span class="i18n" data-en="Exam cue: ">للمراجعة: The diagram is a pipeline plus governance: data movement, storage, analytical engine, and consumption.</span></div></article><article class="topic" id="slide-9"><span class="tnum">SLIDE 09</span><h3><span class="i18n" data-en="Extraction, Transformation, and Loading (ETL)">Extraction, Transformation, and Loading (ETL)</span></h3><p class="sec-lead"><span class="i18n" data-en="ETL is the operational pipeline that prepares data for the warehouse, followed by refresh to propagate later updates.">ETL هو المسار العملي الذي يجعل البيانات جاهزة للمستودع، ثم تُضاف عملية Refresh للحفاظ على حداثتها.</span></p><div class="grid grid-2"><div class="card tinted"><h4>مراحل ETL</h4><div class="steps"><div class="step"><span class="s-n">01</span><div class="s-t">Data extraction</div><div class="s-d">سحب البيانات من مصادر متعددة وغير متجانسة وخارجية.</div></div><div class="step"><span class="s-n">02</span><div class="s-t">Data cleaning</div><div class="s-d">اكتشاف الأخطاء وتصحيحها عندما يكون ذلك ممكنًا.</div></div><div class="step"><span class="s-n">03</span><div class="s-t">Data transformation</div><div class="s-d">تحويل Legacy/Host Format إلى Warehouse Format.</div></div><div class="step"><span class="s-n">04</span><div class="s-t">Load + Refresh</div><div class="s-d">ترتيب وتجميع وحساب Views وفحص Integrity وبناء Indices/Partitions ثم نشر التحديثات.</div></div></div><p><span class="i18n" data-en="Loading is more than copying: sort, summarize, consolidate, compute views, check integrity, and build indexes and partitions. Refresh propagates source updates to the warehouse.">في Load لا ننسخ فقط: قد نعمل Sort وSummarize وConsolidate ونحسب Views ونفحص Integrity ونبني Indices وPartitions. Refresh ينشر التحديثات من المصادر إلى المستودع.</span></p></div><div class="card tinted purple"><h4>Technical reading</h4><p>ETL transforms messy heterogeneous sources into governed warehouse-ready data.</p></div></div><div class="note info"><span class="i18n" data-en="Exam cue: ">للمراجعة: Cleaning is error correction; transformation is format/representation conversion; refresh is later propagation.</span></div></article><article class="topic" id="slide-10"><span class="tnum">SLIDE 10</span><h3><span class="i18n" data-en="Metadata Repository">Metadata Repository</span></h3><p class="sec-lead"><span class="i18n" data-en="Metadata is data about warehouse objects, their structure, lineage, operation, performance, and business meaning.">Metadata هي البيانات التي تصف Data Warehouse objects وتساعد على فهم البنية والمصدر والتاريخ والأداء وقواعد الأعمال.</span></p><div class="grid grid-2"><div class="card tinted"><h4>ماذا يخزن Metadata Repository؟</h4><ul class="clean"><li><span class="i18n" data-en="Structure descriptions: schemas, views, dimensions, hierarchies, derived data, and data marts.">وصف Structure: Schema وView وDimensions وHierarchies وDerived Data Definitions ومواقع ومحتويات Data Marts.</span></li><li><span class="i18n" data-en="Operational metadata: lineage, currency, monitoring, usage, errors, and audit trails.">Operational Metadata: Data Lineage، Currency (Active/Archived/Purged)، Monitoring Information، Usage Statistics، Error Reports، Audit Trails.</span></li><li><span class="i18n" data-en="Algorithms used for summarization.">Algorithms المستخدمة في Summarization.</span></li><li><span class="i18n" data-en="Mappings from the operational environment to the warehouse.">Mapping من Operational Environment إلى Data Warehouse.</span></li><li><span class="i18n" data-en="System-performance data and derived definitions.">بيانات System Performance، مثل تعريفات Warehouse Schema وViews وDerived Data.</span></li><li><span class="i18n" data-en="Business terms, ownership, and charging policies.">Business Data: المصطلحات والتعريفات وData Ownership وCharging Policies.</span></li></ul><p><span class="i18n" data-en="Without metadata, the warehouse is a large storage area without a dictionary: users cannot reliably interpret fields, origins, currency, or ownership.">بدون Metadata يصبح المستودع مخزنًا كبيرًا بلا قاموس: قد نرى عمودًا ولا نعرف معناه أو مصدره أو متى أصبح Active.</span></p></div><div class="card tinted purple"><h4>Technical reading</h4><p>Metadata answers: what is this data, where did it come from, how was it transformed, and who owns it?</p></div></div><div class="note info"><span class="i18n" data-en="Exam cue: ">للمراجعة: Metadata supports discoverability, governance, lineage, auditing, and correct interpretation.</span></div></article></section>
+<section id="diagrams"><div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title i18n" data-en="Diagram explanation">شرح المخطط</h2></div><p class="sec-lead i18n" data-en="The architecture is read as a controlled flow from raw sources to analytical consumption.">نقرأ المعمارية كتدفق مضبوط من المصادر الخام إلى الاستهلاك التحليلي.</p><div class="diagram-block"><div class="db-head"><h3><span class="i18n" data-en="Multi-Tiered Data Warehouse Architecture">Multi-Tiered Data Warehouse Architecture</span> <span class="badge b-on">SLIDE 08</span></h3></div><div class="db-body"><div class="steps"><div class="step"><span class="s-n">01</span><div class="s-t">Data Sources</div><div class="s-d">Operational DBs, external files, transaction records</div></div><div class="step"><span class="s-n">02</span><div class="s-t">Monitor & Integrator</div><div class="s-d">يتابع ويجمع ويحوّل البيانات، مع Metadata</div></div><div class="step"><span class="s-n">03</span><div class="s-t">Warehouse / Marts</div><div class="s-d">تخزين مركزي وsubsets موجهة</div></div><div class="step"><span class="s-n">04</span><div class="s-t">OLAP + Front End</div><div class="s-d">Analysis, Query, Reports, Data Mining</div></div></div><div class="note good"><span class="i18n" data-en="If asked for the direction: start at sources, pass through integration and storage, then use OLAP and front-end tools. Metadata is not decoration; it is descriptive governance around the data.">إذا سأل الامتحان عن اتجاه السهم: ابدأ بالمصادر، مرّر عبر الدمج والتخزين، ثم استخدم OLAP وأدوات الواجهة. Metadata ليست مرحلة منفصلة للعرض فقط؛ هي طبقة وصف وحوكمة ترافق البيانات.</span></div></div></div></section>
+<section id="summary"><div class="sec-head"><span class="sec-num">04</span><h2 class="sec-title i18n" data-en="Comprehensive summary">التلخيص الشامل</h2></div><div class="tbl-wrap"><table><thead><tr><th>Term</th><th><span class="i18n" data-en="Meaning">المعنى</span></th><th><span class="i18n" data-en="Exam distinction">تمييز امتحاني</span></th></tr></thead><tbody><tr><td class="key">Data Warehouse</td><td><span class="i18n" data-en="A separate decision-support database">قاعدة منفصلة لدعم القرار</span></td><td><span class="i18n" data-en="ليس Operational DB">ليس Operational DB</span></td></tr><tr><td class="key">Subject-oriented</td><td><span class="i18n" data-en="Centered on business subjects">حول Customer/Product/Sales</span></td><td><span class="i18n" data-en="ليس حول خطوات المعاملة">ليس حول خطوات المعاملة</span></td></tr><tr><td class="key">Integrated</td><td><span class="i18n" data-en="Consistent heterogeneous sources">مصادر غير متجانسة بتمثيل متسق</span></td><td><span class="i18n" data-en="يتطلب cleaning/integration">يتطلب cleaning/integration</span></td></tr><tr><td class="key">Time-variant</td><td><span class="i18n" data-en="Historical perspective">تاريخ طويل وعنصر زمن</span></td><td><span class="i18n" data-en="يحفظ القديم للتحليل">يحفظ القديم للتحليل</span></td></tr><tr><td class="key">Nonvolatile</td><td><span class="i18n" data-en="Stable controlled store">لا تحديث تشغيلي مباشر</span></td><td><span class="i18n" data-en="يمكن Refresh">يمكن Refresh</span></td></tr><tr><td class="key">OLTP</td><td><span class="i18n" data-en="Short current transactions">معاملات قصيرة حالية</span></td><td><span class="i18n" data-en="write-heavy">write-heavy</span></td></tr><tr><td class="key">OLAP</td><td><span class="i18n" data-en="Complex analytical queries">تحليل وتجميع واستعلامات معقدة</span></td><td><span class="i18n" data-en="read/aggregate-heavy">read/aggregate-heavy</span></td></tr><tr><td class="key">ETL</td><td><span class="i18n" data-en="Prepare data for warehouse">Extract, clean, transform, load</span></td><td><span class="i18n" data-en="ليس نسخًا فقط">ليس نسخًا فقط</span></td></tr><tr><td class="key">Metadata</td><td><span class="i18n" data-en="Structure, lineage, business meaning">بيانات تصف البيانات والبنية والمسار</span></td><td><span class="i18n" data-en="تدعم الحوكمة">تدعم الحوكمة</span></td></tr></tbody></table></div></section>
+<section id="levels"><div class="sec-head"><span class="sec-num">05</span><h2 class="sec-title i18n" data-en="Three learning levels">التبسيط على 3 مستويات</h2></div><div class="grid grid-3"><div class="card tinted"><h3>01 · Beginner</h3><p><span class="i18n" data-en="Imagine a store: OLTP records each purchase; the warehouse keeps sales history so a manager can ask which product sells most each month. OLAP analyzes the answer.">تخيل متجرًا: OLTP يسجل كل عملية شراء، أما Data Warehouse فيحتفظ بتاريخ المبيعات ليسأل المدير: أي منتج يبيع أكثر في كل شهر؟ OLAP هو أداة طرح هذا السؤال وتحليل الإجابة.</span></p></div><div class="card tinted purple"><h3>02 · University</h3><p><span class="i18n" data-en="Analyze any term through: where did data originate, how was it integrated, does it preserve history, how was it loaded, and what metadata describes it? Then classify the workload as OLTP or OLAP.">حلل أي مصطلح عبر: أين توجد البيانات؟ كيف دُمجت؟ هل لها تاريخ؟ كيف وصلت؟ ما Metadata التي تصفها؟ ثم حدد هل workload هو OLTP أم OLAP.</span></p></div><div class="card tinted green"><h3>03 · Last-minute English</h3><ul class="clean"><li>Warehouse = subject-oriented, integrated, time-variant, nonvolatile.</li><li>OLTP = current, short, write-heavy transactions.</li><li>OLAP = historical, complex, read/aggregate-heavy analysis.</li><li>ETL = extract, clean, transform, load; refresh later updates.</li><li>Metadata = structure, lineage, currency, performance, business meaning.</li></ul></div></div></section>
+<section id="quiz"><div class="sec-head"><span class="sec-num">06</span><h2 class="sec-title i18n" data-en="Interactive quiz — 30 questions">اختبار تفاعلي — 30 سؤالًا</h2></div><p class="sec-lead i18n" data-en="MCQs, True/False, and Match A with B. Check each answer for immediate feedback, then view your total score.">MCQs وTrue/False وMatch A with B. تحقق من كل إجابة لرؤية الشرح فورًا ثم راجع نتيجتك النهائية.</p><div class="quiz-head"><div class="score-box">Score: <b id="score">0</b> / 30</div><div class="badge b-on2"><span class="i18n" data-en="Answered">تمت الإجابة</span>: <span id="ansCount">0</span> / 30</div><button class="btn ghost" id="resetTop"><span class="i18n" data-en="Reset quiz">إعادة الاختبار</span></button></div><div class="prog"><div class="bar" id="progBar"></div></div><div id="quizRoot"></div><div class="final" id="finalPanel"><div class="big" id="finalScore">0 / 30</div><div class="pct" id="finalPct">0%</div><div class="msg" id="finalMsg"></div><div class="sub" id="finalSub"></div><button class="btn" id="tryAgain">Try again</button></div></section>
+<section id="tips"><div class="sec-head"><span class="sec-num">07</span><h2 class="sec-title i18n" data-en="Study plan & pro tips">خطة المذاكرة والنصائح</h2></div><div class="grid grid-2"><div class="card tinted"><h3><span class="i18n" data-en="One-day plan">خطة يوم واحد</span></h3><div class="timeline"><div class="tl-item"><div class="tl-t">09:00 — 10:30</div><div class="tl-d"><span class="i18n" data-en="Memorize the warehouse definition and four properties with one example each.">احفظ تعريف Data Warehouse والخصائص الأربع مع مثال لكل خاصية.</span></div></div><div class="tl-item"><div class="tl-t">11:00 — 13:00</div><div class="tl-d"><span class="i18n" data-en="Rebuild the OLTP vs OLAP comparison table from memory.">قارن OLTP وOLAP في جدول من الذاكرة.</span></div></div><div class="tl-item"><div class="tl-t">14:00 — 16:00</div><div class="tl-d"><span class="i18n" data-en="Redraw Slide 8 architecture and explain the data direction.">ارسم معمارية Slide 8 واشرح اتجاه البيانات.</span></div></div><div class="tl-item"><div class="tl-t">17:00 — 19:00</div><div class="tl-d"><span class="i18n" data-en="Review ETL and metadata, then complete all 30 questions.">راجع ETL وMetadata ثم حل الأسئلة الثلاثين.</span></div></div></div></div><div class="card tinted amber"><h3><span class="i18n" data-en="Common traps">أخطاء شائعة</span></h3><ul class="clean"><li><span class="i18n" data-en="Nonvolatile does not mean never refresh.">Nonvolatile لا تعني Never Refresh.</span></li><li><span class="i18n" data-en="OLAP does not replace OLTP; their workloads differ.">OLAP ليس بديلًا عن OLTP؛ لكل واحد workload مختلف.</span></li><li><span class="i18n" data-en="Integration includes semantics and units, not only column names.">Integration يشمل المعنى والوحدات، لا أسماء الأعمدة فقط.</span></li><li><span class="i18n" data-en="Metadata describes business data; it is not simply the business data itself.">Metadata ليست بيانات الأعمال نفسها؛ هي وصف للبنية والمعنى والمسار.</span></li></ul></div></div></section></main><footer><div class="wrap"><span class="i18n" data-en="Review sheet built from all 10 slides of Data Mining — Chapter 4 — OLAP.">ملف مراجعة مبني على جميع الشرائح العشر لمحاضرة Data Mining — Chapter 4 — OLAP.</span><br><span class="fname">Topic4_OLAP_Data_Warehousing_review.html</span></div></footer>
+<script>
+const questions=[{"type": "mc", "q": "Which phrase best defines a Data Warehouse?", "opts": ["A separate decision-support database", "A keyboard driver", "A real-time firewall"], "ans": 0, "exp": "It is maintained separately from operational systems for analysis.", "pairs": null}, {"type": "mc", "q": "Which is NOT one of Inmon’s four properties?", "opts": ["Subject-oriented", "Integrated", "Volatile", "Time-variant"], "ans": 2, "exp": "The property is nonvolatile, not volatile.", "pairs": null}, {"type": "mc", "q": "A warehouse organized around customer, product, and sales is:", "opts": ["Subject-oriented", "Nonvolatile only", "A network protocol"], "ans": 0, "exp": "Its organization follows major business subjects.", "pairs": null}, {"type": "mc", "q": "Why are cleaning and integration needed?", "opts": ["To make heterogeneous sources consistent", "To delete all history", "To replace OLAP with OLTP"], "ans": 0, "exp": "Sources differ in names, formats, units, encodings, and meanings.", "pairs": null}, {"type": "mc", "q": "Which system usually emphasizes current value data?", "opts": ["Operational database", "Data warehouse", "Metadata repository"], "ans": 0, "exp": "Operational systems focus on current transactional state.", "pairs": null}, {"type": "mc", "q": "Time-variant data mainly enables:", "opts": ["Historical trend analysis", "Only password changes", "Removing timestamps"], "ans": 0, "exp": "Time is preserved for historical perspective.", "pairs": null}, {"type": "mc", "q": "Nonvolatile means:", "opts": ["No routine operational updates occur directly in the warehouse", "The warehouse can never be refreshed", "All data is deleted after loading"], "ans": 0, "exp": "It is stable but can receive controlled loads and refreshes.", "pairs": null}, {"type": "mc", "q": "Which workload is most associated with OLAP?", "opts": ["Complex analytical queries", "Short payment transactions", "Single-row order insertion"], "ans": 0, "exp": "OLAP reads and aggregates across dimensions and history.", "pairs": null}, {"type": "mc", "q": "Which component provides multidimensional analysis?", "opts": ["OLAP server/engine", "Data source only", "Charging policy"], "ans": 0, "exp": "The OLAP engine serves analytical operations.", "pairs": null}, {"type": "mc", "q": "Which ETL step detects errors and rectifies them when possible?", "opts": ["Data cleaning", "Data extraction", "Front-end reporting"], "ans": 0, "exp": "Cleaning addresses data errors.", "pairs": null}, {"type": "mc", "q": "During loading, which operation may be performed?", "opts": ["Build indexes and partitions", "Disable all integrity checks", "Erase metadata"], "ans": 0, "exp": "Loading can sort, summarize, check integrity, and build indexes/partitions.", "pairs": null}, {"type": "mc", "q": "What does Data Lineage describe?", "opts": ["History of migrated data and transformation path", "Only user passwords", "The color of a dashboard"], "ans": 0, "exp": "Lineage records origin and transformation history.", "pairs": null}, {"type": "mc", "q": "Which is an example of Business Metadata?", "opts": ["Business terms and data ownership", "CPU temperature only", "Raw packet bytes"], "ans": 0, "exp": "Business metadata documents meaning, ownership, and policies.", "pairs": null}, {"type": "mc", "q": "What is a Data Mart?", "opts": ["A smaller subject/department-oriented subset", "A source-code compiler", "A network cable"], "ans": 0, "exp": "Data marts are focused subsets of warehouse data.", "pairs": null}, {"type": "tf", "q": "A Data Warehouse is normally maintained separately from the operational database.", "opts": ["True", "False"], "ans": 0, "exp": "Separation protects operational workloads and supports historical analysis.", "pairs": null}, {"type": "tf", "q": "Subject-oriented means the warehouse is organized around transaction steps.", "opts": ["True", "False"], "ans": 1, "exp": "It is organized around business subjects, not daily transaction processing.", "pairs": null}, {"type": "tf", "q": "A hotel price of 100 is automatically comparable across sources.", "opts": ["True", "False"], "ans": 1, "exp": "Currency, tax, breakfast inclusion, and other semantics must be standardized.", "pairs": null}, {"type": "tf", "q": "Every warehouse key structure has a time element explicitly or implicitly.", "opts": ["True", "False"], "ans": 0, "exp": "This is the time-variant property.", "pairs": null}, {"type": "tf", "q": "Nonvolatile means the warehouse never receives refreshes.", "opts": ["True", "False"], "ans": 1, "exp": "Refresh propagates source updates to the warehouse.", "pairs": null}, {"type": "tf", "q": "OLTP is designed primarily for long historical analytical queries.", "opts": ["True", "False"], "ans": 1, "exp": "OLTP handles short operational transactions; OLAP handles analysis.", "pairs": null}, {"type": "tf", "q": "ETL extraction can collect data from heterogeneous external sources.", "opts": ["True", "False"], "ans": 0, "exp": "Extraction is the first ETL stage and can use multiple external sources.", "pairs": null}, {"type": "tf", "q": "Metadata can include audit trails and error reports.", "opts": ["True", "False"], "ans": 0, "exp": "These are examples of operational metadata.", "pairs": null}, {"type": "match", "q": "Match each concept with its best description.", "opts": [["Subject-oriented", "Organized around business subjects"], ["Time-variant", "Preserves historical perspective"], ["Nonvolatile", "Stable store with controlled loading/access"], ["Integrated", "Consistent representation from heterogeneous sources"]], "ans": null, "exp": "These four properties define the core warehouse model.", "pairs": [["Subject-oriented", "Organized around business subjects"], ["Time-variant", "Preserves historical perspective"], ["Nonvolatile", "Stable store with controlled loading/access"], ["Integrated", "Consistent representation from heterogeneous sources"]]}, {"type": "match", "q": "Match each OLAP/OLTP term with its role.", "opts": [["OLTP", "Short current transactions"], ["OLAP", "Complex analysis and aggregation"], ["Data Mart", "Focused subset for a subject/department"], ["Front-end tools", "Queries, reports, analysis, and data mining"]], "ans": null, "exp": "The terms describe different layers and workloads.", "pairs": [["OLTP", "Short current transactions"], ["OLAP", "Complex analysis and aggregation"], ["Data Mart", "Focused subset for a subject/department"], ["Front-end tools", "Queries, reports, analysis, and data mining"]]}, {"type": "match", "q": "Match ETL stages with actions.", "opts": [["Extraction", "Get data from multiple sources"], ["Cleaning", "Detect and rectify errors"], ["Transformation", "Convert to warehouse format"], ["Load", "Sort, summarize, check integrity, build indexes"]], "ans": null, "exp": "ETL stages are sequential but may be implemented in pipelines.", "pairs": [["Extraction", "Get data from multiple sources"], ["Cleaning", "Detect and rectify errors"], ["Transformation", "Convert to warehouse format"], ["Load", "Sort, summarize, check integrity, build indexes"]]}, {"type": "match", "q": "Match metadata categories with examples.", "opts": [["Data lineage", "History of migration and transformations"], ["Currency", "Active, archived, or purged status"], ["Business data", "Terms, ownership, charging policies"], ["Monitoring", "Usage statistics, errors, audit trails"]], "ans": null, "exp": "Metadata documents both technical and business context.", "pairs": [["Data lineage", "History of migration and transformations"], ["Currency", "Active, archived, or purged status"], ["Business data", "Terms, ownership, charging policies"], ["Monitoring", "Usage statistics, errors, audit trails"]]}, {"type": "match", "q": "Match architecture components with their function.", "opts": [["Monitor & Integrator", "Monitors and integrates the flow"], ["OLAP server", "Provides analytical processing"], ["Data sources", "Original operational/external inputs"], ["Front-end tools", "Consume analysis, query, reports, mining"]], "ans": null, "exp": "Read the architecture from source to user consumption.", "pairs": [["Monitor & Integrator", "Monitors and integrates the flow"], ["OLAP server", "Provides analytical processing"], ["Data sources", "Original operational/external inputs"], ["Front-end tools", "Consume analysis, query, reports, mining"]]}, {"type": "match", "q": "Match the conflict with the needed integration decision.", "opts": [["Different currencies", "Convert to a common currency"], ["Different encodings", "Standardize encoding"], ["Different measures", "Agree on attribute units/meaning"], ["Different tax rules", "Document and normalize inclusion"]], "ans": null, "exp": "Integration is semantic as well as syntactic.", "pairs": [["Different currencies", "Convert to a common currency"], ["Different encodings", "Standardize encoding"], ["Different measures", "Agree on attribute units/meaning"], ["Different tax rules", "Document and normalize inclusion"]]}, {"type": "match", "q": "Match warehouse activity with its timing.", "opts": [["Initial loading", "First population of the warehouse"], ["Access", "Queries and analysis by users"], ["Refresh", "Propagate later source updates"], ["Operational update", "Routine OLTP action, not direct warehouse behavior"]], "ans": null, "exp": "This distinction explains nonvolatility.", "pairs": [["Initial loading", "First population of the warehouse"], ["Access", "Queries and analysis by users"], ["Refresh", "Propagate later source updates"], ["Operational update", "Routine OLTP action, not direct warehouse behavior"]]}, {"type": "match", "q": "Match metadata item with its question.", "opts": [["Schema/view definition", "What is the structure?"], ["Lineage", "Where did it come from?"], ["Ownership", "Who is responsible?"], ["Performance data", "How is the system behaving?"]], "ans": null, "exp": "Metadata makes the warehouse understandable and governable.", "pairs": [["Schema/view definition", "What is the structure?"], ["Lineage", "Where did it come from?"], ["Ownership", "Who is responsible?"], ["Performance data", "How is the system behaving?"]]}];
+let state=questions.map(()=>({done:false,ok:false}));
+const root=document.getElementById('quizRoot');
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function render(){root.innerHTML='';questions.forEach((x,i)=>{let html='';if(x.type==='match'){html='<div class="match-grid">'+x.opts.map((pair,j)=>`<div class="match-row"><div class="match-a">${esc(pair[0])}</div><select data-j="${j}"><option value="">Choose B</option>${x.opts.map((p,k)=>`<option value="${k}">${esc(p[1])}</option>`).join('')}</select></div>`).join('')+'</div>'}else{html='<div class="opts">'+x.opts.map((o,j)=>`<label class="opt"><input type="${x.type==='tf'?'radio':'radio'}" name="q${i}" value="${j}"><span>${esc(o)}</span></label>`).join('')+'</div>'}root.insertAdjacentHTML('beforeend',`<article class="q" id="q${i}"><div class="q-head"><span class="q-idx">${String(i+1).padStart(2,'0')}</span><div class="q-prompt">${esc(x.q)}</div><span class="badge q-type">${x.type==='mc'?'MCQ':x.type==='tf'?'TRUE / FALSE':'MATCH A → B'}</span></div>${html}<div class="q-actions"><button class="btn check" data-i="${i}">Check / تحقق</button></div><div class="fb" id="fb${i}"></div></article>`)})}
+function update(){let done=state.filter(x=>x.done).length,score=state.filter(x=>x.ok).length;document.getElementById('score').textContent=score;document.getElementById('ansCount').textContent=done;document.getElementById('progBar').style.width=(done/30*100)+'%';if(done===30){document.getElementById('finalPanel').classList.add('show');document.getElementById('finalScore').textContent=score+' / 30';document.getElementById('finalPct').textContent=Math.round(score/30*100)+'%';document.getElementById('finalMsg').textContent=score>=24?'Excellent — ممتاز':score>=18?'Good — جيد':'Review the slides again — راجع الشرائح مرة أخرى';document.getElementById('finalSub').textContent='Every answer is explained above.'}}
+root.addEventListener('click',e=>{if(!e.target.classList.contains('check'))return;let i=+e.target.dataset.i,x=questions[i],q=document.getElementById('q'+i),fb=document.getElementById('fb'+i),ok=false,msg='';if(x.type==='match'){let sels=[...q.querySelectorAll('select')].map(s=>s.value),correct=x.opts.map((_,j)=>String(j));ok=sels.every((v,j)=>v===correct[j]);msg=ok?'All pairs are correct.':'Review the mapping: each A item matches the B description in the same row.'}else{let inp=q.querySelector('input:checked');if(!inp){msg='Choose an answer first.'}else{ok=+inp.value===x.ans;msg=x.exp}}if(state[i].done)return;if(!q.querySelector('input:checked')&&x.type!=='match'){fb.className='fb show no';fb.innerHTML='<span class="fb-t">Not checked</span>'+msg;return}state[i]={done:true,ok};q.classList.add('q-done');fb.className='fb show '+(ok?'ok':'no');fb.innerHTML='<span class="fb-t">'+(ok?'✓ Correct':'✗ Review')+'</span>'+msg;update()});
+function reset(){state=questions.map(()=>({done:false,ok:false}));document.getElementById('finalPanel').classList.remove('show');render();update()}document.getElementById('resetTop').onclick=reset;document.getElementById('tryAgain').onclick=reset;render();
+function setLang(lang){document.documentElement.lang=lang;document.documentElement.dir=lang==='ar'?'rtl':'ltr';document.querySelectorAll('.i18n').forEach(el=>{if(!el.dataset.ar)el.dataset.ar=el.textContent;el.innerHTML=lang==='en'?el.dataset.en:el.dataset.ar});document.getElementById('btnAr').classList.toggle('on',lang==='ar');document.getElementById('btnEn').classList.toggle('on',lang==='en')}document.getElementById('btnAr').onclick=()=>setLang('ar');document.getElementById('btnEn').onclick=()=>setLang('en');
+</script></body></html>

@@ -5,6 +5,7 @@
     "CH2_malware-social-engineering-review.html"
   ],
   "algorithms": [
+    "lec1_algorithms_review.html",
     "lec2_asymptotic-analysis-big-o-review.html",
     "lec3_time-space-complexity-review.html",
     "lec4_space-complexity-memory-review.html",

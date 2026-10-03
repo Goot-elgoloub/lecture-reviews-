@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مرجع المراجعة | Analysis and Design of Algorithms (Lecture 1)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e16; --card:#121a2b; --card2:#0f1524; --border:#212b40; --border-soft:#1a2336;
+    --text:#e7ecf5; --text-dim:#93a1bd; --text-faint:#5c6a89; --accent:#38bdf8; --accent-soft:#38bdf822;
+    --c-qa:#38bdf8; --c-qc:#34d399; --c-static:#a78bfa; --c-dynamic:#fb923c; --c-warn:#f87171; --c-gold:#fbbf24;
+    --ok:#34d399; --bad:#f87171; --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:radial-gradient(1200px 600px at 85% -10%, #12203a55, transparent 60%), radial-gradient(900px 500px at -10% 20%, #1a123655, transparent 55%), var(--bg); color:var(--text); font-family:'Tajawal', sans-serif; line-height:1.75;}
+  html[dir="ltr"] body{font-family:'Fira Code','Tajawal',sans-serif;}
+  code, .mono, .eq, .term-en{font-family:'Fira Code', monospace; direction:ltr; unicode-bidi:isolate;}
+  h1,h2,h3,h4{font-weight:800; margin:0 0 .5em;}
+  p{margin:0 0 1em; color:var(--text);}
+  .container{max-width:1080px; margin:0 auto; padding:0 20px;}
+  .lang-toggle{position:fixed; top:16px; z-index:200; inset-inline-end:16px; display:flex; background:#0d1524ee; border:1px solid var(--border); border-radius:999px; padding:4px; backdrop-filter:blur(8px); box-shadow:0 4px 18px #00000055;}
+  .lang-toggle button{border:none; background:transparent; color:var(--text-dim); font-family:'Fira Code',monospace; font-weight:600; font-size:.78rem; padding:7px 14px; border-radius:999px; cursor:pointer;}
+  .lang-toggle button.active{background:var(--accent); color:#04121c;}
+  .hero{position:relative; padding:70px 0 50px; overflow:hidden; border-bottom:1px solid var(--border-soft);}
+  .hero-bg{position:absolute; inset:0; opacity:.3; pointer-events:none;}
+  .hero .kicker{display:inline-block; font-family:'Fira Code',monospace; font-size:.78rem; letter-spacing:.12em; color:var(--accent); background:var(--accent-soft); border:1px solid #38bdf844; padding:5px 12px; border-radius:999px; margin-bottom:18px;}
+  .hero h1{font-size:2.3rem; line-height:1.25; max-width:800px;}
+  .hero h1 .glow{color:var(--accent); text-shadow:0 0 30px #38bdf866;}
+  .hero p.sub{font-size:1.05rem; color:var(--text-dim); max-width:660px;}
+  @media(max-width:640px){ .hero h1{font-size:1.6rem;} .lang-toggle{top:10px;} }
+  .nav-wrap{position:sticky; top:0; z-index:50; background:#0a0e16dd; backdrop-filter:blur(10px); border-bottom:1px solid var(--border-soft);}
+  .nav-scroll{display:flex; gap:6px; overflow-x:auto; padding:10px 20px; max-width:1080px; margin:0 auto; scrollbar-width:none;}
+  .nav-scroll::-webkit-scrollbar{display:none;}
+  .nav-scroll a{flex:none; white-space:nowrap; font-size:.84rem; font-weight:500; color:var(--text-dim); text-decoration:none; padding:8px 14px; border-radius:999px; border:1px solid transparent;}
+  .nav-scroll a:hover{color:var(--text); border-color:var(--border);}
+  .nav-scroll a.active{color:#04121c; background:var(--accent); font-weight:700;}
+  section{padding:56px 0; border-bottom:1px solid var(--border-soft);}
+  section:last-of-type{border-bottom:none;}
+  .eyebrow{font-family:'Fira Code',monospace; font-size:.75rem; color:var(--accent); letter-spacing:.1em; margin-bottom:8px; display:block;}
+  section > .container > h2{font-size:1.65rem; margin-bottom:.25em;}
+  section > .container > p.lead{color:var(--text-dim); max-width:720px; margin-bottom:2em; font-size:1.02rem;}
+  .part-divider{display:flex; align-items:center; gap:14px; margin:36px 0 20px;}
+  .part-divider:first-child{margin-top:0;}
+  .part-divider .pd-badge{font-family:'Fira Code',monospace; font-size:.78rem; font-weight:700; padding:6px 14px; border-radius:999px; white-space:nowrap;}
+  .pd-l1{color:var(--c-qa); background:#38bdf81a; border:1px solid #38bdf855;}
+  .pd-l2{color:var(--c-dynamic); background:#fb923c1a; border:1px solid #fb923c55;}
+  .part-divider .pd-line{height:1px; background:var(--border); flex:1;}
+  .part-divider h3{margin:0; font-size:1.2rem;}
+  .grid{display:grid; gap:16px;}
+  .grid-2{grid-template-columns:repeat(2,1fr);} .grid-3{grid-template-columns:repeat(3,1fr);} .grid-4{grid-template-columns:repeat(4,1fr);}
+  @media(max-width:860px){ .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;} }
+  .card{background:linear-gradient(180deg, var(--card), var(--card2)); border:1px solid var(--border); border-radius:var(--radius); padding:22px;}
+  .card h3{font-size:1.08rem; margin-bottom:.4em;}
+  .card h3 .num{color:var(--accent); font-family:'Fira Code',monospace; margin-left:6px;}
+  .card.tinted{border-color:#38bdf844; background:linear-gradient(180deg,#0f1a2c,#0d1524);}
+  .badge{display:inline-flex; align-items:center; font-size:.72rem; font-weight:700; font-family:'Fira Code',monospace; padding:3px 10px; border-radius:999px;}
+  .b-qa{color:var(--c-qa); background:#38bdf81a; border:1px solid #38bdf855;}
+  .b-qc{color:var(--c-qc); background:#34d3991a; border:1px solid #34d39955;}
+  .b-static{color:var(--c-static); background:#a78bfa1a; border:1px solid #a78bfa55;}
+  .b-dynamic{color:var(--c-dynamic); background:#fb923c1a; border:1px solid #fb923c55;}
+  .b-warn{color:var(--c-warn); background:#f871711a; border:1px solid #f8717155;}
+  .b-gold{color:var(--c-gold); background:#fbbf241a; border:1px solid #fbbf2455;}
+  pre{background:#080b12; border:1px solid var(--border); border-radius:10px; padding:16px 18px; overflow-x:auto; direction:ltr; text-align:left; font-family:'Fira Code',monospace; font-size:.86rem; color:#c9e6ff; margin:12px 0; line-height:1.6;}
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:.94rem;}
+  th,td{padding:10px 12px; text-align:start; border-bottom:1px solid var(--border-soft);}
+  th{color:var(--accent); font-family:'Fira Code',monospace; font-size:.76rem; border-bottom:1px solid var(--border);}
+  tr:hover td{background:#ffffff05;}
+  .note{border-radius:10px; border:1px solid #fbbf2444; background:#fbbf240d; padding:14px 16px; font-size:.94rem; color:#f3e2b0;}
+  .note.good{border-color:#34d39944; background:#34d3990d; color:#bdf3da;}
+  .note.info{border-color:#38bdf844; background:#38bdf80d; color:#bfe6fb;}
+  .note.warn{border-color:#f8717144; background:#f871710d; color:#fbd7d7;}
+  .diagram-block{border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:22px; background:var(--card);}
+  .diagram-head{padding:16px 20px; border-bottom:1px solid var(--border-soft); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;}
+  .diagram-head h3{margin:0;}
+  .diagram-body{padding:20px;}
+  .flow-wrap{display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; margin:16px 0; direction:ltr;}
+  .flow-box{border:1px solid var(--border); background:#0d1524; border-radius:10px; padding:14px 18px; text-align:center; font-weight:700; min-width:130px;}
+  .flow-box small{display:block; font-weight:400; color:var(--text-faint); margin-top:4px; font-size:.78rem;}
+  .flow-arrow{font-size:1.4rem; color:var(--text-faint);}
+  .tree-wrap{display:flex; flex-direction:column; align-items:center; gap:16px; margin:18px 0;}
+  .tree-root{background:var(--c-gold); color:#04121c; font-weight:800; padding:10px 22px; border-radius:999px;}
+  .tree-branches{display:flex; gap:40px; flex-wrap:wrap; justify-content:center;}
+  .tree-branch{display:flex; flex-direction:column; align-items:center; gap:10px;}
+  .tree-branch-label{font-weight:800; padding:8px 18px; border-radius:999px; font-family:'Fira Code',monospace; font-size:.85rem;}
+  .tree-leaves{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:280px;}
+  .tree-leaf{background:#0d1524; border:1px solid var(--border); border-radius:8px; padding:6px 12px; font-size:.82rem; color:var(--text-dim);}
+  .level-tabs{display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;}
+  .level-tab{padding:9px 16px; border-radius:10px; border:1px solid var(--border); background:var(--card2); color:var(--text-dim); cursor:pointer; font-family:'Tajawal',sans-serif; font-weight:700; font-size:.9rem;}
+  .level-tab.active{background:var(--accent); color:#04121c; border-color:var(--accent);}
+  .level-panel{display:none;} .level-panel.active{display:block;}
+  .quickref-list{list-style:none; padding:0; margin:0; font-family:'Fira Code',monospace; direction:ltr; text-align:left;}
+  .quickref-list li{padding:10px 14px; margin-bottom:6px; border-radius:8px; background:#0d1524; border:1px solid var(--border-soft); font-size:.85rem; color:#d7e6f7;}
+  .quiz-progress{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 18px; gap:14px; flex-wrap:wrap;}
+  .quiz-score{font-family:'Fira Code',monospace; font-weight:600; color:var(--accent); font-size:1.05rem;}
+  .quiz-bar{flex:1; min-width:140px; height:8px; border-radius:99px; background:#1a2336; overflow:hidden;}
+  .quiz-bar-fill{height:100%; width:0%; background:linear-gradient(90deg,#38bdf8,#34d399); transition:width .3s;}
+  .q-card{border:1px solid var(--border); background:var(--card); border-radius:var(--radius); padding:20px 22px; margin-bottom:16px;}
+  .q-meta{margin-bottom:10px;}
+  .q-type-tag{font-family:'Fira Code',monospace; font-size:.7rem; color:var(--text-faint); border:1px solid var(--border); padding:2px 9px; border-radius:999px;}
+  .q-prompt{font-weight:700; font-size:1.02rem; margin-bottom:14px;}
+  .opt-list{display:flex; flex-direction:column; gap:8px;}
+  .opt{display:flex; align-items:center; gap:10px; padding:11px 14px; border-radius:10px; border:1px solid var(--border); background:var(--card2); cursor:pointer; font-size:.95rem;}
+  .opt:hover{border-color:#38bdf866;}
+  .opt input{accent-color:var(--accent); width:16px; height:16px; flex:none;}
+  .opt.correct-flash{border-color:var(--ok); background:#34d3991a;}
+  .opt.wrong-flash{border-color:var(--bad); background:#f871711a;}
+  .fill-input{width:100%; max-width:320px; background:#0d1524; border:1px solid var(--border); border-radius:9px; padding:11px 14px; color:var(--text); font-family:'Fira Code',monospace; font-size:.95rem; direction:ltr; text-align:left;}
+  .fill-input:focus{outline:none; border-color:var(--accent);}
+  .check-btn{margin-top:14px; background:var(--accent); color:#04121c; border:none; padding:9px 20px; border-radius:9px; font-weight:700; cursor:pointer; font-family:'Tajawal',sans-serif;}
+  .check-btn:disabled{opacity:.5; cursor:default;}
+  .q-feedback{margin-top:12px; padding:12px 14px; border-radius:10px; font-size:.9rem; display:none;}
+  .q-feedback.show{display:block;}
+  .q-feedback.correct{background:#34d3991a; border:1px solid #34d39955; color:#c8f5e2;}
+  .q-feedback.incorrect{background:#f871711a; border:1px solid #f8717155; color:#fbd7d7;}
+  .final-score{text-align:center; padding:30px 20px; border-radius:var(--radius); border:1px solid var(--accent); background:linear-gradient(180deg,#0f1a2c,#0d1524); margin-top:20px; display:none;}
+  .final-score.show{display:block;}
+  .final-score .big{font-size:2.4rem; font-weight:800; color:var(--accent); font-family:'Fira Code',monospace;}
+  .reset-btn{margin-top:14px; background:transparent; border:1px solid var(--border); color:var(--text); padding:9px 20px; border-radius:9px; cursor:pointer; font-family:'Tajawal',sans-serif; font-weight:700;}
+  .match-wrap{display:flex; flex-direction:column; gap:10px;}
+  .match-row{display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:10px; border:1px solid var(--border); background:var(--card2); flex-wrap:wrap;}
+  .match-row .match-a{flex:1; min-width:160px; font-size:.95rem;}
+  .match-row select{background:#0d1524; color:var(--text); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-family:'Tajawal',sans-serif; font-size:.88rem; min-width:220px; max-width:100%;}
+  .match-row select:focus{outline:none; border-color:var(--accent);}
+  .match-row.correct-flash{border-color:var(--ok); background:#34d3991a;}
+  .match-row.wrong-flash{border-color:var(--bad); background:#f871711a;}
+  .tip-item, .mistake-item{display:flex; gap:12px; padding:14px 0; border-top:1px solid var(--border-soft);}
+  .tip-item:first-child, .mistake-item:first-child{border-top:none;}
+  .tip-icon, .mistake-icon{flex:none; font-size:1.2rem;}
+  footer{padding:30px 0 60px; text-align:center; color:var(--text-faint); font-size:.85rem;}
+</style>
+</head>
+<body>
+
+<div class="lang-toggle">
+  <button id="btnAr" class="active" onclick="setLang('ar')">AR · عربي</button>
+  <button id="btnEn" onclick="setLang('en')">EN</button>
+</div>
+
+<header class="hero">
+  <svg class="hero-bg" viewBox="0 0 1080 260" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="300" cy="90" r="8" fill="#38bdf8"/><circle cx="360" cy="70" r="8" fill="#38bdf8"/>
+    <path d="M300,90 L360,70" stroke="#2c3650"/>
+    <rect x="620" y="40" width="120" height="34" rx="6" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+    <rect x="540" y="110" width="100" height="34" rx="6" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+    <rect x="720" y="110" width="100" height="34" rx="6" fill="none" stroke="#fb923c" stroke-width="1.5"/>
+    <line x1="680" y1="74" x2="590" y2="110" stroke="#2c3650"/><line x1="680" y1="74" x2="770" y2="110" stroke="#2c3650"/>
+  </svg>
+  <div class="container">
+    <span class="kicker">ANALYSIS AND DESIGN OF ALGORITHMS · LECTURE 1 · REVIEW SHEET</span>
+    <h1><span class="i18n" data-en="Analysis and Design">Analysis and Design</span> <span class="glow i18n" data-en="of Algorithms">of Algorithms</span></h1>
+    <p class="sub i18n" data-en="A complete interactive review of Lecture 1 (How Computers Think and Why Algorithms Matter): from correct solutions to efficient solutions, why analysis matters, design vs. implementation, correctness vs. efficiency, the 5-step design process, linear vs. binary search, time &amp; space complexity, the importance of input size, and the course roadmap — nothing from the lecture skipped.">مرجع مراجعة تفاعلي كامل للمحاضرة الأولى (كيف تفكر الحواسيب ولماذا تهم الخوارزميات): من الحلول الصحيحة إلى الحلول الكفوءة، لماذا يهم تحليل الخوارزميات، التصميم مقابل التنفيذ، الصحة مقابل الكفاءة، عملية التصميم بخطواتها الخمس، البحث الخطي مقابل الثنائي، تعقيد الزمن والمساحة، أهمية حجم المدخلات، وخريطة الكورس — دون تخطي أي جزء من المحاضرة.</p>
+  </div>
+</header>
+
+<div class="nav-wrap">
+  <nav class="nav-scroll" id="navScroll">
+    <a href="#overview" class="i18n" data-en="Overview">نظرة عامة</a>
+    <a href="#explain" class="i18n" data-en="Full Explanation">الشرح الكامل</a>
+    <a href="#diagrams" class="i18n" data-en="Diagrams">الرسومات والمخططات</a>
+    <a href="#summary" class="i18n" data-en="Summary Table">جدول التلخيص</a>
+    <a href="#levels" class="i18n" data-en="3 Levels">3 مستويات</a>
+    <a href="#quiz" class="i18n" data-en="Interactive Quiz">الاختبار التفاعلي</a>
+    <a href="#tips" class="i18n" data-en="Pro Tips">نصائح احترافية</a>
+  </nav>
+</div>
+
+<!-- ============ OVERVIEW ============ -->
+<section id="overview">
+  <div class="container">
+    <span class="eyebrow">01 / OVERVIEW</span>
+    <h2 class="i18n" data-en="Lecture Overview">نظرة عامة على المحاضرة</h2>
+    <p class="lead i18n" data-en="This opening lecture bridges the gap between finding any working solution and finding the best one. It motivates why algorithm analysis matters (execution time, memory usage, scalability), separates algorithm design from implementation, and pairs correctness with efficiency as two goals neither of which is sufficient alone. It then defines algorithm analysis formally, walks through the 5-step design process, builds a 4-question problem-solving mindset, and demonstrates everything on the searching problem — comparing Linear Search with Binary Search. Finally it introduces the two core lenses of efficiency (time complexity and space complexity), shows why input size is the ultimate stress test, surveys the algorithms powering everyday systems, and previews the course roadmap and the next lecture (asymptotic analysis).">
+      تفتح هذه المحاضرة الفجوة بين إيجاد أي حل يعمل وإيجاد الحل الأفضل. تُبرر لماذا يهم تحليل الخوارزميات (زمن التنفيذ، استهلاك الذاكرة، قابلية التوسع)، وتفصل تصميم الخوارزميات عن التنفيذ، وتجمع بين الصحة والكفاءة كهدفين لا يكفي أحدهما وحده. ثم تُعرِّف تحليل الخوارزميات رسميًا، وتشرح عملية التصميم بخطواتها الخمس، وتبني عقلية حل المشكلات بأربعة أسئلة، وتُطبّق كل ذلك على مشكلة البحث — مقارنةً البحث الخطي بالبحث الثنائي. وأخيرًا تقدّم العدستين الأساسيتين للكفاءة (تعقيد الزمن وتعقيد المساحة)، وتوضح لماذا يُعد حجم المدخلات الاختبار الضاغط الأقصى، وتستعرض الخوارزميات التي تُشغّل الأنظمة اليومية، وتُلمّح إلى خريطة الكورس ومحاضرة قادمة (التحليل التقريبي/Asymptotic Analysis).
+    </p>
+    <div class="grid grid-2">
+      <div class="card tinted">
+        <h3 class="i18n" data-en="📘 Part 1 — Why Algorithms &amp; Analysis Matter">📘 الجزء الأول — لماذا تهم الخوارزميات والتحليل</h3>
+        <ul style="margin:0; padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="From correct solutions to efficient solutions: Design → Analyze → Compare → Improve">من الحلول الصحيحة إلى الكفوءة: تصميم ← تحليل ← مقارنة ← تحسين</li>
+          <li class="i18n" data-en="Why analysis matters: time, memory, scalability">لماذا يهم التحليل: الزمن والذاكرة وقابلية التوسع</li>
+          <li class="i18n" data-en="Algorithm design vs. implementation">تصميم الخوارزميات مقابل التنفيذ</li>
+          <li class="i18n" data-en="Correctness vs. efficiency — both required">الصحة مقابل الكفاءة — كلاهما مطلوب</li>
+          <li class="i18n" data-en="Why efficiency is critical at modern scale (search, AI, navigation, recommendations)">لماذا الكفاءة حاسمة في المقياس الحديث (بحث، ذكاء اصطناعي، ملاحة، توصيات)</li>
+          <li class="i18n" data-en="The 5-step design process + the 4-question mindset">عملية التصميم الخمسية + عقلية الأسئلة الأربعة</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:#fb923c44;">
+        <h3 class="i18n" data-en="📗 Part 2 — Measuring Efficiency">📗 الجزء الثاني — قياس الكفاءة</h3>
+        <ul style="margin:0; padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="The searching problem: Linear vs. Binary Search">مشكلة البحث: خطي مقابل ثنائي</li>
+          <li class="i18n" data-en="Comparing algorithms: speed, memory, scalability">مقارنة الخوارزميات: السرعة والذاكرة وقابلية التوسع</li>
+          <li class="i18n" data-en="Time Complexity — how running time grows with input">تعقيد الزمن — كيف ينمو زمن التنفيذ مع المدخلات</li>
+          <li class="i18n" data-en="Space Complexity — input storage, auxiliary memory, temporary variables">تعقيد المساحة — تخزين المدخلات والذاكرة المساعدة والمتغيرات المؤقتة</li>
+          <li class="i18n" data-en="Input size: 100 vs. 1M vs. 10× growth">حجم المدخلات: 100 مقابل مليون مقابل نمو ×10</li>
+          <li class="i18n" data-en="Algorithms around us + course roadmap + what's next (Big-O, Ω, Θ)">الخوارزميات حولنا + خريطة الكورس + ما القادم (Big-O وΩ وΘ)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FULL EXPLANATION ============ -->
+<section id="explain">
+  <div class="container">
+    <span class="eyebrow">02 / FULL EXPLANATION</span>
+    <h2 class="i18n" data-en="Full Explanation of Every Section">الشرح الكامل لكل قسم</h2>
+    <p class="lead i18n" data-en="Each card covers one part of the lecture in order, without dropping information from the slides.">كل بطاقة تغطي جزءًا من المحاضرة بالترتيب، دون تجاوز أي معلومة من الشرائح.</p>
+
+    <div class="part-divider"><span class="pd-badge pd-l1">PART 1</span><span class="pd-line"></span><h3 class="i18n" data-en="Why Algorithms &amp; Analysis Matter">لماذا تهم الخوارزميات والتحليل</h3></div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.1</span> <span class="i18n" data-en="From Correct Solutions to Efficient Solutions">من الحلول الصحيحة إلى الحلول الكفوءة</span></h3>
+      <p class="i18n" data-en="This course bridges the gap between finding any working solution and finding the best one. You will develop the skills to design, evaluate, and improve algorithms systematically."><b>هذا الكورس يسدّ الفجوة</b> بين إيجاد أي حل يعمل وإيجاد الحل الأفضل. ستطوّر مهارات تصميم وتقييم وتحسين الخوارزميات بشكل منهجي عبر أربع قدرات:</p>
+      <div class="grid grid-4">
+        <div class="card" style="padding:12px;"><b>🎨 <span class="i18n" data-en="Design">التصميم</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Craft effective algorithms from scratch.">ابتكر خوارزميات فعّالة من الصفر.</p></div>
+        <div class="card" style="padding:12px;"><b>📊 <span class="i18n" data-en="Analyze">التحليل</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Measure efficiency and performance.">قِس الكفاءة والأداء.</p></div>
+        <div class="card" style="padding:12px;"><b>⚖️ <span class="i18n" data-en="Compare">المقارنة</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Evaluate different solutions objectively.">قيّم الحلول المختلفة بموضوعية.</p></div>
+        <div class="card" style="padding:12px;"><b>🚀 <span class="i18n" data-en="Improve">التحسين</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Optimize existing algorithms.">حسّن الخوارزميات القائمة.</p></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.2</span> <span class="i18n" data-en="Why Algorithm Analysis Matters">لماذا يهم تحليل الخوارزميات</span></h3>
+      <p class="i18n" data-en="A single problem can have many valid solutions — but they are not all equal. Algorithm analysis gives us the tools to choose the right one, along three dimensions:">مشكلة واحدة يمكن أن يكون لها حلول صحيحة كثيرة — لكنها ليست كلها متكافئة. تحليل الخوارزميات يمنحنا الأدوات لاختيار الحل الأنسب، على ثلاثة أبعاد:</p>
+      <div class="grid grid-3">
+        <div class="card" style="padding:14px;"><b>⏱ <span class="i18n" data-en="Execution Time">زمن التنفيذ</span></b><p style="color:var(--text-dim); font-size:.88rem; margin-top:6px;" class="i18n" data-en="How fast does it run?">ما مدى سرعة تشغيله؟</p></div>
+        <div class="card" style="padding:14px;"><b>💾 <span class="i18n" data-en="Memory Usage">استهلاك الذاكرة</span></b><p style="color:var(--text-dim); font-size:.88rem; margin-top:6px;" class="i18n" data-en="How much space does it need?">ما حجم المساحة التي يحتاجها؟</p></div>
+        <div class="card" style="padding:14px;"><b>📈 <span class="i18n" data-en="Scalability">قابلية التوسع</span></b><p style="color:var(--text-dim); font-size:.88rem; margin-top:6px;" class="i18n" data-en="How does it handle larger inputs?">كيف يتعامل مع مدخلات أكبر؟</p></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.3</span> <span class="i18n" data-en="Algorithm Design vs. Implementation">تصميم الخوارزميات مقابل التنفيذ</span></h3>
+      <p class="i18n" data-en="These two phases are distinct but deeply connected. A strong design makes implementation straightforward; a poor design makes even the best code inefficient.">المرحلتان مُختلفتان لكنهما مترابطتان بعمق. التصميم القوي يجعل التنفيذ مباشرًا؛ والتصميم السيئ يجعل حتى أفضل كود غير كفء.</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px; border-color:#38bdf844;">
+          <b class="i18n" data-en="Algorithm Design">تصميم الخوارزمية</b>
+          <ul style="color:var(--text-dim); font-size:.9rem; margin-top:6px; padding-inline-start:18px;">
+            <li class="i18n" data-en="Understand the problem fully">افهم المشكلة فهمًا كاملًا</li>
+            <li class="i18n" data-en="Choose a suitable strategy">اختر استراتيجية مناسبة</li>
+            <li class="i18n" data-en="Develop an efficient solution">طوّر حلاً كفءًا</li>
+          </ul>
+        </div>
+        <div class="card" style="padding:14px; border-color:#fb923c44;">
+          <b class="i18n" data-en="Implementation">التنفيذ</b>
+          <ul style="color:var(--text-dim); font-size:.9rem; margin-top:6px; padding-inline-start:18px;">
+            <li class="i18n" data-en="Write the code">اكتب الكود</li>
+            <li class="i18n" data-en="Use programming languages">استخدم لغات البرمجة</li>
+            <li class="i18n" data-en="Execute and test the solution">نفّذ الحل واختبره</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.4</span> <span class="i18n" data-en="Correctness vs. Efficiency">الصحة مقابل الكفاءة</span></h3>
+      <p class="i18n" data-en="A good algorithm must satisfy both of these goals. Neither alone is sufficient for a truly effective solution.">الخوارزمية الجيدة يجب أن تحقق الهدفين معًا. لا يكفي أي منهما وحده لحل فعّال حقًا:</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px; border-color:#34d39944;">
+          <b>✅ <span class="i18n" data-en="Correctness">الصحة</span></b>
+          <p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Produces the right result for every valid input. A fast algorithm that gives wrong answers is useless.">ينتج النتيجة الصحيحة لكل مدخل صالح. الخوارزمية السريعة التي تعطي إجابات خاطئة عديمة الفائدة.</p>
+        </div>
+        <div class="card" style="padding:14px; border-color:#fbbf2444;">
+          <b>⚡ <span class="i18n" data-en="Efficiency">الكفاءة</span></b>
+          <p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="Uses computational resources wisely — minimizing time and memory without sacrificing accuracy.">تستخدم الموارد الحوسبية بحكمة — تقليل الزمن والذاكرة دون التضحية بالدقة.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.5</span> <span class="i18n" data-en="Why Efficient Algorithms Are Critical">لماذا الخوارزميات الكفءة حاسمة</span></h3>
+      <p class="i18n" data-en="Modern systems operate at a scale that makes algorithmic efficiency non-negotiable. A poorly designed algorithm can become a bottleneck at millions of users.">الأنظمة الحديثة تعمل على مقياس يجعل الكفاءة الخوارزمية غير قابلة للتفاوض. الخوارزمية سيئة التصميم يمكن أن تصبح عنق زجاجة عند ملايين المستخدمين:</p>
+      <div class="grid grid-4">
+        <div class="card" style="padding:12px;"><b>🔍 <span class="i18n" data-en="Search Engines">محركات البحث</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Billions of queries per day require near-instant results.">مليارات الاستعلامات يوميًا تتطلب نتائج شبه فورية.</p></div>
+        <div class="card" style="padding:12px;"><b>🤖 <span class="i18n" data-en="Artificial Intelligence">الذكاء الاصطناعي</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Training models on massive datasets demands optimized computation.">تدريب النماذج على بيانات ضخمة يتطلب حسابات مُحسَّنة.</p></div>
+        <div class="card" style="padding:12px;"><b>🗺 <span class="i18n" data-en="Navigation Systems">أنظمة الملاحة</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Real-time routing across complex road networks.">توجيه لحظي عبر شبكات طرق معقدة.</p></div>
+        <div class="card" style="padding:12px;"><b>🎯 <span class="i18n" data-en="Recommendation Systems">أنظمة التوصية</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Personalized suggestions computed from millions of user interactions.">توصيات مخصصة محسوبة من ملايين تفاعلات المستخدمين.</p></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.6</span> <span class="i18n" data-en="What Is Algorithm Analysis?">ما هو تحليل الخوارزميات؟</span></h3>
+      <p class="i18n" data-en="Algorithm analysis is the systematic process of evaluating an algorithm's performance before and after implementation. It answers: How will this algorithm behave as the input grows?"><b>تحليل الخوارزميات</b> هو العملية المنهجية لتقييم أداء الخوارزمية قبل التنفيذ وبعده. ويجيب عن السؤال: كيف ستتصرف هذه الخوارزمية كلما كبر حجم المدخلات؟</p>
+      <div class="note info"><span class="i18n" data-en="It examines three aspects: Running Time (how execution time scales with input size), Memory Usage (how much space the algorithm consumes), and Scalability (how performance holds up at larger scales).">يفحص ثلاثة جوانب: زمن التنفيذ (كيف يتوسع وقت التنفيذ مع حجم المدخلات)، واستهلاك الذاكرة (كم مساحة تستهلكها الخوارزمية)، وقابلية التوسع (كيف يصمد الأداء على النطاقات الأكبر).</span></div>
+      <p style="margin-top:8px;" class="i18n" data-en="The goal is not just to find an algorithm that works — it is to find the best one. Efficiency separates a working prototype from a production-ready system.">الهدف ليس مجرد إيجاد خوارزمية تعمل — بل إيجاد الأفضل. الكفاءة هي ما يفصل النموذج الأولي العامل عن نظام جاهز للإنتاج.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">1.7</span> <span class="i18n" data-en="The Algorithm Design Process (5 Steps)">عملية تصميم الخوارزمية (5 خطوات)</span></h3>
+      <p class="i18n" data-en="Effective algorithm design follows a structured, iterative process. Each step builds on the previous one to ensure both correctness and efficiency:">التصميم الفعّال يتبع عملية مُهيكلة ومتكررة. كل خطوة تبني على سابقتها لضمان الصحة والكفاءة معًا:</p>
+      <ol style="color:var(--text-dim); padding-inline-start:20px;">
+        <li><b class="i18n" data-en="Problem Understanding">فهم المشكلة</b> — <span class="i18n" data-en="Define inputs, outputs, and constraints clearly.">حدِّد المدخلات والمُخرَجات والقيود بوضوح.</span></li>
+        <li><b class="i18n" data-en="Design Strategy">استراتيجية التصميم</b> — <span class="i18n" data-en="Select an approach: divide-and-conquer, greedy, dynamic programming, etc.">اختر منهجًا: فرّق تَسُد (divide-and-conquer)، الجشع (greedy)، البرمجة الديناميكية، إلخ.</span></li>
+        <li><b class="i18n" data-en="Algorithm Development">تطوير الخوارزمية</b> — <span class="i18n" data-en="Write pseudocode or a formal description of the solution.">اكتب كودًا شبه مُبرمَج (pseudocode) أو وصفًا رسميًا للحل.</span></li>
+        <li><b class="i18n" data-en="Correctness Verification">التحقق من الصحة</b> — <span class="i18n" data-en="Prove or test that the algorithm produces correct results.">أثبت أو اختبر أن الخوارزمية تنتج نتائج صحيحة.</span></li>
+        <li><b class="i18n" data-en="Efficiency Analysis">تحليل الكفاءة</b> — <span class="i18n" data-en="Evaluate time and space complexity using Big-O notation.">قيّم تعقيد الزمن والمساحة باستخدام تدوين Big-O.</span></li>
+      </ol>
+    </div>
+
+    <div class="card" style="margin-bottom:0;">
+      <h3><span class="num">1.8</span> <span class="i18n" data-en="A Problem-Solving Mindset (4 Questions)">عقلية حل المشكلات (4 أسئلة)</span></h3>
+      <p class="i18n" data-en="Great computer scientists don't just write code — they think critically about every problem they encounter. These four questions form the foundation of algorithmic thinking:">علماء الحاسوب العظماء لا يكتبون الكود فقط — بل يفكرون تفكيرًا نقديًا في كل مشكلة يواجهونها. هذه الأسئلة الأربعة تشكّل أساس التفكير الخوارزمي:</p>
+      <div class="grid grid-4">
+        <div class="card" style="padding:12px;"><b>1️⃣ <span class="i18n" data-en="What is the problem?">ما المشكلة؟</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Define it precisely.">عرّفها بدقة.</p></div>
+        <div class="card" style="padding:12px;"><b>2️⃣ <span class="i18n" data-en="What are the solutions?">ما الحلول؟</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Explore alternatives.">استكشف البدائل.</p></div>
+        <div class="card" style="padding:12px;"><b>3️⃣ <span class="i18n" data-en="Which is better?">أيها أفضل؟</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Compare rigorously.">قارن بصرامة.</p></div>
+        <div class="card" style="padding:12px;"><b>4️⃣ <span class="i18n" data-en="How can we improve?">كيف نُحسّن؟</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Iterate and optimize.">كرّر وحسّن.</p></div>
+      </div>
+    </div>
+
+    <div class="part-divider"><span class="pd-badge pd-l2">PART 2</span><span class="pd-line"></span><h3 class="i18n" data-en="Measuring Efficiency">قياس الكفاءة</h3></div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.1</span> <span class="i18n" data-en="Example: The Searching Problem">مثال: مشكلة البحث</span></h3>
+      <p class="i18n" data-en="How do we find a specific name in a large database? Multiple algorithms can solve the same problem correctly — but their efficiency can be dramatically different.">كيف نجدد اسمًا معينًا في قاعدة بيانات كبيرة؟ خوارزميات متعددة يمكنها حل المشكلة نفسها بشكل صحيح — لكن كفاءتها قد تختلف اختلافًا جذريًا.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.2</span> <span class="i18n" data-en="Comparing Algorithms: Linear vs. Binary Search">مقارنة الخوارزميات: البحث الخطي مقابل الثنائي</span></h3>
+      <p class="i18n" data-en="Two algorithms can both produce the correct answer, yet behave very differently in practice. When evaluating solutions, we look beyond correctness — at execution speed, memory consumption, and scalability.">خوارزميتان يمكن أن تعطيا الإجابة الصحيحة كلتيهما، لكن سلوكهما عمليًا يختلف جدًا. عند تقييم الحلول ننظر إلى ما وراء الصحة — إلى سرعة التنفيذ واستهلاك الذاكرة وقابلية التوسع.</p>
+      <table>
+        <tr><th class="i18n" data-en="Algorithm">الخوارزمية</th><th class="i18n" data-en="How it works">كيف تعمل</th></tr>
+        <tr><td><span class="badge b-qa">Linear Search</span></td><td class="i18n" data-en="Checks each element one by one. Simple, but slow on large datasets.">يفحص كل عنصر واحدًا تلو الآخر. بسيط، لكنه بطيء على البيانات الكبيرة.</td></tr>
+        <tr><td><span class="badge b-qc">Binary Search</span></td><td class="i18n" data-en="Halves the search space each step. Much faster — but requires sorted data.">يُنصّف فضاء البحث في كل خطوة. أسرع بكثير — لكنه يتطلب بيانات مُرتَّبة.</td></tr>
+      </table>
+      <div class="note warn"><b class="i18n" data-en="The catch:">المقايضة:</b> <span class="i18n" data-en="Binary Search's speed comes with a precondition — the data must be sorted. This is a classic example of a trade-off in algorithm design.">سرعة البحث الثنائي تأتي بشرط مسبق — يجب أن تكون البيانات مُرتَّبة. وهذا مثال كلاسيكي على المقايضة (Trade-off) في تصميم الخوارزميات.</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.3</span> <span class="i18n" data-en="Algorithm Efficiency: Time &amp; Space">كفاءة الخوارزمية: الزمن والمساحة</span></h3>
+      <p class="i18n" data-en="Efficiency measures how effectively an algorithm uses computational resources. Two key dimensions define it:">تقيس الكفاءة مدى فعالية استخدام الخوارزمية للموارد الحوسبية. بُعدان رئيسيان يعرّفانها:</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px;">
+          <b>⏱ <span class="i18n" data-en="Time">الزمن</span></b>
+          <p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="How long does the algorithm take to execute? Measured in terms of input size, not wall-clock seconds.">كم تستغرق الخوارزمية من زمن للتنفيذ؟ تُقاس بدلالة حجم المدخلات، لا بالثواني الفعلية (wall-clock).</p>
+        </div>
+        <div class="card" style="padding:14px;">
+          <b>💾 <span class="i18n" data-en="Space">المساحة</span></b>
+          <p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="How much memory does the algorithm require? Includes input storage, auxiliary variables, and temporary structures.">كم ذاكرة تحتاجها الخوارزمية؟ تشمل تخزين المدخلات، والمتغيرات المساعدة، والهياكل المؤقتة.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.4</span> <span class="i18n" data-en="Time Complexity (Core Concept)">تعقيد الزمن (المفهوم المحوري)</span></h3>
+      <p class="i18n" data-en="Time Complexity describes how the running time of an algorithm grows as the input size increases. It answers the critical question: How does execution time change when the problem becomes larger?"><b>تعقيد الزمن</b> يصف كيف ينمو زمن تنفيذ الخوارزمية كلما زاد حجم المدخلات. ويجيب عن السؤال الحاسم: كيف يتغير وقت التنفيذ عندما تصبح المشكلة أكبر؟</p>
+      <div class="note info"><b class="i18n" data-en="The lecture's example:">مثال المحاضرة:</b> <span class="i18n" data-en="An algorithm that takes 1 second on 100 items might take 10,000 seconds on 10,000 items — or just 14 seconds. The difference lies in its time complexity class.">خوارزمية تستغرق ثانية واحدة على 100 عنصر قد تستغرق 10,000 ثانية على 10,000 عنصر — أو 14 ثانية فقط. الفرق يكمن في فئة تعقيد الزمن الخاصة بها.</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.5</span> <span class="i18n" data-en="Space Complexity">تعقيد المساحة</span></h3>
+      <p class="i18n" data-en="Space Complexity describes the amount of memory required by an algorithm during execution. Like time complexity, it is expressed as a function of input size. It has three components:"><b>تعقيد المساحة</b> يصف مقدار الذاكرة التي تتطلبها الخوارزمية أثناء التنفيذ. ومثل تعقيد الزمن، يُعبَّر عنه كدالة في حجم المدخلات. وله ثلاثة مكوّنات:</p>
+      <table>
+        <tr><th class="i18n" data-en="Component">المكوّن</th><th class="i18n" data-en="What it is">ما هو</th></tr>
+        <tr><td><b class="i18n" data-en="Input Storage">تخزين المدخلات</b></td><td class="i18n" data-en="Memory needed to hold the input data itself.">الذاكرة اللازمة لحفظ بيانات المدخلات نفسها.</td></tr>
+        <tr><td><b class="i18n" data-en="Auxiliary Memory">الذاكرة المساعدة</b></td><td class="i18n" data-en="Extra space allocated beyond the input (e.g., temporary arrays).">مساحة إضافية تُخصَّص فوق المدخلات (مثل المصفوفات المؤقتة).</td></tr>
+        <tr><td><b class="i18n" data-en="Temporary Variables">المتغيرات المؤقتة</b></td><td class="i18n" data-en="Counters, pointers, and intermediate values used during computation.">عدّادات ومؤشرات وقيم وسيطة تُستخدم أثناء الحساب.</td></tr>
+      </table>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.6</span> <span class="i18n" data-en="The Importance of Input Size">أهمية حجم المدخلات</span></h3>
+      <p class="i18n" data-en="An algorithm that feels instant on small data can become impractical at scale. Input size is the ultimate stress test.">الخوارزمية التي تبدو فورية على بيانات صغيرة قد تصبح غير عملية على المقياس الكبير. حجم المدخلات هو الاختبار الضاغط الأقصى:</p>
+      <div class="grid grid-3">
+        <div class="card" style="padding:14px;"><b class="mono" style="color:var(--c-qc);">100</b><b> <span class="i18n" data-en="Small Dataset">بيانات صغيرة</span></b><p style="color:var(--text-dim); font-size:.88rem; margin-top:6px;" class="i18n" data-en="Most algorithms perform acceptably. Differences are barely noticeable.">معظم الخوارزميات تؤدي بشكل مقبول. الفروق بالكاد تُلاحَظ.</p></div>
+        <div class="card" style="padding:14px;"><b class="mono" style="color:var(--c-gold);">1M</b><b> <span class="i18n" data-en="Large Dataset">بيانات كبيرة</span></b><p style="color:var(--text-dim); font-size:.88rem; margin-top:6px;" class="i18n" data-en="A poorly chosen algorithm may take hours — or days — to complete.">الخوارزمية سيئة الاختيار قد تستغرق ساعات — أو أيامًا — لإكمال العمل.</p></div>
+        <div class="card" style="padding:14px;"><b class="mono" style="color:var(--c-dynamic);">10×</b><b> <span class="i18n" data-en="Growth Factor">عامل النمو</span></b><p style="color:var(--text-dim); font-size:.88rem; margin-top:6px;" class="i18n" data-en="Some algorithms slow down linearly; others explode exponentially with input growth.">بعض الخوارزميات تتباطأ خطيًا؛ وأخرى تنفجر أُسّيًا مع نمو المدخلات.</p></div>
+      </div>
+      <div class="note good" style="margin-top:8px;"><b class="i18n" data-en="The lecture's punchline:">خلاصة المحاضرة:</b> <span class="i18n" data-en="This is why we analyze algorithms before deploying them — not after they crash in production.">لهذا نحلل الخوارزميات قبل نشرها — وليس بعد أن تنهار في الإنتاج.</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">2.7</span> <span class="i18n" data-en="Algorithms Around Us">الخوارزميات من حولنا</span></h3>
+      <p class="i18n" data-en="Algorithm analysis isn't just academic — efficient algorithms power the systems we rely on every day:">تحليل الخوارزميات ليس أكاديميًا فحسب — فالخوارزميات الكفءة تُشغّل الأنظمة التي نعتمد عليها يوميًا:</p>
+      <div class="grid grid-3">
+        <div class="card" style="padding:12px;"><b>🔍 <span class="i18n" data-en="Search Engines">محركات البحث</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Billions of pages indexed and queried in milliseconds.">مليارات الصفحات تُفهرَس ويُستعلم عنها في ميلي ثانية.</p></div>
+        <div class="card" style="padding:12px;"><b>🗺 <span class="i18n" data-en="GPS Navigation">ملاحة GPS</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Shortest-path algorithms compute routes in real time.">خوارزميات أقصر مسار تحسب الطرق لحظيًا.</p></div>
+        <div class="card" style="padding:12px;"><b>🤖 <span class="i18n" data-en="Artificial Intelligence">الذكاء الاصطناعي</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Training and inference rely on optimized numerical algorithms.">التدريب والاستدلال يعتمدان على خوارزميات عددية مُحسَّنة.</p></div>
+        <div class="card" style="padding:12px;"><b>🎮 <span class="i18n" data-en="Computer Games">الألعاب</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Pathfinding, physics, and AI opponents all use algorithms.">إيجاد المسار والفيزياء والخصوم الأذكياء كلها خوارزميات.</p></div>
+        <div class="card" style="padding:12px;"><b>📊 <span class="i18n" data-en="Data Analysis">تحليل البيانات</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Sorting, filtering, and aggregating massive datasets efficiently.">فرز وتصفية وتجميع بيانات ضخمة بكفاءة.</p></div>
+        <div class="card" style="padding:12px;"><b>🎯 <span class="i18n" data-en="Recommendations">التوصيات</span></b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Personalized suggestions powered by similarity and ranking algorithms.">توصيات مخصصة تعمل بخوارزميات التشابه والترتيب.</p></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;">
+      <h3><span class="num">2.8</span> <span class="i18n" data-en="Course Roadmap + What Comes Next">خريطة الكورس + ما القادم</span></h3>
+      <p class="i18n" data-en="This course builds a complete toolkit for designing and analyzing algorithms — from fundamentals to advanced strategies:">هذا الكورس يبني عدّة كاملة لتصميم وتحليل الخوارزميات — من الأساسيات إلى الاستراتيجيات المتقدمة:</p>
+      <table>
+        <tr><th class="i18n" data-en="#">#</th><th class="i18n" data-en="Topic">الموضوع</th><th class="i18n" data-en="In one line">في سطر واحد</th></tr>
+        <tr><td class="mono">01</td><td><b class="i18n" data-en="Algorithm Design Techniques">تقنيات تصميم الخوارزميات</b></td><td class="i18n" data-en="Foundations of structured problem-solving.">أساسيات حل المشكلات المُهيكل.</td></tr>
+        <tr><td class="mono">02</td><td><b class="i18n" data-en="Complexity Analysis">تحليل التعقيد</b></td><td class="i18n" data-en="Formal tools to measure time and space usage.">أدوات رسمية لقياس استخدام الزمن والمساحة.</td></tr>
+        <tr><td class="mono">03</td><td><b class="i18n" data-en="Divide and Conquer">فرّق تَسُد</b></td><td class="i18n" data-en="Break problems into smaller subproblems.">قسّم المشكلات إلى مسائل فرعية أصغر.</td></tr>
+        <tr><td class="mono">04</td><td><b class="i18n" data-en="Greedy Algorithms">الخوارزميات الجشعة</b></td><td class="i18n" data-en="Make locally optimal choices at each step.">اتخذ اختيارات مثلى محليًا في كل خطوة.</td></tr>
+        <tr><td class="mono">05</td><td><b class="i18n" data-en="Dynamic Programming">البرمجة الديناميكية</b></td><td class="i18n" data-en="Store and reuse solutions to overlapping subproblems.">خزّن وأعد استخدام حلول المسائل الفرعية المتداخلة.</td></tr>
+        <tr><td class="mono">06</td><td><b class="i18n" data-en="Graph Algorithms">خوارزميات الرسوم البيانية</b></td><td class="i18n" data-en="Model and solve network-based problems.">نمذجة وحل مشكلات الشبكات.</td></tr>
+        <tr><td class="mono">07</td><td><b class="i18n" data-en="Advanced Strategies">استراتيجيات متقدمة</b></td><td class="i18n" data-en="NP-completeness, approximation, and beyond.">اكتمال NP والتقريبات وما بعدها.</td></tr>
+      </table>
+      <div class="note info" style="margin-top:10px;"><b class="i18n" data-en="Coming up next — Asymptotic Analysis:">ما القادم — التحليل التقريبي:</b> <span class="i18n" data-en="We've seen why efficiency matters. Next, we learn how to measure it mathematically: Big-O Notation (upper bounds on growth rates), Ω and Θ Notation (lower and tight bounds), and comparing classes — O(1), O(log n), O(n), O(n²) — and what they mean in practice. Driving question: how can we compare algorithms mathematically, without running them on specific hardware?">رأينا لماذا تهم الكفاءة. القادم: كيف نقيسها رياضيًا: تدوين Big-O (الحدود العليا لمعدلات النمو)، وتدوين Ω وΘ (الحدود الدنيا والضيقة)، ومقارنة الفئات — O(1) وO(log n) وO(n) وO(n²) — ومعناها عمليًا. السؤال الموجِّه: كيف نقارن الخوارزميات رياضيًا دون تشغيلها على عتاد محدد؟</span></div>
+      <div class="note" style="margin-top:8px;"><b class="i18n" data-en="Reference (from slide 21):">المرجع (من الشريحة 21):</b> <span class="i18n" data-en="Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, Clifford Stein — Introduction to Algorithms (CLRS), 4th Edition, MIT Press, 2022; plus MIT OpenCourseWare / MIT 6.006 — Introduction to Algorithms.">Thomas H. Cormen وCharles E. Leiserson وRonald L. Rivest وClifford Stein — Introduction to Algorithms (CLRS)، الطبعة الرابعة، MIT Press، 2022؛ بالإضافة إلى MIT OpenCourseWare / MIT 6.006 — مقدمة في الخوارزميات.</span></div>
+    </div>
+  </div>
+</section>
+<!-- ============ DIAGRAMS ============ -->
+<section id="diagrams">
+  <div class="container">
+    <span class="eyebrow">03 / DIAGRAMS</span>
+    <h2 class="i18n" data-en="Explaining the Diagrams">شرح الرسومات والمخططات</h2>
+    <p class="lead i18n" data-en="A precise text description of every visual in the lecture, tied to the theory behind it.">وصف نصي دقيق لكل رسم في المحاضرة، مرتبط بالنظرية خلفه.</p>
+
+    <div class="diagram-block">
+      <div class="diagram-head"><h3 class="i18n" data-en="🧭 Figure 1 — The 5-Step Algorithm Design Process (slide 9)">🧭 الشكل 1 — عملية تصميم الخوارزمية بخمس خطوات (شريحة 9)</h3><span class="badge b-qa">Process Flow</span></div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="A vertical numbered pipeline of five connected stages, each numbered 01–05: Problem Understanding (define inputs, outputs, constraints) → Design Strategy (divide-and-conquer, greedy, dynamic programming, etc.) → Algorithm Development (pseudocode / formal description) → Correctness Verification (prove or test correct results) → Efficiency Analysis (time and space complexity with Big-O). The visual point: design is sequential and each stage feeds the next — skipping, for example, correctness verification and jumping to efficiency analysis produces a fast wrong answer.">خط أنابيب رأسي مُرقَّم من خمس مراحل متصلة، مرقّمة 01–05: فهم المشكلة (تحديد المدخلات والمُخرَجات والقيود) ← استراتيجية التصميم (فرّق تَسُد، الجشع، البرمجة الديناميكية، إلخ) ← تطوير الخوارزمية (كود شبه مُبرمَج / وصف رسمي) ← التحقق من الصحة (إثبات أو اختبار صحة النتائج) ← تحليل الكفاءة (تعقيد الزمن والمساحة بـBig-O). النقطة البصرية: التصميم تسلسلي وكل مرحلة تُغذّي التالية — تخطي مثلًا التحقق من الصحة والقفز لتحليل الكفاءة يُنتج إجابة سريعة وخاطئة.</p>
+        <div class="flow-wrap">
+          <div class="flow-box">01<small>Problem Understanding</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">02<small>Design Strategy</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">03<small>Algorithm Development</small></div>
+        </div>
+        <div class="flow-wrap">
+          <div class="flow-box">04<small>Correctness Verification</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">05<small>Efficiency Analysis</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="diagram-block">
+      <div class="diagram-head"><h3 class="i18n" data-en="🔍 Figure 2 — Linear Search vs. Binary Search (slides 11–12)">🔍 الشكل 2 — البحث الخطي مقابل البحث الثنائي (شريحتان 11–12)</h3><span class="badge b-dynamic">Side-by-Side Comparison</span></div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="A two-panel comparison for the searching problem (“find a specific name in a large database”). The left panel shows Linear Search: a sequence of elements checked one by one, front to back — simple, but slow on large datasets. The right panel shows Binary Search: the search space repeatedly halved each step — much faster, but requires sorted data. Under both panels sit the three evaluation lenses used in the lecture: Execution Speed, Memory Consumption, and Scalability. The visual point: two correct algorithms, radically different behavior — correctness alone does not rank algorithms.">مقارنة بلوحن لمشكلة البحث (\"إيجاد اسم معين في قاعدة بيانات كبيرة\"). اللوح الأيسر يعرض البحث الخطي: سلسلة عناصر تُفحص واحدًا تلو الآخر من الأمام للخلف — بسيط، لكنه بطيء على البيانات الكبيرة. اللوح الأيمن يعرض البحث الثنائي: فضاء البحث يُنصَّف في كل خطوة — أسرع بكثير، لكنه يتطلب بيانات مُرتَّبة. تحت اللوحين توجد عدسات التقييم الثلاث المستخدمة في المحاضرة: سرعة التنفيذ، استهلاك الذاكرة، وقابلية التوسع. النقطة البصرية: خوارزميتان صحيحتان، وسلوك مختلف جذريًا — الصحة وحدها لا تُرتّب الخوارزميات.</p>
+        <div class="flow-wrap">
+          <div class="flow-box" style="border-color:#38bdf855;">Linear Search<small>checks each element one by one</small></div>
+          <span style="font-size:1.4rem; color:var(--text-faint); align-self:center;">vs</span>
+          <div class="flow-box" style="border-color:#34d39955;">Binary Search<small>halves the search space each step</small></div>
+        </div>
+        <div class="note info"><span class="i18n" data-en="Memory aid: Linear scans the whole list (needs nothing sorted); Binary cuts the list in half every step (needs it sorted). On 1,000,000 items that's up to 1,000,000 checks versus about 20.">وسيلة مساعدة: الخطي يمسح القائمة كلها (لا يحتاج ترتيبًا)؛ والثنائي يقسم القائمة نصفين كل خطوة (يحتاجها مُرتَّبة). على مليون عنصر هذا يعني حتى مليون فحص مقابل حوالي 20 فقط.</span></div>
+      </div>
+    </div>
+
+    <div class="diagram-block">
+      <div class="diagram-head"><h3 class="i18n" data-en="📊 Figure 3 — Input Size: The Stress Test (slide 16)">📊 الشكل 3 — حجم المدخلات: الاختبار الضاغط (شريحة 16)</h3><span class="badge b-gold">Scale Comparison</span></div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="Three stat-cards of increasing magnitude: 100 (Small Dataset — most algorithms perform acceptably and differences are barely noticeable), 1M (Large Dataset — a poorly chosen algorithm may take hours or days), and 10× (Growth Factor — some algorithms slow down linearly, others explode exponentially with input growth). The visual point: the same algorithm looks identical to its rivals at 100 items and catastrophically different at 1,000,000 — which is why we analyze before deploying, not after crashing in production.">ثلاث بطاقات إحصائية بترتيب تصاعدي: 100 (بيانات صغيرة — معظم الخوارزميات تؤدي بشكل مقبول والفروق بالكاد تُلاحَظ)، ومليون (بيانات كبيرة — الخوارزمية سيئة الاختيار قد تستغرق ساعات أو أيامًا)، و×10 (عامل النمو — بعض الخوارزميات تتباطأ خطيًا وأخرى تنفجر أُسّيًا مع نمو المدخلات). النقطة البصرية: الخوارزمية نفسها تبدو مطابقة لمنافساتها عند 100 عنصر، ومختلفة كارثيًا عند مليون — لهذا نحلل قبل النشر، لا بعد الانهيار في الإنتاج.</p>
+        <div class="flow-wrap" style="gap:0; align-items:stretch;">
+          <div class="flow-box" style="min-width:150px; flex:1; border-color:#34d39955; background:#34d3991a;">100<small>Small dataset — barely noticeable differences</small></div>
+          <div class="flow-box" style="min-width:150px; flex:1; border-color:#fbbf2455; background:#fbbf241a;">1M<small>Large dataset — hours or days</small></div>
+          <div class="flow-box" style="min-width:150px; flex:1; border-color:#f8717155; background:#f871711a;">10×<small>Growth — linear slowdown vs. exponential blow-up</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="diagram-block">
+      <div class="diagram-head"><h3 class="i18n" data-en="🧮 Figure 4 — Time Complexity Class: 1s on 100 items (slide 14)">🧮 الشكل 4 — فئة تعقيد الزمن: ثانية على 100 عنصر (شريحة 14)</h3><span class="badge b-warn">Growth Contrast</span></div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="The lecture's contrast example as two paths diverging from one starting point: an algorithm that takes 1 second on 100 items, when given 10,000 items (a 100× larger input), may take 10,000 seconds — or just 14 seconds. Both are “correct” algorithms; the divergence comes purely from each one's time complexity class. This preview motivates the next lecture, which names those classes formally (O(1), O(log n), O(n), O(n²)).">مثال المقارنة في المحاضرة كمسارين يفترقان من نقطة بداية واحدة: خوارزمية تستغرق ثانية على 100 عنصر، عند إعطائها 10,000 عنصر (مدخلات أكبر بـ100 مرة)، قد تستغرق 10,000 ثانية — أو 14 ثانية فقط. كلتاهما خوارزمية \"صحيحة\"؛ والافتراق يأتي فقط من فئة تعقيد الزمن لكل منهما. هذا التمهيد يُحفّز المحاضرة القادمة التي تُسمّي هذه الفئات رسميًا (O(1) وO(log n) وO(n) وO(n²)).</p>
+        <div class="flow-wrap">
+          <div class="flow-box" style="border-color:#fbbf2455;">1 second<small>on 100 items</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box" style="border-color:#f8717155; background:#f871711a;">10,000 seconds<small>on 10,000 items — one complexity class</small></div>
+          <span class="flow-arrow">or</span>
+          <div class="flow-box" style="border-color:#34d39955; background:#34d3991a;">14 seconds<small>on 10,000 items — a better class</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="diagram-block">
+      <div class="diagram-head"><h3 class="i18n" data-en="🗺️ Figure 5 — Course Roadmap (slide 18)">🗺️ الشكل 5 — خريطة الكورس (شريحة 18)</h3><span class="badge b-static">Roadmap</span></div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="A seven-step numbered roadmap (01–07) from foundations to advanced strategies: Algorithm Design Techniques → Complexity Analysis → Divide and Conquer → Greedy Algorithms → Dynamic Programming → Graph Algorithms → Advanced Strategies (NP-completeness, approximation, and beyond). The visual point: the course is cumulative — each stage is a toolkit that the later stages assume you already carry (e.g., you need complexity analysis to evaluate the greedy and dynamic programming designs).">خريطة طريق مُرقَّمة من سبع خطوات (01–07) من الأساسيات إلى الاستراتيجيات المتقدمة: تقنيات تصميم الخوارزميات ← تحليل التعقيد ← فرّق تَسُد ← الخوارزميات الجشعة ← البرمجة الديناميكية ← خوارزميات الرسوم ← استراتيجيات متقدمة (اكتمال NP والتقريبات وما بعدها). النقطة البصرية: الكورس تراكمي — كل مرحلة عدّة تفترض المراحل اللاحقة أنك تحملها (مثلًا، تحتاج تحليل التعقيد لتقييم تصاميم الجشع والبرمجة الديناميكية).</p>
+        <div class="flow-wrap">
+          <div class="flow-box">01<small>Design Techniques</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">02<small>Complexity Analysis</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">03<small>Divide &amp; Conquer</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">04<small>Greedy</small></div>
+        </div>
+        <div class="flow-wrap">
+          <div class="flow-box">05<small>Dynamic Programming</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">06<small>Graph Algorithms</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">07<small>Advanced (NP, Approx.)</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SUMMARY ============ -->
+<section id="summary">
+  <div class="container">
+    <span class="eyebrow">04 / SUMMARY</span>
+    <h2 class="i18n" data-en="Comprehensive Summary — Key Concepts and Definitions">تلخيص شامل — المفاهيم والتعريفات الجوهرية</h2>
+    <table>
+      <tr><th class="i18n" data-en="Term">المصطلح</th><th class="i18n" data-en="Definition">التعريف</th></tr>
+      <tr><td><b class="i18n" data-en="Algorithm Analysis">تحليل الخوارزميات</b></td><td class="i18n" data-en="The systematic process of evaluating an algorithm's performance before and after implementation — running time, memory usage, and scalability — answering: how will it behave as input grows?">العملية المنهجية لتقييم أداء الخوارزمية قبل التنفيذ وبعده — زمن التنفيذ واستهلاك الذاكرة وقابلية التوسع — وتجيب: كيف ستتصرف كلما كبرت المدخلات؟</td></tr>
+      <tr><td><b class="i18n" data-en="Correctness">الصحة</b></td><td class="i18n" data-en="Produces the right result for every valid input. A fast algorithm that gives wrong answers is useless.">تنتج النتيجة الصحيحة لكل مدخل صالح. الخوارزمية السريعة التي تعطي إجابات خاطئة عديمة الفائدة.</td></tr>
+      <tr><td><b class="i18n" data-en="Efficiency">الكفاءة</b></td><td class="i18n" data-en="Uses computational resources wisely — minimizing time and memory without sacrificing accuracy. Neither goal alone suffices.">استخدام الموارد الحوسبية بحكمة — تقليل الزمن والذاكرة دون التضحية بالدقة. لا يكفي أي هدف وحده.</td></tr>
+      <tr><td><b class="i18n" data-en="Design vs. Implementation">التصميم مقابل التنفيذ</b></td><td class="i18n" data-en="Design: understand the problem, choose a strategy, develop a solution. Implementation: write code in a language, execute and test. A strong design makes implementation straightforward; a poor one makes even the best code inefficient.">التصميم: فهم المشكلة واختيار الاستراتيجية وتطوير الحل. التنفيذ: كتابة الكود بلغة، والتنفيذ والاختبار. التصميم القوي يجعل التنفيذ مباشرًا؛ والسيئ يجعل أفضل كود غير كفء.</td></tr>
+      <tr><td><b class="i18n" data-en="5-Step Design Process">عملية التصميم الخمسية</b></td><td class="i18n" data-en="Problem Understanding → Design Strategy → Algorithm Development (pseudocode) → Correctness Verification → Efficiency Analysis (Big-O).">فهم المشكلة ← استراتيجية التصميم ← تطوير الخوارزمية (pseudocode) ← التحقق من الصحة ← تحليل الكفاءة (Big-O).</td></tr>
+      <tr><td><b class="i18n" data-en="4-Question Mindset">عقلية الأسئلة الأربعة</b></td><td class="i18n" data-en="What is the problem (define precisely)? What are the solutions (explore alternatives)? Which is better (compare rigorously)? How can we improve (iterate and optimize)?">ما المشكلة (عرّفها بدقة)؟ ما الحلول (استكشف البدائل)؟ أيها أفضل (قارن بصرامة)؟ كيف نُحسّن (كرّر وحسّن)؟</td></tr>
+      <tr><td><span class="badge b-qa">Linear Search</span></td><td class="i18n" data-en="Checks each element one by one. Simple, but slow on large datasets. Works on unsorted data.">يفحص كل عنصر واحدًا تلو الآخر. بسيط، لكنه بطيء على البيانات الكبيرة. يعمل على بيانات غير مُرتَّبة.</td></tr>
+      <tr><td><span class="badge b-qc">Binary Search</span></td><td class="i18n" data-en="Halves the search space each step. Much faster — but requires sorted data.">يُنصّف فضاء البحث كل خطوة. أسرع بكثير — لكنه يتطلب بيانات مُرتَّبة.</td></tr>
+      <tr><td><b class="i18n" data-en="Time Complexity">تعقيد الزمن</b></td><td class="i18n" data-en="Describes how the running time grows as input size increases — e.g., 1s on 100 items could become 10,000s or 14s on 10,000 items depending on the complexity class.">يصف كيف ينمو زمن التنفيذ مع زيادة حجم المدخلات — مثلًا، ثانية على 100 عنصر قد تصبح 10,000 ثانية أو 14 ثانية على 10,000 عنصر حسب فئة التعقيد.</td></tr>
+      <tr><td><b class="i18n" data-en="Space Complexity">تعقيد المساحة</b></td><td class="i18n" data-en="The memory required during execution, as a function of input size: input storage + auxiliary memory (e.g., temporary arrays) + temporary variables (counters, pointers, intermediate values).">الذاكرة المطلوبة أثناء التنفيذ كدالة في حجم المدخلات: تخزين المدخلات + الذاكرة المساعدة (كالمصفوفات المؤقتة) + المتغيرات المؤقتة (عدّادات ومؤشرات وقيم وسيطة).</td></tr>
+      <tr><td><b class="i18n" data-en="Input Size">حجم المدخلات</b></td><td class="i18n" data-en="The ultimate stress test: at 100 items all algorithms look fine; at 1M a poor choice takes hours or days; under 10× growth some slow linearly and others explode exponentially. Analyze before deploying — not after crashing in production.">الاختبار الضاغط الأقصى: عند 100 عنصر تبدو كل الخوارزميات جيدة؛ وعند مليون يستغرق الاختيار السيئ ساعات أو أيامًا؛ وتحت نمو ×10 يتباطأ بعضها خطيًا وينفجر آخر أُسّيًا. حَلِّل قبل النشر — لا بعد الانهيار في الإنتاج.</td></tr>
+      <tr><td><b class="i18n" data-en="Coming Next">ما القادم</b></td><td class="i18n" data-en="Asymptotic Analysis: Big-O (upper bounds), Ω and Θ (lower and tight bounds), and comparing O(1), O(log n), O(n), O(n²) — comparing algorithms mathematically without running them on specific hardware.">التحليل التقريبي: Big-O (حدود عليا)، وΩ وΘ (حدود دنيا وضيقة)، ومقارنة O(1) وO(log n) وO(n) وO(n²) — مقارنة الخوارزميات رياضيًا دون تشغيلها على عتاد محدد.</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============ LEVELS ============ -->
+<section id="levels">
+  <div class="container">
+    <span class="eyebrow">05 / THREE LEVELS</span>
+    <h2 class="i18n" data-en="Simplified at 3 Levels">تبسيط على 3 مستويات</h2>
+    <div class="level-tabs">
+      <button class="level-tab active" data-level="beginner"><span class="i18n" data-en="🌱 Beginner">🌱 للمبتدئين</span></button>
+      <button class="level-tab" data-level="intermediate"><span class="i18n" data-en="🎓 University Level">🎓 مستوى جامعي</span></button>
+      <button class="level-tab" data-level="quick"><span class="i18n" data-en="⚡ Quick Review">⚡ مراجعة سريعة</span></button>
+    </div>
+    <div class="level-panel active" id="panel-beginner">
+      <div class="card">
+        <p class="i18n" data-en="Everyday picture of the whole lecture:">صورة يومية لكامل المحاضرة:</p>
+        <ul style="padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="<b>Many right answers, one best answer.</b> Routes from home to college: many roads get you there (correct), but one is fastest at 8 AM (efficient). Algorithms are the same."><b>إجابات صحيحة كثيرة، وإجابة واحدة هي الأفضل.</b> الطرق من البيت للكلية: طرق كثيرة توصلك (صحيحة)، لكن واحدة أسرع في الساعة 8 صباحًا (كفء). الخوارزميات كذلك.</li>
+          <li class="i18n" data-en="<b>Linear vs. Binary search</b> is like finding a friend in a 500-page phone book: Linear = flip page by page from the start; Binary = open the middle, decide “before or after?”, throw away half — repeat. That's why it needs the book sorted."><b>البحث الخطي مقابل الثنائي</b> مثل إيجاد صديق في دليل هاتف من 500 صفحة: الخطي = تقلّب صفحة صفحة من الأول؛ الثنائي = افتح المنتصف، قرر \"قبله أم بعده؟\"، ارمِ النصف — كرّر. لهذا يحتاج الدليل مُرتَّبًا.</li>
+          <li class="i18n" data-en="<b>Input size matters</b> like walking vs. driving: for 100 meters walking is fine (small data), for 100 km you need a plan (big data). The algorithm that \"felt instant\" can collapse at scale."><b>حجم المدخلات مهم</b> مثل المشي مقابل القيادة: لـ100 متر المشي كافٍ (بيانات صغيرة)، ولمئة كيلومتر تحتاج خطة (بيانات كبيرة). الخوارزمية التي \"بدت فورية\" قد تنهار على المقياس الكبير.</li>
+          <li class="i18n" data-en="<b>Time vs. Space complexity:</b> time = how long the recipe takes to cook; space = how big your kitchen counter must be. Both are judged by the number of guests (input size), not by the clock on the wall."><b>تعقيد الزمن مقابل المساحة:</b> الزمن = كم تستغرق الوصفة في الطبخ؛ المساحة = كم تكون مساحة سطح مطبخك. كلاهما يُحكم عليه بعدد الضيوف (حجم المدخلات)، لا بساعة الحائط.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="level-panel" id="panel-intermediate">
+      <div class="card i18n" data-en="<p>The lecture's central claim is that correctness is a necessary but not sufficient condition for a deployable solution. The analysis framework it builds is deliberately hardware-independent: running time is measured as a function of input size, not wall-clock seconds — this foreshadows asymptotic notation, which removes machine constants entirely. The 14-seconds-versus-10,000-seconds example (same 100→10,000 input growth) is a concrete preview of comparing O(log n)-class behavior against O(n²)-class behavior without running anything.</p><p>Note the lecture's implicit trade-off taxonomy: correctness versus efficiency (both required), design versus implementation (distinct but coupled phases), and time versus space (the two dimensions of complexity). Binary Search introduces the first trade-off of the course: logarithmic search time is bought with a sortedness precondition — preprocessing cost for query speed. Space complexity's three components (input storage, auxiliary memory, temporary variables) will later justify the standard distinction between in-place algorithms (O(1) auxiliary) and those needing O(n) extra space. The 5-step process ends at Big-O precisely because the next lecture formalizes it.</p>">
+        <p>الادعاء المحوري للمحاضرة هو أن الصحة شرط لازم لكنه غير كافٍ لحل قابل للنشر. إطار التحليل الذي تبنيه مقصودًا مستقل عن العتاد: يُقاس زمن التنفيذ كدالة في حجم المدخلات، لا بالثواني الفعلية — وهذا تمهيد للتدوين التقريبي الذي يُلغي ثوابت الآلة كليًا. مثال الـ14 ثانية مقابل الـ10,000 ثانية (نفس نمو المدخلات من 100 إلى 10,000) هو معاينة ملموسة لمقارنة سلوك فئة O(log n) بسلوك فئة O(n²) دون تشغيل أي شيء.</p>
+        <p>لاحظ تصنيف المقايضات الضمني في المحاضرة: الصحة مقابل الكفاءة (كلاهما مطلوب)، والتصميم مقابل التنفيذ (مرحلتان مُختلفتان لكنهما مترابطتان)، والزمن مقابل المساحة (بعدا التعقيد). البحث الثنائي يقدّم أول مقايضة في الكورس: زمن البحث اللوغاريتمي يُشترى بشرط مسبق هو الترتيب — كلفة تجهيز مقابل سرعة استعلام. ومكوّنات تعقيد المساحة الثلاثة (تخزين المدخلات، الذاكرة المساعدة، المتغيرات المؤقتة) ستُبرر لاحقًا التمييز القياسي بين الخوارزميات في المكان (in-place بمساحة مساعدة O(1)) وتلك التي تحتاج مساحة إضافية O(n). وتنتهي عملية الخطوات الخمس عند Big-O تحديدًا لأن المحاضرة القادمة تُشكّله رسميًا.</p>
+      </div>
+    </div>
+    <div class="level-panel" id="panel-quick">
+      <div class="card">
+        <ul class="quickref-list">
+          <li>Course skills: Design → Analyze → Compare → Improve.</li>
+          <li>Analysis dimensions: Execution Time, Memory Usage, Scalability.</li>
+          <li>Design = understand problem, choose strategy, develop solution. Implementation = write code, execute &amp; test.</li>
+          <li>Good algorithm = Correctness (right result for every valid input) AND Efficiency (wise resources).</li>
+          <li>Efficiency critical at scale: search engines, AI, navigation, recommendations.</li>
+          <li>Analysis = evaluating performance before &amp; after implementation; how does it behave as input grows?</li>
+          <li>5 steps: Understand → Strategy → Develop (pseudocode) → Verify correctness → Analyze efficiency (Big-O).</li>
+          <li>4 questions: What is the problem? What are the solutions? Which is better? How to improve?</li>
+          <li>Linear search: one-by-one, simple, slow, unsorted OK. Binary search: halve each step, fast, needs sorted.</li>
+          <li>Time complexity: growth of running time vs input size (1s@100 → 10,000s or 14s @10,000).</li>
+          <li>Space complexity = input storage + auxiliary memory + temporary variables.</li>
+          <li>Input size = ultimate stress test (100 vs 1M vs 10×). Analyze BEFORE deployment.</li>
+          <li>Next lecture: asymptotic analysis — Big-O, Ω, Θ; compare O(1), O(log n), O(n), O(n²).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section id="quiz">
+  <div class="container">
+    <span class="eyebrow">06 / INTERACTIVE QUIZ</span>
+    <h2 class="i18n" data-en="Interactive Quiz">اختبار تفاعلي</h2>
+    <p class="lead i18n" data-en="Covers the whole lecture, including two matching questions. Answer each question, then press “Check Answer” — your final score appears at the bottom.">يغطي المحاضرة كاملة، بما فيها سؤالا مطابقة. أجب عن كل سؤال ثم اضغط "تحقق من الإجابة" — النتيجة النهائية تظهر أسفل الصفحة.</p>
+    <div class="quiz-progress">
+      <div class="quiz-score"><span class="i18n" data-en="Score:">النتيجة:</span> <span id="scoreNow">0</span> / <span id="scoreTotal">0</span></div>
+      <div class="quiz-bar"><div class="quiz-bar-fill" id="quizBarFill"></div></div>
+    </div>
+    <div id="quizContainer"></div>
+    <div class="final-score" id="finalScore">
+      <div class="big" id="finalScoreText">0 / 0</div>
+      <p id="finalScoreMsg" style="margin-top:8px; color:var(--text-dim);"></p>
+      <button class="reset-btn" onclick="resetQuiz()"><span class="i18n" data-en="🔄 Try Again">🔄 إعادة المحاولة</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TIPS ============ -->
+<section id="tips">
+  <div class="container">
+    <span class="eyebrow">07 / PRO TIPS</span>
+    <h2 class="i18n" data-en="Pro Tips">نصائح احترافية</h2>
+    <div class="grid grid-2" style="align-items:start;">
+      <div class="card">
+        <h3 class="i18n" data-en="💡 How to Understand Instead of Memorize">💡 كيف تفهم بدلًا من الحفظ</h3>
+        <div class="tip-item"><span class="tip-icon">🔍</span><div class="i18n" data-en="Link the 5-step process to the 4 questions: steps 1–2 answer “what is the problem &amp; solutions?”, steps 3–4 answer “which is better?”, and step 5 answers “how can we improve?” — one framework, two views.">اربط عملية الخطوات الخمس بالأسئلة الأربعة: الخطوتان 1–2 تجيبان \"ما المشكلة والحلول؟\"، والخطوتان 3–4 تجيبان \"أيها أفضل؟\"، والخطوة 5 تجيب \"كيف نُحسّن؟\" — إطار واحد بعينين.</div></div>
+        <div class="tip-item"><span class="tip-icon">✍️</span><div class="i18n" data-en="Remember time complexity is NOT measured in seconds: the lecture says “measured in terms of input size, not wall-clock seconds” — that's what makes comparing algorithms hardware-independent.">تذكّر أن تعقيد الزمن لا يُقاس بالثواني: المحاضرة تقول \"يُقاس بدلالة حجم المدخلات، لا بالثواني الفعلية\" — وهذا ما يجعل مقارنة الخوارزميات مستقلة عن العتاد.</div></div>
+        <div class="tip-item"><span class="tip-icon">📐</span><div class="i18n" data-en="Anchor every concept to the two running examples: searching (linear vs. binary) and input growth (100 → 1M → 10×). If a definition doesn't change what happens in those two examples, you memorized the words, not the idea.">ثبّت كل مفهوم بالمثالين الجاريين: البحث (خطي مقابل ثنائي) ونمو المدخلات (100 ← مليون ← ×10). إذا لم يُغيّر التعريف شيئًا في المثالين، فأنت حفظت الكلمات لا الفكرة.</div></div>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="🏋️ Suggested Hands-On Practice">🏋️ تدريب عملي مقترح</h3>
+        <div class="tip-item"><span class="tip-icon">1️⃣</span><div class="i18n" data-en="Pick any app on your phone and identify which of the six “algorithms around us” categories it uses (search, navigation, AI, games, data analysis, recommendations) — and what would break if its algorithm were inefficient.">اختر أي تطبيق في هاتفك وحدد أيًا من فئات \"الخوارزميات من حولنا\" الست يستخدم (بحث، ملاحة، ذكاء اصطناعي، ألعاب، تحليل بيانات، توصيات) — وماذا سينهار لو كانت خوارزميته غير كفء.</div></div>
+        <div class="tip-item"><span class="tip-icon">2️⃣</span><div class="i18n" data-en="Manually perform Binary Search on a sorted list of 16 names to find a target, writing down how many checks each step needs — then do Linear Search on the same list and count. Feel the gap.">نفّذ البحث الثنائي يدويًا على قائمة مُرتَّبة من 16 اسمًا لإيجاد هدف، ودوّن عدد الفحوص في كل خطوة — ثم نفّذ البحث الخطي على القائمة نفسها واحسب. تحسّ الفرق.</div></div>
+        <div class="tip-item"><span class="tip-icon">3️⃣</span><div class="i18n" data-en="Take a small coding problem (e.g., checking if a word is a palindrome) and walk it through all 5 design steps on paper — including writing the pseudocode and one correctness test case.">خذ مسألة برمجية صغيرة (مثل فحص كلمة إن كانت متناظرة/palindrome) وامشِ بها خطوات التصميم الخمس على الورق — متضمنة كتابة الـpseudocode وحالة اختبار صحة واحدة.</div></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <h3 class="i18n" data-en="⚠️ Common Mistakes Students Make on This Exact Topic">⚠️ أخطاء شائعة يقع فيها الطلاب في هذا الموضوع تحديدًا</h3>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Thinking a correct algorithm is “good enough”:</b> the lecture's whole point is that correctness alone is not enough — a fast wrong answer is useless, and a slow right answer can crash at millions of users. Both goals are mandatory."><b>الاعتقاد بأن الخوارزمية الصحيحة \"كافية\":</b> جوهر المحاضرة كله أن الصحة وحدها لا تكفي — الإجابة السريعة الخاطئة عديمة الفائدة، والإجابة الصحيحة البطيئة قد تنهار عند ملايين المستخدمين. الهدفان إجباريان معًا.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Saying Binary Search is “always better”:</b> it is much faster but requires sorted data — on unsorted data it simply doesn't work. Correct comparison includes the precondition, not just speed."><b>القول إن البحث الثنائي \"أفضل دائمًا\":</b> هو أسرع بكثير لكنه يتطلب بيانات مُرتَّبة — على بيانات غير مُرتَّبة لا يعمل ببساطة. المقارنة الصحيحة تشمل الشرط المسبق، لا السرعة فقط.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Measuring complexity with a stopwatch:</b> wall-clock time depends on the machine, language, and load. Complexity is a function of input size — the 1s@100 → 14s vs. 10,000s@10,000 example exists precisely to make this distinction."><b>قياس التعقيد بساعة إيقاف:</b> الوقت الفعلي يعتمد على الآلة واللغة والحِمل. التعقيد دالة في حجم المدخلات — مثال 1 ثانية عند 100 ← 14 أو 10,000 ثانية عند 10,000 موجود تحديدًا لهذا التمييز.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Forgetting the three components of space complexity:</b> it is not just the input — auxiliary memory (temporary arrays) and temporary variables (counters, pointers, intermediate values) count too."><b>نسيان مكونات تعقيد المساحة الثلاثة:</b> ليس المدخلات فقط — الذاكرة المساعدة (المصفوفات المؤقتة) والمتغيرات المؤقتة (عدّادات ومؤشرات وقيم وسيطة) تُحسب أيضًا.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Skipping the small-data trap:</b> at 100 items, “most algorithms perform acceptably and differences are barely noticeable” — students test on tiny inputs, see no difference, and conclude performance doesn't matter. Scale is what reveals the truth."><b>الوقوع في فخ البيانات الصغيرة:</b> عند 100 عنصر، \"معظم الخوارزميات تؤدي بشكل مقبول والفروق بالكاد تُلاحَظ\" — الطلاب يختبرون على مدخلات ضئيلة، لا يرون فرقًا، ويستنتجون أن الأداء لا يهم. المقياس الكبير هو ما يكشف الحقيقة.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="i18n" data-en="Interactive review sheet — Analysis and Design of Algorithms, Lecture 1">مرجع مراجعة تفاعلي — تحليل وتصميم الخوارزميات، المحاضرة 1</footer>
+<script>
+let QUIZ_LANG = 'ar';
+const QUIZ = [
+  {type:'mcq', prompt:'ما الأهداف الأربعة التي يطورها كورس تحليل وتصميم الخوارزميات؟', promptEn:'What are the four skills the Analysis and Design of Algorithms course develops?',
+   options:['التصميم، التحليل، المقارنة، التحسين','الكتابة، الترجمة، المراجعة، النشر','التجميع، التنفيذ، التصحيح، التوزيع','التخطيط، الجدولة، الاختبار، التوثيق'],
+   optionsEn:['Design, Analyze, Compare, Improve','Write, Translate, Review, Publish','Compile, Execute, Debug, Deploy','Plan, Schedule, Test, Document'],
+   correct:0, explain:'الكورس يطور: التصميم (ابتكار خوارزميات فعّالة من الصفر)، التحليل (قياس الكفاءة والأداء)، المقارنة (تقييم الحلول بموضوعية)، والتحسين (تحسين الخوارزميات القائمة).', explainEn:'The course develops: Design (craft algorithms from scratch), Analyze (measure efficiency and performance), Compare (evaluate solutions objectively), and Improve (optimize existing algorithms).'},
+  {type:'multi', prompt:'أي مما يلي من الأبعاد الثلاثة التي يجيب عنها تحليل الخوارزميات عند اختيار الحل الأنسب؟ (اختر كل ما ينطبق)', promptEn:'Which of the following are the three dimensions along which algorithm analysis helps choose the right solution? (select all)',
+   options:['زمن التنفيذ','استهلاك الذاكرة','قابلية التوسع','لون واجهة النظام'],
+   optionsEn:['Execution Time','Memory Usage','Scalability','The color of the system UI'],
+   correctSet:[0,1,2], explain:'الأبعاد الثلاثة: زمن التنفيذ (ما مدى سرعة تشغيله؟)، استهلاك الذاكرة (ما حجم المساحة التي يحتاجها؟)، وقابلية التوسع (كيف يتعامل مع مدخلات أكبر؟).', explainEn:'The three dimensions: Execution Time (how fast does it run?), Memory Usage (how much space does it need?), and Scalability (how does it handle larger inputs?).'},
+  {type:'mcq', prompt:'وفقًا للمحاضرة، ماذا يحدث عندما يكون تصميم الخوارزمية سيئًا؟', promptEn:'According to the lecture, what happens when the algorithm design is poor?',
+   options:['لا يمكن كتابة كود له أبدًا','حتى أفضل كود يصبح غير كفء','التنفيذ يصبح أسهل','لا شيء — التصميم والتنفيذ منفصلان تمامًا'],
+   optionsEn:['No code can ever be written for it','Even the best code becomes inefficient','Implementation becomes easier','Nothing — design and implementation are fully independent'],
+   correct:1, explain:'المرحلتان مُختلفتان لكنهما مترابطتان بعمق: التصميم القوي يجعل التنفيذ مباشرًا، والتصميم السيئ يجعل حتى أفضل كود غير كفء.', explainEn:'The two phases are distinct but deeply connected: a strong design makes implementation straightforward; a poor design makes even the best code inefficient.'},
+  {type:'mcq', prompt:'لماذا الخوارزمية السريعة التي تعطي إجابات خاطئة عديمة الفائدة؟', promptEn:'Why is a fast algorithm that gives wrong answers useless?',
+   options:['لأن السرعة أهم من كل شيء','لأن الصحة تقتضي إنتاج النتيجة الصحيحة لكل مدخل صالح','لأن الإجابات الخاطئة تستهلك ذاكرة أكثر','لأنها لن تُشتغل أصلًا'],
+   optionsEn:['Because speed matters above all','Because correctness requires producing the right result for every valid input','Because wrong answers consume more memory','Because it will not run at all'],
+   correct:1, explain:'الصحة تعني إنتاج النتيجة الصحيحة لكل مدخل صالح — والخوارزمية الجيدة يجب أن تحقق الصحة والكفاءة معًا؛ لا يكفي أي منهما وحده.', explainEn:'Correctness means producing the right result for every valid input — a good algorithm must satisfy both correctness and efficiency; neither alone suffices.'},
+  {type:'tf', prompt:'تعريف المدخلات والمُخرَجات والقيود بوضوح هي خطوة تحليل الكفاءة في عملية التصميم.', promptEn:'Defining inputs, outputs, and constraints clearly is the Efficiency Analysis step of the design process.',
+   correct:false, explain:'خاطئ — هذا تعريف خطوة فهم المشكلة (الخطوة 01). تحليل الكفاءة هو الخطوة الأخيرة (05): تقييم تعقيد الزمن والمساحة باستخدام Big-O.', explainEn:'False — that is the Problem Understanding step (01). Efficiency Analysis is the last step (05): evaluating time and space complexity using Big-O notation.'},
+  {type:'mcq', prompt:'في أي خطوة من خطوات التصميم الخمس تُكتب الـ pseudocode؟', promptEn:'In which of the five design steps is pseudocode written?',
+   options:['فهم المشكلة','استراتيجية التصميم','تطوير الخوارزمية','تحليل الكفاءة'],
+   optionsEn:['Problem Understanding','Design Strategy','Algorithm Development','Efficiency Analysis'],
+   correct:2, explain:'الخطوة 03 — تطوير الخوارزمية: كتابة pseudocode أو وصف رسمي للحل. الخطوة 02 تختار المنهج (فرّق تَسُد، جشع، برمجة ديناميكية، إلخ).', explainEn:'Step 03 — Algorithm Development: write pseudocode or a formal description of the solution. Step 02 selects the approach (divide-and-conquer, greedy, dynamic programming, etc.).'},
+  {type:'fill', prompt:'أكمل السؤال الرابع من أسئلة عقلية حل المشكلات: 1) ما المشكلة؟ 2) ما الحلول؟ 3) أيها أفضل؟ 4) ______؟', promptEn:'Complete the fourth question of the problem-solving mindset: 1) What is the problem? 2) What are the solutions? 3) Which is better? 4) ______?',
+   accept:['how can we improve','كيف نحسن','كيف نُحسّن','كيف يمكننا التحسين'], explain:'السؤال الرابع: كيف نُحسّن؟ — كرّر وحسّن. الأسئلة الأربعة: ما المشكلة (عرّفها بدقة)؟ ما الحلول (استكشف البدائل)؟ أيها أفضل (قارن بصرامة)؟ كيف نُحسّن (كرّر وحسّن)؟', explainEn:'The fourth question: How can we improve? — iterate and optimize. The four: what is the problem (define precisely)? what are the solutions (explore alternatives)? which is better (compare rigorously)? how can we improve (iterate and optimize)?'},
+  {type:'mcq', prompt:'ما الفرق الجوهري بين البحث الخطي والبحث الثنائي؟', promptEn:'What is the key difference between Linear Search and Binary Search?',
+   options:['الخطي أسرع دائمًا','الثنائي يُنصّف فضاء البحث كل خطوة لكنه يتطلب بيانات مُرتَّبة','الخطي يحتاج بيانات مُرتَّبة والثنائي لا','لا فرق بينهما في الأداء'],
+   optionsEn:['Linear is always faster','Binary halves the search space each step but requires sorted data','Linear requires sorted data, Binary does not','There is no performance difference'],
+   correct:1, explain:'البحث الخطي يفحص كل عنصر واحدًا تلو الآخر (بسيط لكنه بطيء). البحث الثنائي يُنصّف فضاء البحث كل خطوة (أسرع بكثير) لكنه يتطلب بيانات مُرتَّبة.', explainEn:'Linear Search checks each element one by one (simple, slow). Binary Search halves the search space each step (much faster) but requires sorted data.'},
+  {type:'tf', prompt:'يُقاس تعقيد الزمن بالثواني الفعلية (wall-clock) التي تستغرقها الخوارزمية على جهاز معين.', promptEn:'Time complexity is measured in actual wall-clock seconds an algorithm takes on a given machine.',
+   correct:false, explain:'خاطئ. يُقاس الزمن بدلالة حجم المدخلات، لا بالثواني الفعلية — وهذا ما يجعل المقارنة مستقلة عن العتاد. المحاضرة القادمة تُشكّل هذا رسميًا بالتدوين التقريبي.', explainEn:'False. Time is measured in terms of input size, not wall-clock seconds — which makes comparison hardware-independent. The next lecture formalizes this with asymptotic notation.'},
+  {type:'mcq', prompt:'في مثال المحاضرة: خوارزمية تستغرق ثانية واحدة على 100 عنصر — ماذا قد يحدث لها على 10,000 عنصر؟', promptEn:'In the lecture\'s example: an algorithm takes 1 second on 100 items — what might happen on 10,000 items?',
+   options:['10,000 ثانية — أو 14 ثانية فقط، حسب فئة تعقيد الزمن','10 ثوانٍ دائمًا لأي خوارزمية','نفس الثانية تمامًا','لا يمكن تشغيلها على 10,000 عنصر'],
+   optionsEn:['10,000 seconds — or just 14 seconds, depending on its time complexity class','Always exactly 10 seconds','Exactly the same 1 second','It cannot run on 10,000 items'],
+   correct:0, explain:'مثال المحاضرة: قد تستغرق 10,000 ثانية على 10,000 عنصر — أو 14 ثانية فقط. الفرق يكمن في فئة تعقيد الزمن الخاصة بها.', explainEn:'The lecture\'s example: it might take 10,000 seconds on 10,000 items — or just 14 seconds. The difference lies in its time complexity class.'},
+  {type:'multi', prompt:'أي مما يلي من مكونات تعقيد المساحة الثلاثة؟ (اختر كل ما ينطبق)', promptEn:'Which of the following are components of space complexity? (select all)',
+   options:['تخزين المدخلات','الذاكرة المساعدة (مثل المصفوفات المؤقتة)','المتغيرات المؤقتة (عدّادات ومؤشرات وقيم وسيطة)','سرعة معالج الجهاز'],
+   optionsEn:['Input storage','Auxiliary memory (e.g., temporary arrays)','Temporary variables (counters, pointers, intermediate values)','The machine\'s processor speed'],
+   correctSet:[0,1,2], explain:'تعقيد المساحة = تخزين المدخلات + الذاكرة المساعدة + المتغيرات المؤقتة. سرعة المعالج تخص الزمن لا المساحة، وهي أصلاً غير جزء من التعقيد.', explainEn:'Space complexity = input storage + auxiliary memory + temporary variables. Processor speed concerns time, not space — and is not part of complexity anyway.'},
+  {type:'mcq', prompt:'وفقًا لشريحة حجم المدخلات، ماذا يحدث عند مليون (1M) عنصر؟', promptEn:'Per the input-size slide, what happens at 1M (large dataset) scale?',
+   options:['كل الخوارزميات تصبح فورية','الخوارزمية سيئة الاختيار قد تستغرق ساعات — أو أيامًا — لإكمال العمل','لا يمكن تحليل الخوارزميات عندها','الفروق بين الخوارزميات بالكاد تُلاحَظ'],
+   optionsEn:['All algorithms become instant','A poorly chosen algorithm may take hours — or days — to complete','Algorithms cannot be analyzed at that scale','Differences between algorithms are barely noticeable'],
+   correct:1, explain:'عند مليون عنصر، الخوارزمية سيئة الاختيار قد تستغرق ساعات أو أيامًا. أما \"الفروق بالكاد تُلاحَظ\" فتصف مجموعة البيانات الصغيرة (100 عنصر).', explainEn:'At 1M items, a poorly chosen algorithm may take hours or days. “Differences are barely noticeable” describes the small dataset (100 items).'},
+  {type:'mcq', prompt:'ما خلاصة المحاضرة عن توقيت تحليل الخوارزميات؟', promptEn:'What is the lecture\'s conclusion about WHEN to analyze algorithms?',
+   options:['بعد النشر في الإنتاج مباشرة','عندما يشتكي المستخدمون فقط','قبل نشرها — وليس بعد انهيارها في الإنتاج','التحليل غير ضروري أبدًا'],
+   optionsEn:['Immediately after deploying to production','Only when users complain','Before deploying them — not after they crash in production','Analysis is never necessary'],
+   correct:2, explain:'\"لهذا نحلل الخوارزميات قبل نشرها — وليس بعد أن تنهار في الإنتاج.\" حجم المدخلات هو الاختبار الضاغط الأقصى.', explainEn:'“This is why we analyze algorithms before deploying them — not after they crash in production.” Input size is the ultimate stress test.'},
+  {type:'mcq', prompt:'أي مثال استخدمته المحاضرة لتوضيح لماذا الكفاءة الخوارزمية غير قابلة للتفاوض في الأنظمة الحديثة؟', promptEn:'Which example did the lecture use to show why algorithmic efficiency is non-negotiable in modern systems?',
+   options:['محركات البحث: مليارات الاستعلامات يوميًا تتطلب نتائج شبه فورية','الحاسبة: عملية جمع واحد','دفتر العناوين الورقي','المصباح الكهربائي'],
+   optionsEn:['Search engines: billions of queries per day require near-instant results','A calculator: a single addition','A paper address book','An electric lamp'],
+   correct:0, explain:'من أمثلة المحاضرة: محركات البحث (مليارات الاستعلامات يوميًا)، الذكاء الاصطناعي، أنظمة الملاحة، وأنظمة التوصية. الخوارزمية سيئة التصميم تصبح عنق زجاجة عند ملايين المستخدمين.', explainEn:'Lecture examples: search engines (billions of daily queries), AI, navigation systems, and recommendation systems. A poorly designed algorithm becomes a bottleneck at millions of users.'},
+  {type:'mcq', prompt:'في خريطة الكورس، ما موضوع المرحلة 03؟', promptEn:'In the course roadmap, what is topic 03?',
+   options:['البرمجة الديناميكية','فرّق تَسُد (Divide and Conquer)','خوارزميات الرسوم البيانية','استراتيجيات متقدمة'],
+   optionsEn:['Dynamic Programming','Divide and Conquer','Graph Algorithms','Advanced Strategies'],
+   correct:1, explain:'الترتيب: 01 تقنيات تصميم الخوارزميات، 02 تحليل التعقيد، 03 فرّق تَسُد، 04 الخوارزميات الجشعة، 05 البرمجة الديناميكية، 06 خوارزميات الرسوم، 07 استراتيجيات متقدمة (NP والتقريبات).', explainEn:'Order: 01 Design Techniques, 02 Complexity Analysis, 03 Divide and Conquer, 04 Greedy Algorithms, 05 Dynamic Programming, 06 Graph Algorithms, 07 Advanced Strategies (NP, approximation).'},
+  {type:'mcq', prompt:'ما الموضوع القادم في المحاضرة التالية (COMING UP NEXT)؟', promptEn:'What is the topic of the next lecture (COMING UP NEXT)?',
+   options:['التحليل التقريبي — Big-O وΩ وΘ','تعلم الآلة','قواعد البيانات','شبكات الحاسوب'],
+   optionsEn:['Asymptotic Analysis — Big-O, Ω, and Θ','Machine Learning','Databases','Computer Networks'],
+   correct:0, explain:'القادم: التحليل التقريبي — قياس الكفاءة رياضيًا: Big-O (حدود عليا لمعدلات النمو)، Ω وΘ (حدود دنيا وضيقة)، ومقارنة فئات O(1) وO(log n) وO(n) وO(n²).', explainEn:'Next: Asymptotic Analysis — measuring efficiency mathematically: Big-O (upper bounds on growth rates), Ω and Θ (lower and tight bounds), and comparing O(1), O(log n), O(n), O(n²).'},
+  {type:'tf', prompt:'الهدف من تحليل الخوارزميات هو مجرد إيجاد خوارزمية تعمل — أي حل صحيح يفي بالغرض.', promptEn:'The goal of algorithm analysis is just to find an algorithm that works — any correct solution suffices.',
+   correct:false, explain:'خاطئ. الهدف ليس مجرد إيجاد خوارزمية تعمل — بل إيجاد الأفضل. الكفاءة هي ما يفصل النموذج الأولي العامل عن نظام جاهز للإنتاج.', explainEn:'False. The goal is not just to find an algorithm that works — it is to find the best one. Efficiency separates a working prototype from a production-ready system.'},
+  {type:'mcq', prompt:'ما السؤال الموجِّه الذي تطرحه المحاضرة تمهيدًا للتحليل التقريبي؟', promptEn:'What driving question does the lecture pose to motivate asymptotic analysis?',
+   options:['كيف نقارن الخوارزميات رياضيًا دون تشغيلها على عتاد محدد؟','كيف نشتري حاسوبًا أسرع؟','كيف نكتب كودًا أقل؟','كيف نُخفي الأخطاء عن المستخدمين؟'],
+   optionsEn:['How can we compare algorithms mathematically, without running them on specific hardware?','How do we buy a faster computer?','How do we write less code?','How do we hide bugs from users?'],
+   correct:0, explain:'السؤال: كيف نقارن الخوارزميات رياضيًا، دون تشغيلها على عتاد محدد؟ — وهذا موضوع المحاضرة القادمة (التحليل التقريبي).', explainEn:'The question: how can we compare algorithms mathematically, without running them on specific hardware? — the subject of the next lecture (asymptotic analysis).'},
+  {type:'match', prompt:'طابق كل خطوة من خطوات التصميم الخمس بوصفها الصحيح:', promptEn:'Match each of the five design steps to its correct description:',
+   listA:['Problem Understanding','Design Strategy','Algorithm Development','Correctness Verification','Efficiency Analysis'],
+   listB:['أثبت أو اختبر أن الخوارزمية تنتج نتائج صحيحة','حدِّد المدخلات والمُخرَجات والقيود بوضوح','اختر منهجًا: فرّق تَسُد، جشع، برمجة ديناميكية، إلخ','قيّم تعقيد الزمن والمساحة باستخدام Big-O','اكتب pseudocode أو وصفًا رسميًا للحل'],
+   listBEn:['Prove or test that the algorithm produces correct results','Define inputs, outputs, and constraints clearly','Select an approach: divide-and-conquer, greedy, dynamic programming, etc.','Evaluate time and space complexity using Big-O','Write pseudocode or a formal description of the solution'],
+   correctMap:[1,2,4,0,3],
+   explain:'01 فهم المشكلة = تحديد المدخلات/المُخرَجات/القيود (b)؛ 02 الاستراتيجية = اختيار المنهج (c)؛ 03 التطوير = pseudocode (e)؛ 04 التحقق من الصحة = إثبات/اختبار (a)؛ 05 تحليل الكفاءة = Big-O (d).',
+   explainEn:'01 Understanding = inputs/outputs/constraints (b); 02 Strategy = approach (c); 03 Development = pseudocode (e); 04 Correctness = prove/test (a); 05 Efficiency = Big-O (d).'},
+  {type:'match', prompt:'طابق كل مكون من مكونات تعقيد المساحة بتعريفه الصحيح:', promptEn:'Match each space-complexity component to its correct definition:',
+   listA:['Input Storage','Auxiliary Memory','Temporary Variables'],
+   listB:['عدّادات ومؤشرات وقيم وسيطة تُستخدم أثناء الحساب','الذاكرة اللازمة لحفظ بيانات المدخلات نفسها','مساحة إضافية تُخصَّص فوق المدخلات (مثل المصفوفات المؤقتة)'],
+   listBEn:['Counters, pointers, and intermediate values used during computation','Memory needed to hold the input data itself','Extra space allocated beyond the input (e.g., temporary arrays)'],
+   correctMap:[1,2,0],
+   explain:'تخزين المدخلات = حفظ البيانات نفسها (b)؛ الذاكرة المساعدة = مساحة إضافية فوق المدخلات (c)؛ المتغيرات المؤقتة = عدّادات ومؤشرات وقيم وسيطة (a).',
+   explainEn:'Input storage = holding the data itself (b); Auxiliary memory = extra space beyond input (c); Temporary variables = counters/pointers/intermediate values (a).'}
+];
+
+let userAnswers = new Array(QUIZ.length).fill(null);
+let checked = new Array(QUIZ.length).fill(false);
+let score = 0;
+const TYPE_LABELS = { ar: {mcq:'اختيار من متعدد', tf:'صح / خطأ', multi:'اختيار متعدد الإجابات', fill:'إكمال الفراغ', match:'مطابقة قوائم'}, en: {mcq:'Multiple Choice', tf:'True / False', multi:'Multiple Select', fill:'Fill in the Blank', match:'Match the Lists'} };
+
+function renderQuiz(preserveState){
+  const c = document.getElementById('quizContainer');
+  c.innerHTML = '';
+  document.getElementById('scoreTotal').textContent = QUIZ.length;
+  QUIZ.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'q-card'; card.id = 'q-'+qi;
+    const typeLabel = TYPE_LABELS[QUIZ_LANG][q.type];
+    const prompt = (QUIZ_LANG === 'en' && q.promptEn) ? q.promptEn : q.prompt;
+    let optsHtml = '';
+    if(q.type === 'mcq'){
+      const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+      optsHtml = '<div class="opt-list">' + options.map((opt,oi)=>`<label class="opt" id="opt-${qi}-${oi}"><input type="radio" name="q${qi}" value="${oi}" onchange="selectAnswer(${qi}, ${oi})"><span>${opt}</span></label>`).join('') + '</div>';
+    } else if(q.type === 'tf'){
+      const trueLabel = QUIZ_LANG === 'en' ? '✅ True' : '✅ صح (True)';
+      const falseLabel = QUIZ_LANG === 'en' ? '❌ False' : '❌ خطأ (False)';
+      optsHtml = `<div class="opt-list"><label class="opt" id="opt-${qi}-1"><input type="radio" name="q${qi}" value="true" onchange="selectAnswer(${qi}, true)"><span>${trueLabel}</span></label><label class="opt" id="opt-${qi}-0"><input type="radio" name="q${qi}" value="false" onchange="selectAnswer(${qi}, false)"><span>${falseLabel}</span></label></div>`;
+    } else if(q.type === 'multi'){
+      const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+      optsHtml = '<div class="opt-list">' + options.map((opt,oi)=>`<label class="opt" id="opt-${qi}-${oi}"><input type="checkbox" name="q${qi}" value="${oi}" onchange="toggleMulti(${qi}, ${oi})"><span>${opt}</span></label>`).join('') + '</div>';
+    } else if(q.type === 'fill'){
+      const placeholder = QUIZ_LANG === 'en' ? 'Type your answer here…' : 'اكتب إجابتك هنا…';
+      optsHtml = `<input type="text" class="fill-input" id="fill-${qi}" placeholder="${placeholder}" oninput="userAnswers[${qi}] = this.value; document.getElementById('checkbtn-${qi}').disabled = !this.value.trim();">`;
+    } else if(q.type === 'match'){
+      const listA = q.listA;
+      const listB = (QUIZ_LANG === 'en' && q.listBEn) ? q.listBEn : q.listB;
+      const letters = 'abcdefgh';
+      optsHtml = '<div class="match-wrap">' + listA.map((a,ai)=>{
+        const opts = listB.map((b,bi)=>`<option value="${bi}">${letters[bi]}) ${b}</option>`).join('');
+        return `<div class="match-row" id="mrow-${qi}-${ai}"><div class="match-a"><b>${ai+1}.</b> ${a}</div><select id="msel-${qi}-${ai}" onchange="selectMatch(${qi})"><option value="" disabled selected>${QUIZ_LANG==='en'?'Choose a match…':'اختر التطابق…'}</option>${opts}</select></div>`;
+      }).join('') + '</div>';
+    }
+    const checkLabel = QUIZ_LANG === 'en' ? 'Check Answer' : 'تحقق من الإجابة';
+    const qLabel = QUIZ_LANG === 'en' ? 'Question' : 'سؤال';
+    const needsDisable = (q.type==='fill' || q.type==='match');
+    card.innerHTML = `<div class="q-meta"><span class="q-type-tag">${qLabel} ${qi+1} · ${typeLabel}</span></div><div class="q-prompt">${prompt}</div>${optsHtml}<button class="check-btn" id="checkbtn-${qi}" onclick="checkAnswer(${qi})" ${needsDisable ? 'disabled':''}>${checkLabel}</button><div class="q-feedback" id="feedback-${qi}"></div>`;
+    c.appendChild(card);
+  });
+  if(!preserveState){ userAnswers = new Array(QUIZ.length).fill(null); checked = new Array(QUIZ.length).fill(false); score = 0; }
+  updateScoreBar();
+  document.getElementById('finalScore').classList.remove('show');
+}
+function selectAnswer(qi, val){ userAnswers[qi] = val; }
+function toggleMulti(qi, oi){
+  if(!Array.isArray(userAnswers[qi])) userAnswers[qi] = [];
+  const idx = userAnswers[qi].indexOf(oi);
+  if(idx === -1) userAnswers[qi].push(oi); else userAnswers[qi].splice(idx,1);
+}
+function selectMatch(qi){
+  const q = QUIZ[qi];
+  const sels = q.listA.map((_,ai)=>document.getElementById(`msel-${qi}-${ai}`).value);
+  const allFilled = sels.every(v => v !== '');
+  userAnswers[qi] = sels.map(v=>Number(v));
+  document.getElementById('checkbtn-'+qi).disabled = !allFilled;
+}
+function checkAnswer(qi){
+  if(checked[qi]) return;
+  const q = QUIZ[qi];
+  let isCorrect = false;
+  const fb = document.getElementById('feedback-'+qi);
+  const explain = (QUIZ_LANG === 'en' && q.explainEn) ? q.explainEn : q.explain;
+  if(q.type === 'mcq'){
+    const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+    if(userAnswers[qi] === null){ alert(QUIZ_LANG==='en' ? 'Please choose an answer first' : 'من فضلك اختر إجابة أولًا'); return; }
+    isCorrect = Number(userAnswers[qi]) === q.correct;
+    for(let i=0;i<options.length;i++){ const el = document.getElementById(`opt-${qi}-${i}`); if(i === q.correct) el.classList.add('correct-flash'); else if(i === Number(userAnswers[qi])) el.classList.add('wrong-flash'); }
+  } else if(q.type === 'tf'){
+    if(userAnswers[qi] === null){ alert(QUIZ_LANG==='en' ? 'Please choose an answer first' : 'من فضلك اختر إجابة أولًا'); return; }
+    const chosen = (userAnswers[qi] === true || userAnswers[qi] === 'true');
+    isCorrect = chosen === q.correct;
+    document.getElementById(q.correct ? `opt-${qi}-1` : `opt-${qi}-0`).classList.add('correct-flash');
+    if(!isCorrect) document.getElementById(q.correct ? `opt-${qi}-0` : `opt-${qi}-1`).classList.add('wrong-flash');
+  } else if(q.type === 'multi'){
+    const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+    const chosen = Array.isArray(userAnswers[qi]) ? userAnswers[qi].slice().sort() : [];
+    const correctSet = q.correctSet.slice().sort();
+    isCorrect = chosen.length === correctSet.length && chosen.every((v,i)=>v===correctSet[i]);
+    for(let i=0;i<options.length;i++){ const el = document.getElementById(`opt-${qi}-${i}`); if(q.correctSet.includes(i)) el.classList.add('correct-flash'); else if(chosen.includes(i)) el.classList.add('wrong-flash'); }
+  } else if(q.type === 'fill'){
+    const val = (userAnswers[qi] || '').trim().toLowerCase();
+    isCorrect = q.accept.some(a => a.toLowerCase() === val || val.includes(a.toLowerCase()));
+    document.getElementById('fill-'+qi).style.borderColor = isCorrect ? 'var(--ok)' : 'var(--bad)';
+  } else if(q.type === 'match'){
+    const chosen = userAnswers[qi] || [];
+    isCorrect = chosen.length === q.correctMap.length && chosen.every((v,i)=>v===q.correctMap[i]);
+    q.listA.forEach((_,ai)=>{
+      const row = document.getElementById(`mrow-${qi}-${ai}`);
+      document.getElementById(`msel-${qi}-${ai}`).disabled = true;
+      if(chosen[ai] === q.correctMap[ai]) row.classList.add('correct-flash'); else row.classList.add('wrong-flash');
+    });
+  }
+  checked[qi] = true;
+  if(isCorrect) score++;
+  fb.className = 'q-feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+  const correctTag = QUIZ_LANG==='en' ? '✅ <b>Correct!</b> ' : '✅ <b>إجابة صحيحة!</b> ';
+  const wrongTag = QUIZ_LANG==='en' ? '❌ <b>Not quite.</b> ' : '❌ <b>إجابة غير صحيحة.</b> ';
+  fb.innerHTML = (isCorrect ? correctTag : wrongTag) + explain;
+  document.getElementById('checkbtn-'+qi).disabled = true;
+  document.querySelectorAll(`#q-${qi} input`).forEach(inp => inp.disabled = true);
+  updateScoreBar();
+  if(checked.every(Boolean)) showFinalScore();
+}
+function updateScoreBar(){
+  document.getElementById('scoreNow').textContent = score;
+  const answered = checked.filter(Boolean).length;
+  document.getElementById('quizBarFill').style.width = (QUIZ.length ? (answered / QUIZ.length) * 100 : 0) + '%';
+}
+function showFinalScore(){
+  const el = document.getElementById('finalScore');
+  const pct = Math.round((score/QUIZ.length)*100);
+  document.getElementById('finalScoreText').textContent = `${score} / ${QUIZ.length} (${pct}%)`;
+  let msg = '';
+  if(QUIZ_LANG === 'en'){
+    if(pct >= 85) msg = 'Excellent! You are fully ready for both lectures. 🎉';
+    else if(pct >= 60) msg = 'Good! Review the questions you missed via the Full Explanation section.';
+    else msg = 'It is recommended to revisit the Full Explanation and 3 Levels sections before trying again.';
+  } else {
+    if(pct >= 85) msg = 'ممتاز! أنت جاهز تمامًا للمحاضرتين. 🎉';
+    else if(pct >= 60) msg = 'جيد! راجع الأسئلة التي أخطأت فيها من قسم الشرح الكامل.';
+    else msg = 'يُنصح بمراجعة قسمي الشرح الكامل و3 مستويات قبل إعادة المحاولة.';
+  }
+  document.getElementById('finalScoreMsg').textContent = msg;
+  el.classList.add('show');
+}
+function resetQuiz(){
+  userAnswers = new Array(QUIZ.length).fill(null);
+  checked = new Array(QUIZ.length).fill(false);
+  score = 0;
+  document.getElementById('finalScore').classList.remove('show');
+  renderQuiz(true);
+  document.getElementById('quiz').scrollIntoView({behavior:'smooth'});
+}
+renderQuiz(false);
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>

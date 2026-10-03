@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مرجع المراجعة | Software Testing Course (Lectures 3 &amp; 4)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e16; --card:#121a2b; --card2:#0f1524; --border:#212b40; --border-soft:#1a2336;
+    --text:#e7ecf5; --text-dim:#93a1bd; --text-faint:#5c6a89; --accent:#38bdf8; --accent-soft:#38bdf822;
+    --c-qa:#38bdf8; --c-qc:#34d399; --c-static:#a78bfa; --c-dynamic:#fb923c; --c-warn:#f87171; --c-gold:#fbbf24;
+    --ok:#34d399; --bad:#f87171; --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{margin:0; background:radial-gradient(1200px 600px at 85% -10%, #12203a55, transparent 60%), radial-gradient(900px 500px at -10% 20%, #1a123655, transparent 55%), var(--bg); color:var(--text); font-family:'Tajawal', sans-serif; line-height:1.75;}
+  html[dir="ltr"] body{font-family:'Fira Code','Tajawal',sans-serif;}
+  code, .mono, .eq, .term-en{font-family:'Fira Code', monospace; direction:ltr; unicode-bidi:isolate;}
+  h1,h2,h3,h4{font-weight:800; margin:0 0 .5em;}
+  p{margin:0 0 1em; color:var(--text);}
+  .container{max-width:1080px; margin:0 auto; padding:0 20px;}
+  .lang-toggle{position:fixed; top:16px; z-index:200; inset-inline-end:16px; display:flex; background:#0d1524ee; border:1px solid var(--border); border-radius:999px; padding:4px; backdrop-filter:blur(8px); box-shadow:0 4px 18px #00000055;}
+  .lang-toggle button{border:none; background:transparent; color:var(--text-dim); font-family:'Fira Code',monospace; font-weight:600; font-size:.78rem; padding:7px 14px; border-radius:999px; cursor:pointer;}
+  .lang-toggle button.active{background:var(--accent); color:#04121c;}
+  .hero{position:relative; padding:70px 0 50px; overflow:hidden; border-bottom:1px solid var(--border-soft);}
+  .hero-bg{position:absolute; inset:0; opacity:.3; pointer-events:none;}
+  .hero .kicker{display:inline-block; font-family:'Fira Code',monospace; font-size:.78rem; letter-spacing:.12em; color:var(--accent); background:var(--accent-soft); border:1px solid #38bdf844; padding:5px 12px; border-radius:999px; margin-bottom:18px;}
+  .hero h1{font-size:2.3rem; line-height:1.25; max-width:800px;}
+  .hero h1 .glow{color:var(--accent); text-shadow:0 0 30px #38bdf866;}
+  .hero p.sub{font-size:1.05rem; color:var(--text-dim); max-width:660px;}
+  @media(max-width:640px){ .hero h1{font-size:1.6rem;} .lang-toggle{top:10px;} }
+  .nav-wrap{position:sticky; top:0; z-index:50; background:#0a0e16dd; backdrop-filter:blur(10px); border-bottom:1px solid var(--border-soft);}
+  .nav-scroll{display:flex; gap:6px; overflow-x:auto; padding:10px 20px; max-width:1080px; margin:0 auto; scrollbar-width:none;}
+  .nav-scroll::-webkit-scrollbar{display:none;}
+  .nav-scroll a{flex:none; white-space:nowrap; font-size:.84rem; font-weight:500; color:var(--text-dim); text-decoration:none; padding:8px 14px; border-radius:999px; border:1px solid transparent;}
+  .nav-scroll a:hover{color:var(--text); border-color:var(--border);}
+  .nav-scroll a.active{color:#04121c; background:var(--accent); font-weight:700;}
+  section{padding:56px 0; border-bottom:1px solid var(--border-soft);}
+  section:last-of-type{border-bottom:none;}
+  .eyebrow{font-family:'Fira Code',monospace; font-size:.75rem; color:var(--accent); letter-spacing:.1em; margin-bottom:8px; display:block;}
+  section > .container > h2{font-size:1.65rem; margin-bottom:.25em;}
+  section > .container > p.lead{color:var(--text-dim); max-width:720px; margin-bottom:2em; font-size:1.02rem;}
+  .part-divider{display:flex; align-items:center; gap:14px; margin:36px 0 20px;}
+  .part-divider:first-child{margin-top:0;}
+  .part-divider .pd-badge{font-family:'Fira Code',monospace; font-size:.78rem; font-weight:700; padding:6px 14px; border-radius:999px; white-space:nowrap;}
+  .pd-l1{color:var(--c-qa); background:#38bdf81a; border:1px solid #38bdf855;}
+  .pd-l2{color:var(--c-dynamic); background:#fb923c1a; border:1px solid #fb923c55;}
+  .part-divider .pd-line{height:1px; background:var(--border); flex:1;}
+  .part-divider h3{margin:0; font-size:1.2rem;}
+  .grid{display:grid; gap:16px;}
+  .grid-2{grid-template-columns:repeat(2,1fr);} .grid-3{grid-template-columns:repeat(3,1fr);} .grid-4{grid-template-columns:repeat(4,1fr);}
+  @media(max-width:860px){ .grid-2,.grid-3,.grid-4{grid-template-columns:1fr;} }
+  .card{background:linear-gradient(180deg, var(--card), var(--card2)); border:1px solid var(--border); border-radius:var(--radius); padding:22px;}
+  .card h3{font-size:1.08rem; margin-bottom:.4em;}
+  .card h3 .num{color:var(--accent); font-family:'Fira Code',monospace; margin-left:6px;}
+  .card.tinted{border-color:#38bdf844; background:linear-gradient(180deg,#0f1a2c,#0d1524);}
+  .badge{display:inline-flex; align-items:center; font-size:.72rem; font-weight:700; font-family:'Fira Code',monospace; padding:3px 10px; border-radius:999px;}
+  .b-qa{color:var(--c-qa); background:#38bdf81a; border:1px solid #38bdf855;}
+  .b-qc{color:var(--c-qc); background:#34d3991a; border:1px solid #34d39955;}
+  .b-static{color:var(--c-static); background:#a78bfa1a; border:1px solid #a78bfa55;}
+  .b-dynamic{color:var(--c-dynamic); background:#fb923c1a; border:1px solid #fb923c55;}
+  .b-warn{color:var(--c-warn); background:#f871711a; border:1px solid #f8717155;}
+  .b-gold{color:var(--c-gold); background:#fbbf241a; border:1px solid #fbbf2455;}
+  pre{background:#080b12; border:1px solid var(--border); border-radius:10px; padding:16px 18px; overflow-x:auto; direction:ltr; text-align:left; font-family:'Fira Code',monospace; font-size:.86rem; color:#c9e6ff; margin:12px 0; line-height:1.6;}
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:.94rem;}
+  th,td{padding:10px 12px; text-align:start; border-bottom:1px solid var(--border-soft);}
+  th{color:var(--accent); font-family:'Fira Code',monospace; font-size:.76rem; border-bottom:1px solid var(--border);}
+  tr:hover td{background:#ffffff05;}
+  .note{border-radius:10px; border:1px solid #fbbf2444; background:#fbbf240d; padding:14px 16px; font-size:.94rem; color:#f3e2b0;}
+  .note.good{border-color:#34d39944; background:#34d3990d; color:#bdf3da;}
+  .note.info{border-color:#38bdf844; background:#38bdf80d; color:#bfe6fb;}
+  .note.warn{border-color:#f8717144; background:#f871710d; color:#fbd7d7;}
+  .diagram-block{border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:22px; background:var(--card);}
+  .diagram-head{padding:16px 20px; border-bottom:1px solid var(--border-soft); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;}
+  .diagram-head h3{margin:0;}
+  .diagram-body{padding:20px;}
+  .flow-wrap{display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap; margin:16px 0; direction:ltr;}
+  .flow-box{border:1px solid var(--border); background:#0d1524; border-radius:10px; padding:14px 18px; text-align:center; font-weight:700; min-width:130px;}
+  .flow-box small{display:block; font-weight:400; color:var(--text-faint); margin-top:4px; font-size:.78rem;}
+  .flow-arrow{font-size:1.4rem; color:var(--text-faint);}
+  .tree-wrap{display:flex; flex-direction:column; align-items:center; gap:16px; margin:18px 0;}
+  .tree-root{background:var(--c-gold); color:#04121c; font-weight:800; padding:10px 22px; border-radius:999px;}
+  .tree-branches{display:flex; gap:40px; flex-wrap:wrap; justify-content:center;}
+  .tree-branch{display:flex; flex-direction:column; align-items:center; gap:10px;}
+  .tree-branch-label{font-weight:800; padding:8px 18px; border-radius:999px; font-family:'Fira Code',monospace; font-size:.85rem;}
+  .tree-leaves{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:280px;}
+  .tree-leaf{background:#0d1524; border:1px solid var(--border); border-radius:8px; padding:6px 12px; font-size:.82rem; color:var(--text-dim);}
+  .level-tabs{display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;}
+  .level-tab{padding:9px 16px; border-radius:10px; border:1px solid var(--border); background:var(--card2); color:var(--text-dim); cursor:pointer; font-family:'Tajawal',sans-serif; font-weight:700; font-size:.9rem;}
+  .level-tab.active{background:var(--accent); color:#04121c; border-color:var(--accent);}
+  .level-panel{display:none;} .level-panel.active{display:block;}
+  .quickref-list{list-style:none; padding:0; margin:0; font-family:'Fira Code',monospace; direction:ltr; text-align:left;}
+  .quickref-list li{padding:10px 14px; margin-bottom:6px; border-radius:8px; background:#0d1524; border:1px solid var(--border-soft); font-size:.85rem; color:#d7e6f7;}
+  .quiz-progress{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 18px; gap:14px; flex-wrap:wrap;}
+  .quiz-score{font-family:'Fira Code',monospace; font-weight:600; color:var(--accent); font-size:1.05rem;}
+  .quiz-bar{flex:1; min-width:140px; height:8px; border-radius:99px; background:#1a2336; overflow:hidden;}
+  .quiz-bar-fill{height:100%; width:0%; background:linear-gradient(90deg,#38bdf8,#34d399); transition:width .3s;}
+  .q-card{border:1px solid var(--border); background:var(--card); border-radius:var(--radius); padding:20px 22px; margin-bottom:16px;}
+  .q-meta{margin-bottom:10px;}
+  .q-type-tag{font-family:'Fira Code',monospace; font-size:.7rem; color:var(--text-faint); border:1px solid var(--border); padding:2px 9px; border-radius:999px;}
+  .q-prompt{font-weight:700; font-size:1.02rem; margin-bottom:14px;}
+  .opt-list{display:flex; flex-direction:column; gap:8px;}
+  .opt{display:flex; align-items:center; gap:10px; padding:11px 14px; border-radius:10px; border:1px solid var(--border); background:var(--card2); cursor:pointer; font-size:.95rem;}
+  .opt:hover{border-color:#38bdf866;}
+  .opt input{accent-color:var(--accent); width:16px; height:16px; flex:none;}
+  .opt.correct-flash{border-color:var(--ok); background:#34d3991a;}
+  .opt.wrong-flash{border-color:var(--bad); background:#f871711a;}
+  .fill-input{width:100%; max-width:320px; background:#0d1524; border:1px solid var(--border); border-radius:9px; padding:11px 14px; color:var(--text); font-family:'Fira Code',monospace; font-size:.95rem; direction:ltr; text-align:left;}
+  .fill-input:focus{outline:none; border-color:var(--accent);}
+  .check-btn{margin-top:14px; background:var(--accent); color:#04121c; border:none; padding:9px 20px; border-radius:9px; font-weight:700; cursor:pointer; font-family:'Tajawal',sans-serif;}
+  .check-btn:disabled{opacity:.5; cursor:default;}
+  .q-feedback{margin-top:12px; padding:12px 14px; border-radius:10px; font-size:.9rem; display:none;}
+  .q-feedback.show{display:block;}
+  .q-feedback.correct{background:#34d3991a; border:1px solid #34d39955; color:#c8f5e2;}
+  .q-feedback.incorrect{background:#f871711a; border:1px solid #f8717155; color:#fbd7d7;}
+  .final-score{text-align:center; padding:30px 20px; border-radius:var(--radius); border:1px solid var(--accent); background:linear-gradient(180deg,#0f1a2c,#0d1524); margin-top:20px; display:none;}
+  .final-score.show{display:block;}
+  .final-score .big{font-size:2.4rem; font-weight:800; color:var(--accent); font-family:'Fira Code',monospace;}
+  .reset-btn{margin-top:14px; background:transparent; border:1px solid var(--border); color:var(--text); padding:9px 20px; border-radius:9px; cursor:pointer; font-family:'Tajawal',sans-serif; font-weight:700;}
+  .match-wrap{display:flex; flex-direction:column; gap:10px;}
+  .match-row{display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:10px; border:1px solid var(--border); background:var(--card2); flex-wrap:wrap;}
+  .match-row .match-a{flex:1; min-width:160px; font-size:.95rem;}
+  .match-row select{background:#0d1524; color:var(--text); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-family:'Tajawal',sans-serif; font-size:.88rem; min-width:220px; max-width:100%;}
+  .match-row select:focus{outline:none; border-color:var(--accent);}
+  .match-row.correct-flash{border-color:var(--ok); background:#34d3991a;}
+  .match-row.wrong-flash{border-color:var(--bad); background:#f871711a;}
+  .tip-item, .mistake-item{display:flex; gap:12px; padding:14px 0; border-top:1px solid var(--border-soft);}
+  .tip-item:first-child, .mistake-item:first-child{border-top:none;}
+  .tip-icon, .mistake-icon{flex:none; font-size:1.2rem;}
+  footer{padding:30px 0 60px; text-align:center; color:var(--text-faint); font-size:.85rem;}
+</style>
+</head>
+<body>
+
+<div class="lang-toggle">
+  <button id="btnAr" class="active" onclick="setLang('ar')">AR · عربي</button>
+  <button id="btnEn" onclick="setLang('en')">EN</button>
+</div>
+
+<header class="hero">
+  <svg class="hero-bg" viewBox="0 0 1080 260" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="300" cy="90" r="8" fill="#38bdf8"/><circle cx="360" cy="70" r="8" fill="#38bdf8"/>
+    <path d="M300,90 L360,70" stroke="#2c3650"/>
+    <rect x="620" y="40" width="120" height="34" rx="6" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+    <rect x="540" y="110" width="100" height="34" rx="6" fill="none" stroke="#a78bfa" stroke-width="1.5"/>
+    <rect x="720" y="110" width="100" height="34" rx="6" fill="none" stroke="#fb923c" stroke-width="1.5"/>
+    <line x1="680" y1="74" x2="590" y2="110" stroke="#2c3650"/><line x1="680" y1="74" x2="770" y2="110" stroke="#2c3650"/>
+  </svg>
+  <div class="container">
+    <span class="kicker">SOFTWARE TESTING COURSE · LECTURES 3 &amp; 4 · COMBINED REVIEW SHEET</span>
+    <h1><span class="i18n" data-en="Test Organization">Test Organization</span> <span class="glow i18n" data-en="and Test Case Design">and Test Case Design</span></h1>
+    <p class="sub i18n" data-en="A complete interactive review covering Lecture 3 (independent testing, degrees of independence, and the categories of test case design techniques) and Lecture 4 (black box techniques: the general process, advantages and disadvantages, and Equivalence Partitioning with the full worked example) — nothing from either lecture skipped.">مرجع مراجعة تفاعلي كامل يغطي المحاضرة 3 (الاختبار المستقل، درجات الاستقلالية، وفئات تقنيات تصميم حالات الاختبار) والمحاضرة 4 (تقنيات الصندوق الأسود: العملية العامة، المزايا والعيوب، وتقسيم الفئات المتكافئة بالمثال المحلول بالكامل) — دون تخطي أي جزء من المحاضرتين.</p>
+  </div>
+</header>
+
+<div class="nav-wrap">
+  <nav class="nav-scroll" id="navScroll">
+    <a href="#overview" class="i18n" data-en="Overview">نظرة عامة</a>
+    <a href="#explain" class="i18n" data-en="Full Explanation">الشرح الكامل</a>
+    <a href="#diagrams" class="i18n" data-en="Diagrams">الرسومات والمخططات</a>
+    <a href="#summary" class="i18n" data-en="Summary Table">جدول التلخيص</a>
+    <a href="#levels" class="i18n" data-en="3 Levels">3 مستويات</a>
+    <a href="#quiz" class="i18n" data-en="Interactive Quiz">الاختبار التفاعلي</a>
+    <a href="#tips" class="i18n" data-en="Pro Tips">نصائح احترافية</a>
+  </nav>
+</div>
+
+<!-- ============ OVERVIEW ============ -->
+<section id="overview">
+  <div class="container">
+    <span class="eyebrow">01 / OVERVIEW</span>
+    <h2 class="i18n" data-en="Combined Overview">نظرة عامة موحّدة</h2>
+    <p class="lead i18n" data-en="Lecture 3 answers two organizational questions: WHO performs the testing (independent testing and its degrees, from developers testing their own code up to external outsourced testers) and HOW test cases are designed (the three categories of test techniques — black box, white box, experience-based — their purpose, the factors guiding the choice between them, and the common characteristics of each category). Lecture 4 zooms into the first category: black box techniques. It walks through the general black box testing process step by step, weighs its advantages and disadvantages, lists its seven named techniques, and then deep-dives into Equivalence Partitioning with a complete worked example (the HR hiring-by-age module) that reduces 100 test cases to just 4.">
+      تجيب المحاضرة 3 عن سؤالين تنظيميين: مَن يقوم بالاختبار؟ (الاختبار المستقل ودرجاته، من المطوّرين الذين يختبرون كودهم أنفسهم حتى المُختبِرين الخارجيين المستعان بهم)، وكيف تُصمَّم حالات الاختبار؟ (الفئات الثلاث لتقنيات الاختبار — الصندوق الأسود والأبيض والتقنيات القائمة على الخبرة — والغرض منها، والعوامل الموجِّهة للاختيار بينها، والخصائص المشتركة لكل فئة). تُغلِّق المحاضرة 4 على الفئة الأولى: تقنيات الصندوق الأسود. تشرح العملية العامة لاختبار الصندوق الأسود خطوة بخطوة، وتوازن مزاياها وعيوبها، وتسرد تقنياتها السبع المسماة، ثم تتعمق في تقسيم الفئات المتكافئة (Equivalence Partitioning) بمثال محلول كامل (وحدة التوظيف حسب العمر في نظام الموارد البشرية) يُقلِّل 100 حالة اختبار إلى 4 فقط.
+    </p>
+    <div class="grid grid-2">
+      <div class="card tinted">
+        <h3 class="i18n" data-en="📘 Lecture 3 — Test Organization &amp; Test Case Design (Part One)">📘 المحاضرة 3 — تنظيم الاختبار وتصميم حالات الاختبار (الجزء الأول)</h3>
+        <ul style="margin:0; padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="Independent Testing — who performs testing tasks">الاختبار المستقل — مَن ينفّذ مهام الاختبار</li>
+          <li class="i18n" data-en="Degrees of independence (from low to high)">درجات الاستقلالية (من الأدنى إلى الأعلى)</li>
+          <li class="i18n" data-en="Benefits &amp; drawbacks of test independence (Assignment No. 3)">فوائد وعيوب الاستقلالية (واجب رقم 3)</li>
+          <li class="i18n" data-en="Independence in Agile development">الاستقلالية في التطوير الرشيق (Agile)</li>
+          <li class="i18n" data-en="Test techniques: Black Box, White Box, Experience-based">تقنيات الاختبار: الصندوق الأسود والأبيض والقائمة على الخبرة</li>
+          <li class="i18n" data-en="Factors in choosing a technique + characteristics of each category">عوامل اختيار التقنية + خصائص كل فئة</li>
+        </ul>
+      </div>
+      <div class="card" style="border-color:#fb923c44;">
+        <h3 class="i18n" data-en="📗 Lecture 4 — Test Case Design Techniques (Part Two): Black Box">📗 المحاضرة 4 — تقنيات تصميم حالات الاختبار (الجزء الثاني): الصندوق الأسود</h3>
+        <ul style="margin:0; padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="Black box testing: based solely on requirements &amp; specifications">اختبار الصندوق الأسود: اعتماد كلي على المتطلبات والمواصفات</li>
+          <li class="i18n" data-en="The general black box testing process (7 steps)">العملية العامة لاختبار الصندوق الأسود (7 خطوات)</li>
+          <li class="i18n" data-en="Disadvantages: exhaustive testing is impossible">العيوب: الاختبار الشامل مستحيل</li>
+          <li class="i18n" data-en="Advantages: efficient &amp; effective test subsets">المزايا: مجموعات اختبار فعّالة وكفوءة</li>
+          <li class="i18n" data-en="The 7 black box techniques">تقنيات الصندوق الأسود السبع</li>
+          <li class="i18n" data-en="Equivalence Partitioning + the HR age example (100 → 4 test cases)">تقسيم الفئات المتكافئة + مثال أعمار التوظيف (من 100 إلى 4 حالات)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FULL EXPLANATION ============ -->
+<section id="explain">
+  <div class="container">
+    <span class="eyebrow">02 / FULL EXPLANATION</span>
+    <h2 class="i18n" data-en="Full Explanation of Every Section">الشرح الكامل لكل قسم</h2>
+    <p class="lead i18n" data-en="Each card covers one part of the lectures in order, without dropping information from the slides.">كل بطاقة تغطي جزءًا من المحاضرتين بالترتيب، دون تجاوز أي معلومة من الشرائح.</p>
+
+    <div class="part-divider"><span class="pd-badge pd-l1">LECTURE 3</span><span class="pd-line"></span><h3 class="i18n" data-en="Test Organization &amp; Test Case Design">تنظيم الاختبار وتصميم حالات الاختبار</h3></div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.1</span> <span class="i18n" data-en="Test Organization — Independent Testing">تنظيم الاختبار — الاختبار المستقل (Independent Testing)</span></h3>
+      <p class="i18n" data-en="Testing tasks may be done by people in a specific testing role, or by people in another role (e.g., customers). The organization of testing — who tests and how independently — directly affects how effective testing is at finding defects."><b>تنظيم الاختبار</b> يتناول مَن ينفّذ مهام الاختبار: قد تُنفَّذ مهام الاختبار بواسطة أشخاص في دور اختبار محدَّد، أو بواسطة أشخاص في دور آخر (مثلًا، العملاء). طريقة تنظيم الاختبار — مَن يختبر ومدى استقلاليته — تؤثر مباشرة في فعالية الاختبار في إيجاد العيوب.</p>
+      <div class="note info"><b class="i18n" data-en="Key idea:">الفكرة المحورية:</b> <span class="i18n" data-en="A certain degree of independence often makes the tester more effective at finding defects due to differences between the author's and the tester's cognitive biases.">درجة معينة من الاستقلالية غالبًا ما تجعل المُختبِر أكثر فعالية في إيجاد العيوب، بسبب الاختلافات بين الانحيازات الذهنية (cognitive biases) لدى مُؤلِّف العمل versus المُختبِر.</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.2</span> <span class="i18n" data-en="Degrees of Independence (from Low to High)">درجات الاستقلالية (من الأدنى إلى الأعلى)</span></h3>
+      <table>
+        <tr><th class="i18n" data-en="Level">المستوى</th><th class="i18n" data-en="Who tests?">مَن يختبر؟</th></tr>
+        <tr><td><b class="i18n" data-en="1 — Lowest (no independence)">1 — الأدنى (بدون استقلالية)</b></td><td class="i18n" data-en="No independent testers; the only form of testing available is developers testing their own code.">لا يوجد مُختبِرون مستقلون؛ الشكل الوحيد المتاح للاختبار هو أن يختبر المطوّرون كودهم بأنفسهم.</td></tr>
+        <tr><td><b>2</b></td><td class="i18n" data-en="Independent developers or testers within the development teams or the project team; this could be developers testing their colleagues' products.">مطوّرون أو مُختبِرون مستقلون داخل فرق التطوير أو فريق المشروع؛ مثلًا مطوّرون يختبرون منتجات زملائهم.</td></tr>
+        <tr><td><b>3</b></td><td class="i18n" data-en="Independent test team or group within the organization, reporting to project management or executive management.">فريق أو مجموعة اختبار مستقلة داخل المنظمة، تُقدِّم تقاريرها لإدارة المشروع أو الإدارة التنفيذية.</td></tr>
+        <tr><td><b>4</b></td><td class="i18n" data-en="Independent testers from the business organization or user community, or with specializations in specific test types such as usability, security, performance, regulatory/compliance, or portability.">مُختبِرون مستقلون من منظمة الأعمال أو مجتمع المستخدمين، أو من ذوي تخصصات في أنواع اختبار محدَّدة مثل قابلية الاستخدام، الأمان، الأداء، الامتثال التنظيمي، أو قابلية النقل.</td></tr>
+        <tr><td><b class="i18n" data-en="5 — Highest">5 — الأعلى</b></td><td class="i18n" data-en="Independent testers external to the organization, either working on-site (in-house) or off-site (outsourcing).">مُختبِرون مستقلون خارجيون عن المنظمة، إما يعملون في الموقع (in-house) أو خارجه (استعانة بمصادر خارجية / outsourcing).</td></tr>
+      </table>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.3</span> <span class="i18n" data-en="Independence: Benefits and Caveats">الاستقلالية: الفوائد والتحفّظات</span></h3>
+      <p class="i18n" data-en="Independence is not, however, a replacement for familiarity, and developers can efficiently find many defects in their own code.">ومع ذلك، الاستقلالية ليست بديلًا عن الألفة (familiarity)، ويمكن للمطوّرين أن يجدوا بكفاءة عيوبًا كثيرة في كودهم الخاص.</p>
+      <div class="note good"><b class="i18n" data-en="Best practice:">أفضل ممارسة:</b> <span class="i18n" data-en="For most types of projects, it is usually best to have multiple test levels, with some of these levels handled by independent testers. Developers should participate in testing, especially at the lower levels, so as to exercise control over the quality of their own work.">لمعظم أنواع المشاريع، يُفضَّل عادةً وجود مستويات اختبار متعددة، بعضها يُنفَّذ بواسطة مُختبِرين مستقلين. يجب أن يشارك المطوّرون في الاختبار، خاصة في المستويات الدنيا، ليُمارسوا سيطرة على جودة أعمالهم الخاصة.</span></div>
+      <p style="margin-top:8px;"><b class="i18n" data-en="Assignment No. 3 (from the slides):">الواجب رقم 3 (من الشرائح):</b> <span class="i18n" data-en="List three benefits &amp; drawbacks of test independence.">عدِّد ثلاث فوائد وعيوب لاستقلالية الاختبار.</span></p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.4</span> <span class="i18n" data-en="Independence in Agile Development">الاستقلالية في التطوير الرشيق (Agile)</span></h3>
+      <p class="i18n" data-en="In Agile development, testers may be part of a development team. In some organizations using Agile methods, these testers may be considered part of a larger independent test team as well. In addition, in such organizations, product owners may perform acceptance testing to validate user stories at the end of each iteration.">في التطوير الرشيق (Agile)، قد يكون المُختبِرون جزءًا من فريق التطوير. في بعض المنظمات التي تستخدم أساليب Agile، قد يُعتبَر هؤلاء المُختبِرون جزءًا أيضًا من فريق اختبار مستقل أكبر. إضافةً إلى ذلك، في هذه المنظمات، قد يقوم مالكو المنتج (Product Owners) باختبار القبول (Acceptance Testing) للتصديق على قصص المستخدم (User Stories) في نهاية كل تكرار (Iteration).</p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.5</span> <span class="i18n" data-en="Test Case Design Techniques — The Three Categories">تقنيات تصميم حالات الاختبار — الفئات الثلاث</span></h3>
+      <p class="i18n" data-en="The purpose of a test technique is to help in identifying test conditions, test cases, and test data. The main categories are:">الغرض من تقنية الاختبار هو المساعدة في تحديد شروط الاختبار (Test Conditions)، وحالات الاختبار (Test Cases)، وبيانات الاختبار (Test Data). الفئات الرئيسية هي:</p>
+      <div class="grid grid-3">
+        <div class="card" style="padding:14px;"><span class="badge b-qa">Black Box</span><p style="color:var(--text-dim); font-size:.88rem; margin-top:8px;" class="i18n" data-en="Derived from requirements, specifications, use cases, user stories — without looking inside the code.">مُشتقّة من المتطلبات والمواصفات وقصص الاستخدام — دون النظر إلى داخل الكود.</p></div>
+        <div class="card" style="padding:14px;"><span class="badge b-static">White Box</span><p style="color:var(--text-dim); font-size:.88rem; margin-top:8px;" class="i18n" data-en="Derived from code, software architecture, detailed design — the internal structure of the software.">مُشتقّة من الكود ومعمارية البرمجية والتصميم التفصيلي — البنية الداخلية للبرمجية.</p></div>
+        <div class="card" style="padding:14px;"><span class="badge b-gold">Experience-based</span><p style="color:var(--text-dim); font-size:.88rem; margin-top:8px;" class="i18n" data-en="Derived from knowledge and experience of testers, developers, users and other stakeholders.">مُشتقّة من معرفة وخبرة المُختبِرين والمطوّرين والمستخدمين وأصحاب المصلحة الآخرين.</p></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">3.6</span> <span class="i18n" data-en="Choosing Which Technique to Use">اختيار التقنية المناسبة</span></h3>
+      <p class="i18n" data-en="The choice of which test techniques to use depends on a number of factors, including:">يعتمد اختيار تقنيات الاختبار المُستخدَمة على عدد من العوامل، بما في ذلك:</p>
+      <div class="grid grid-4">
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Complexity">التعقيد</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Of the component or system.">للمكوّن أو النظام.</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="SDLC Model">نموذج دورة الحياة</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="The software development lifecycle model.">نموذج دورة حياة تطوير البرمجيات.</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Expected Defects">العيوب المتوقعة</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="The types of defects expected in the component or system.">أنواع العيوب المتوقعة في المكوّن أو النظام.</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Requirements">المتطلبات</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Customer or contractual requirements.">متطلبات العميل أو المتطلبات التعاقدية.</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Skills">المهارات</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Tester knowledge and skills.">معرفة ومهارات المُختبِر.</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Documentation">التوثيق</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Available documentation.">التوثيق المتاح.</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Risks &amp; Standards">المخاطر والمعايير</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Risk levels and types; regulatory standards.">مستويات وأنواع المخاطر؛ المعايير التنظيمية.</p></div>
+        <div class="card" style="padding:12px;"><b class="i18n" data-en="Resources">الموارد</b><p style="color:var(--text-dim); font-size:.85rem; margin-top:4px;" class="i18n" data-en="Time, budget and available tools.">الوقت والميزانية والأدوات المتاحة.</p></div>
+      </div>
+      <div class="note info" style="margin-top:10px;"><b class="i18n" data-en="Also note:">لاحظ أيضًا:</b> <span class="i18n" data-en="Some techniques are more applicable to certain situations and test levels; others are applicable to all test levels. When creating test cases, testers generally use a combination of test techniques to achieve the best results from the test effort.">بعض التقنيات أكثر ملاءمة لظروف ومستويات اختبار معينة؛ وأخرى قابلة للتطبيق على جميع مستويات الاختبار. عند إنشاء حالات الاختبار، يستخدم المُختبِرون عمومًا مزيجًا من تقنيات الاختبار لتحقيق أفضل النتائج من جهد الاختبار.</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;">
+      <h3><span class="num">3.7</span> <span class="i18n" data-en="Characteristics of Each Category of Techniques">خصائص كل فئة من التقنيات</span></h3>
+      <table>
+        <tr><th class="i18n" data-en="Category">الفئة</th><th class="i18n" data-en="Common Characteristics">الخصائص المشتركة</th></tr>
+        <tr><td><span class="badge b-qa">Black Box</span></td><td class="i18n" data-en="Test conditions, test cases, and test data are derived from a test basis that may include software requirements, specifications, use cases, and user stories. Test cases may be used to detect gaps between the requirements and the implementation of the requirements, as well as deviations from the requirements. Coverage is measured based on the items tested in the test basis and the technique applied to the test basis.">تُشتقّ شروط الاختبار وحالات الاختبار وبيانات الاختبار من أساس اختبار (Test Basis) قد يشمل متطلبات البرمجيات والمواصفات وقصص الاستخدام وقصص المستخدم. يمكن استخدام حالات الاختبار لاكتشاف الفجوات بين المتطلبات وتنفيذ المتطلبات، وكذلك الانحرافات عن المتطلبات. تُقاس التغطية بناءً على العناصر المُختبَرة في أساس الاختبار والتقنية المُطبَّقة عليه.</td></tr>
+        <tr><td><span class="badge b-static">White Box</span></td><td class="i18n" data-en="Test conditions, test cases, and test data are derived from a test basis that may include code, software architecture, detailed design, or any other source of information regarding the structure of the software. Coverage is measured based on the items tested within a selected structure (e.g., the code or interfaces) and the technique applied to the test basis.">تُشتقّ شروط وحالات وبيانات الاختبار من أساس اختبار قد يشمل الكود، معمارية البرمجية، التصميم التفصيلي، أو أي مصدر آخر للمعلومات حول بنية البرمجية. تُقاس التغطية بناءً على العناصر المُختبَرة داخل بنية مُحدَّدة (مثل الكود أو الواجهات) والتقنية المُطبَّقة على أساس الاختبار.</td></tr>
+        <tr><td><span class="badge b-gold">Experience-based</span></td><td class="i18n" data-en="Test conditions, test cases, and test data are derived from a test basis that may include knowledge and experience of testers, developers, users and other stakeholders.">تُشتقّ شروط وحالات وبيانات الاختبار من أساس اختبار قد يشمل معرفة وخبرة المُختبِرين والمطوّرين والمستخدمين وأصحاب المصلحة الآخرين.</td></tr>
+      </table>
+    </div>
+
+    <div class="part-divider"><span class="pd-badge pd-l2">LECTURE 4</span><span class="pd-line"></span><h3 class="i18n" data-en="Black Box Techniques">تقنيات الصندوق الأسود</h3></div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.1</span> <span class="i18n" data-en="What Is Black Box Testing?">ما هو اختبار الصندوق الأسود؟</span></h3>
+      <p class="i18n" data-en="Black box testing is a strategy in which testing is based solely on the requirements and specifications. The tester does not look at the internal code — the system is treated as an opaque “box” whose behavior is checked against what the specification says it should do."><b>اختبار الصندوق الأسود</b> هو استراتيجية يكون فيها الاختبار مبنيًا فقط على المتطلبات والمواصفات. لا ينظر المُختبِر إلى الكود الداخلي — يُعامَل النظام كـ\"صندوق\" معتم يُفحَص سلوكه مقابل ما تقوله المواصفات أنه يجب أن يفعله.</p>
+      <div class="note info"><b class="i18n" data-en="Note:">ملاحظة:</b> <span class="i18n" data-en="SUT means Software Under Test — i.e., the software being tested.">SUT اختصار لـSoftware Under Test — أي البرمجية الخاضعة للاختبار.</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.2</span> <span class="i18n" data-en="The General Black Box Testing Process">العملية العامة لاختبار الصندوق الأسود</span></h3>
+      <p class="i18n" data-en="The general black box testing process is:">العملية العامة لاختبار الصندوق الأسود هي:</p>
+      <ol style="color:var(--text-dim); padding-inline-start:20px;">
+        <li class="i18n" data-en="The requirements or specifications are analyzed.">تُحلَّل المتطلبات أو المواصفات.</li>
+        <li class="i18n" data-en="Valid inputs are chosen based on the specification to determine that the SUT processes them correctly. Invalid inputs must also be chosen to verify that the SUT detects them and handles them properly.">تُختار مدخلات صالحة بناءً على المواصفة للتأكد من أن البرمجية الخاضعة للاختبار تعالجها بشكل صحيح. ويجب أيضًا اختيار مدخلات غير صالحة للتحقق من أن البرمجية تكتشفها وتتعامل معها بشكل صحيح.</li>
+        <li class="i18n" data-en="Expected outputs for those inputs are determined.">تُحدَّد المُخرَجات المتوقعة لتلك المدخلات.</li>
+        <li class="i18n" data-en="Tests are constructed with the selected inputs.">تُبنى الاختبارات بالمدخلات المُختارة.</li>
+        <li class="i18n" data-en="The tests are run.">تُشغَّل الاختبارات.</li>
+        <li class="i18n" data-en="Actual outputs are compared with the expected outputs.">تُقارَن المُخرَجات الفعلية بالمُخرَجات المتوقعة.</li>
+        <li class="i18n" data-en="A determination is made as to the proper functioning of the SUT.">يُحسم الأمر بشأن الأداء الصحيح للبرمجية الخاضعة للاختبار.</li>
+      </ol>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.3</span> <span class="i18n" data-en="Disadvantages of Black Box Testing">عيوب اختبار الصندوق الأسود</span></h3>
+      <ul style="color:var(--text-dim); padding-inline-start:20px;">
+        <li class="i18n" data-en="To find every defect using black box testing, the tester would have to create every possible combination of input data, both valid and invalid. This exhaustive input testing is almost always impossible.">لإيجاد كل عيب باستخدام اختبار الصندوق الأسود، على المُختبِر إنشاء كل تركيبة ممكنة من بيانات المدخلات، الصالحة وغير الصالحة. هذا الاختبار الشامل للمدخلات مستحيل تقريبًا دائمًا.</li>
+        <li class="i18n" data-en="When using black box testing, the tester can never be sure of how much of the SUT has been tested. No matter how clever or diligent the tester, some execution paths may never be exercised.">عند استخدام اختبار الصندوق الأسود، لا يستطيع المُختبِر أبدًا التأكد من مقدار ما تم اختباره من البرمجية. مهما كان المُختبِر ذكيًا أو مجتهدًا، فقد لا تُمارَس بعض مسارات التنفيذ أبدًا.</li>
+      </ul>
+      <div class="note warn" style="margin-top:8px;"><b class="i18n" data-en="Key Point — the hidden “feature”:">نقطة محورية — الميزة الخفية:</b> <span class="i18n" data-en="Consider a code fragment that checks: if the name is “Lee” AND the employee number is “1234” AND the employment status is “RecentlyTerminatedForCause”, it sends Lee a check for $1,000,000. What is the probability a tester (working only from requirements, with no knowledge of the code) would select a test case to discover this hidden “feature”? Practically zero — this is exactly the kind of defect black box testing can miss.">تأمّل جزء كود يفحص: إذا كان الاسم \"Lee\" ورقم الموظف \"1234\" وحالة التوظيف \"RecentlyTerminatedForCause\"، يُرسل شيكًا لـLee بمليون دولار. ما احتمال أن يختار المُختبِر (العامل من المتطلبات فقط دون معرفة الكود) حالة اختبار تكتشف هذه \"الميزة\" الخفية؟ صفر عمليًا — وهذا بالضبط نوع العيوب الذي قد يفوّته اختبار الصندوق الأسود.</span></div>
+      <pre style="margin-top:10px;">if (name == "Lee" &amp;&amp; employeeNumber == "1234"
+    &amp;&amp; employmentStatus == "RecentlyTerminatedForCause")
+{
+    send Lee a check for $1,000,000;
+}</pre>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.4</span> <span class="i18n" data-en="Advantages of Black Box Testing">مزايا اختبار الصندوق الأسود</span></h3>
+      <p class="i18n" data-en="Even though we can't test everything, formal black box testing directs the tester to choose subsets of tests that are both efficient and effective in finding defects. As such, these subsets will find more defects than a randomly created equivalent number of tests.">رغم أننا لا نستطيع اختبار كل شيء، فإن اختبار الصندوق الأسود الرسمي يوجّه المُختبِر لاختيار مجموعات جزئية من الاختبارات تكون فعّالة (efficient) وكفوءة (effective) في إيجاد العيوب. وبالتالي، ستجد هذه المجموعات عيوبًا أكثر من عدد مكافئ من الاختبارات المُنشأة عشوائيًا.</p>
+      <p style="margin-top:8px;"><b class="i18n" data-en="The seven black box techniques named in the lecture:">تقنيات الصندوق الأسود السبع المذكورة في المحاضرة:</b></p>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:6px;">
+        <span class="badge b-qa">Equivalence Class</span>
+        <span class="badge b-qc">Boundary Value</span>
+        <span class="badge b-static">Decision Table</span>
+        <span class="badge b-dynamic">State-Transition</span>
+        <span class="badge b-gold">Use Case</span>
+        <span class="badge b-warn">Pairwise</span>
+        <span class="badge b-qa">Domain Analysis</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.5</span> <span class="i18n" data-en="Equivalence Partitioning — The Concept">تقسيم الفئات المتكافئة — المفهوم</span></h3>
+      <p class="i18n" data-en="Equivalence partitioning divides data into partitions (also known as equivalence classes) in such a way that all the members of a given partition are expected to be processed in the same way."><b>تقسيم الفئات المتكافئة</b> يقسّم البيانات إلى أقسام (تُعرف أيضًا بالفئات المتكافئة) بحيث يُتوقَّع أن تُعالَج جميع أعضاء القسم الواحد بالطريقة نفسها.</p>
+      <div class="note good"><b class="i18n" data-en="Definition:">التعريف:</b> <span class="i18n" data-en="An equivalence class consists of a set of data that is treated the same by the module or that should produce the same result.">الفئة المتكافئة تتكون من مجموعة بيانات تتعامل معها الوحدة بالطريقة نفسها، أو يُفترض أن تُنتج النتيجة نفسها.</span></div>
+      <p style="margin-top:8px;" class="i18n" data-en="Ranges such as the ones in the example below are called equivalence classes — instead of testing every single value, we test one representative value from each class.">النطاقات مثل المذكورة في المثال أدناه تُسمّى فئات متكافئة — بدلًا من اختبار كل قيمة مفردة، نختبر قيمة مُمثِّلة واحدة من كل فئة.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.6</span> <span class="i18n" data-en="Worked Example — HR Hiring Module by Age">مثال محلول — وحدة التوظيف حسب العمر</span></h3>
+      <p class="i18n" data-en="Consider a module for a human resources system that decides how to process employment applications based on a person's age. The organization's rules are:">لننظر إلى وحدة في نظام موارد بشرية تقرر كيفية معالجة طلبات التوظيف بناءً على عمر الشخص. قواعد المنظمة هي:</p>
+      <table>
+        <tr><th class="i18n" data-en="Age Range (Equivalence Class)">نطاق العمر (الفئة المتكافئة)</th><th class="i18n" data-en="Decision">القرار</th></tr>
+        <tr><td class="mono">0 – 16</td><td class="i18n" data-en="Don't hire">لا يُوظَّف (Don't hire)</td></tr>
+        <tr><td class="mono">16 – 18</td><td class="i18n" data-en="Can hire on a part-time basis only">يمكن توظيفه بدوام جزئي فقط</td></tr>
+        <tr><td class="mono">18 – 55</td><td class="i18n" data-en="Can hire as a full-time employee">يمكن توظيفه بدوام كامل</td></tr>
+        <tr><td class="mono">55 – 99</td><td class="i18n" data-en="Don't hire">لا يُوظَّف (Don't hire)</td></tr>
+      </table>
+      <div class="note warn"><b class="i18n" data-en="The question the lecture poses:">السؤال الذي تطرحه المحاضرة:</b> <span class="i18n" data-en="Should we test the module for the ages 0, 1, 2, 3, ..., 98, 99 — every single value?">هل يجب أن نختبر الوحدة لكل الأعمار 0، 1، 2، 3، ...، 98، 99 — كل قيمة مفردة؟</span></div>
+      <p style="margin-top:8px;" class="i18n" data-en="If we had lots of time (and put aside age repetition and were being paid by the hour) we certainly could — but only if the programmer implemented the module with one <code>if</code> statement per age. In that (bad) case, the fact that any set of tests passes tells us nothing about the next test we could execute: it may pass, it may fail, so we really would need to test each age.">لو كان لدينا وقت كثير (وأغفلنا تكرار الأعمار وكنا نتقاضى بالساعة) لفعلنا ذلك بالتأكيد — لكن فقط لو نفّذ المبرمج الوحدة بعبارة <code>if</code> لكل عمر. في تلك الحالة (السيئة)، حقيقة نجاح أي مجموعة اختبارات لا تخبرنا شيئًا عن الاختبار التالي الذي قد نُنفّذه: قد ينجح وقد يفشل، وبالتالي سنحتاج فعلًا لاختبار كل عمر.</p>
+      <pre style="margin-top:10px;">/* Bad implementation — one if per age */
+If (applicantAge == 0)  hireStatus = "NO";
+If (applicantAge == 1)  hireStatus = "NO";
+...
+If (applicantAge == 16) hireStatus = "PART";
+If (applicantAge == 17) hireStatus = "PART";
+If (applicantAge == 18) hireStatus = "FULL";
+...
+If (applicantAge == 54) hireStatus = "FULL";
+If (applicantAge == 55) hireStatus = "NO";
+...
+If (applicantAge == 99) hireStatus = "NO";
+
+/* Better implementation — ranges */
+If (applicantAge &gt;= 0 &amp;&amp; applicantAge &lt;=16)  hireStatus = "NO";
+If (applicantAge &gt;= 16 &amp;&amp; applicantAge &lt;=18)  hireStatus = "PART";
+If (applicantAge &gt;= 18 &amp;&amp; applicantAge &lt;=55)  hireStatus = "FULL";
+If (applicantAge &gt;= 55 &amp;&amp; applicantAge &lt;=99)  hireStatus = "NO";</pre>
+      <p style="margin-top:8px;" class="i18n" data-en="Luckily, programmers don't write code like that (at least not very often). Given the typical (range-based) implementation, it is clear that for the first requirement we don't have to test 0, 1, 2, ... 14, 15, and 16 — only one value needs to be tested. And which value? Any one within that range is just as good as any other one. The same is true for each of the other ranges.">لحسن الحظ، لا يكتب المبرمجون كودًا كهذا (على الأقل ليس كثيرًا). بناءً على التنفيذ النموذجي (القائم على النطاقات)، من الواضح أنه بالنسبة للمتطلب الأول لا يلزمنا اختبار 0، 1، 2، ... 14، 15، و16 — يلزمنا اختبار قيمة واحدة فقط. وأي قيمة؟ أي قيمة داخل ذلك النطاق لا تختلف عن غيرها. والشيء نفسه ينطبق على كل نطاق آخر.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">4.7</span> <span class="i18n" data-en="The Two Key Properties of Equivalence Classes">الخاصيتان المحوريتان للفئات المتكافئة</span></h3>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px; border-color:#f8717144;">
+          <b class="i18n" data-en="✅ Property 1">✅ الخاصية 1</b>
+          <p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="If one test case in an equivalence class detects a defect, all other test cases in the same equivalence class are likely to detect the same defect.">إذا كشفت حالة اختبار واحدة في فئة متكافئة عن عيب، فمن المُرجَّح أن تكشف جميع حالات الاختبار الأخرى في نفس الفئة عن العيب نفسه.</p>
+        </div>
+        <div class="card" style="padding:14px; border-color:#34d39944;">
+          <b class="i18n" data-en="✅ Property 2">✅ الخاصية 2</b>
+          <p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="If one test case in an equivalence class does not detect a defect, no other test cases in the same equivalence class are likely to detect the defect.">إذا لم تكشف حالة اختبار واحدة في فئة متكافئة عن عيب، فمن غير المُرجَّح أن تكشف حالات الاختبار الأخرى في نفس الفئة عن ذلك العيب.</p>
+        </div>
+      </div>
+      <p style="margin-top:8px;" class="i18n" data-en="Example from the slides: testing <code>Age = 2</code> in the class 0–16 gives “Hire” (a failure — the rule says don't hire). Because of Property 1, this single failing test tells us the whole class is worth investigating — and any value in 0–16 would have exposed the same defect.">مثال من الشرائح: اختبار <code>العمر = 2</code> في فئة 0–16 يعطي \"Hire\" (إخفاق — القاعدة تقول لا يُوظَّف). وبسبب الخاصية 1، تخبرنا حالة الاختبار الفاشلة هذه أن الفئة كلها تستحق الفحص — وأي قيمة داخل 0–16 كانت ستكشف العيب نفسه.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:0;">
+      <h3><span class="num">4.8</span> <span class="i18n" data-en="Steps and Test Case Reduction">الخطوات وتقليل حالات الاختبار</span></h3>
+      <p class="i18n" data-en="How many test cases do we have in the example? Using the equivalence class approach, we have reduced the number of test cases from 100 (testing each age) to four (testing one age in each equivalence class).">كم حالة اختبار لدينا في المثال؟ باستخدام أسلوب الفئات المتكافئة، قلّلنا عدد حالات الاختبار من 100 (اختبار كل عمر) إلى أربع (اختبار عمر واحد في كل فئة متكافئة).</p>
+      <div class="note info"><b class="i18n" data-en="The steps for using equivalence class testing are simple:">خطوات استخدام اختبار الفئات المتكافئة بسيطة:</b> <span class="i18n" data-en="First, identify the equivalence classes. Second, create a test case for each equivalence class. You could create additional test cases for each equivalence class if you have the time and money.">أولًا، حدِّد الفئات المتكافئة. ثانيًا، أنشئ حالة اختبار لكل فئة متكافئة. يمكنك إنشاء حالات اختبار إضافية لكل فئة إن كان لديك الوقت والمال.</span></div>
+    </div>
+  </div>
+</section>
+<!-- ============ DIAGRAMS ============ -->
+<section id="diagrams">
+  <div class="container">
+    <span class="eyebrow">03 / DIAGRAMS</span>
+    <h2 class="i18n" data-en="Explaining the Diagrams">شرح الرسومات والمخططات</h2>
+    <p class="lead i18n" data-en="A precise text description of every diagram in the two lectures, tied to the theory behind it.">وصف نصي دقيق لكل مخطط في المحاضرتين، مرتبط بالنظرية خلفه.</p>
+
+    <div class="diagram-block">
+      <div class="diagram-head"><h3 class="i18n" data-en="👑 Figure 1 — Degrees of Test Independence (Lecture 3, slides 3–5)">👑 الشكل 1 — درجات استقلالية الاختبار (المحاضرة 3، شريحتان 3–5)</h3><span class="badge b-qa">Hierarchy / Ladder</span></div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="A vertical ladder (from bottom = lowest independence, to top = highest) listing the five degrees of independence described in the slides. Each rung is one degree: developers testing their own code (none) → independent developers/testers within the team → an independent test team within the organization reporting to management → specialized independent testers from the business/user community (usability, security, performance, compliance, portability) → fully external independent testers (in-house on-site or outsourced off-site). The visual point: effectiveness at finding defects tends to increase as you climb the ladder, because the tester's cognitive biases differ more and more from the author's — yet the lecture stresses independence is not a replacement for familiarity.">سُلَّم رأسي (من الأسفل = أقل استقلالية، إلى الأعلى = أعلى استقلالية) يسرد الدرجات الخمس للاستقلالية الموصوفة في الشرائح. كل درجة هي مستوى: مطوّرون يختبرون كودهم الخاص (بدون استقلالية) ← مطوّرون/مُختبِرون مستقلون داخل الفريق ← فريق اختبار مستقل داخل المنظمة يتبع الإدارة ← مُختبِرون مستقلون متخصصون من منظمة الأعمال/مجتمع المستخدمين (قابلية الاستخدام، الأمان، الأداء، الامتثال، قابلية النقل) ← مُختبِرون مستقلون خارجيون بالكامل (في الموقع أو استعانة بمصادر خارجية). النقطة البصرية: فعالية إيجاد العيوب تميل للارتفاع كلما صعدت في السُلَّم، لأن الانحيازات الذهنية للمُختبِر تختلف أكثر فأكثر عن انحيازات المُؤلِّف — لكن المحاضرة تُشدِّد على أن الاستقلالية ليست بديلًا عن الألفة.</p>
+        <div class="tree-wrap">
+          <div class="tree-root" style="background:var(--c-gold);">5 · External Independent Testers</div>
+          <div class="tree-branches">
+            <div class="tree-branch">
+              <div class="tree-branch-label" style="background:var(--c-dynamic); color:#04121c;">4 · Specialized Testers</div>
+              <div class="tree-leaves">
+                <div class="tree-leaf">Usability · Security</div>
+                <div class="tree-leaf">Performance · Compliance · Portability</div>
+              </div>
+            </div>
+          </div>
+          <div class="tree-branch">
+            <div class="tree-branch-label" style="background:var(--c-static); color:#04121c;">3 · Independent Test Team (in org)</div>
+            <div class="tree-leaves"><div class="tree-leaf">Reports to project / executive management</div></div>
+          </div>
+          <div class="tree-branch">
+            <div class="tree-branch-label" style="background:var(--c-qc); color:#04121c;">2 · Independent devs/testers within the team</div>
+            <div class="tree-leaves"><div class="tree-leaf">Developers testing colleagues' products</div></div>
+          </div>
+          <div class="tree-branch">
+            <div class="tree-branch-label" style="background:var(--border); color:var(--text-dim);">1 · No independence</div>
+            <div class="tree-leaves"><div class="tree-leaf">Developers testing their own code only</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="diagram-block">
+      <div class="diagram-head"><h3 class="i18n" data-en="🗂️ Figure 2 — Categories of Test Techniques (Lecture 3, slides 7–9)">🗂️ الشكل 2 — فئات تقنيات الاختبار (المحاضرة 3، شريحتان 7–9)</h3><span class="badge b-static">Classification Tree</span></div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="A classification tree titled “Test Case Design Techniques” splitting into three branches: “Black Box” (test basis = requirements, specifications, use cases, user stories), “White Box” (test basis = code, architecture, detailed design — the software's structure), and “Experience-based” (test basis = knowledge and experience of people). Each branch lists the source its test conditions, test cases and test data are derived from, and how coverage is measured for it.">شجرة تصنيف بعنوان \"Test Case Design Techniques\" تتفرع إلى ثلاثة فروع: \"Black Box\" (أساس الاختبار = المتطلبات والمواصفات وقصص الاستخدام وقصص المستخدم)، و\"White Box\" (أساس الاختبار = الكود والمعمارية والتصميم التفصيلي — بنية البرمجية)، و\"Experience-based\" (أساس الاختبار = معرفة وخبرة الأشخاص). كل فرع يسرد المصدر الذي تُشتقّ منه شروط الاختبار وحالات الاختبار وبيانات الاختبار، وكيف تُقاس التغطية له.</p>
+        <div class="tree-wrap">
+          <div class="tree-root">Test Case Design Techniques</div>
+          <div class="tree-branches">
+            <div class="tree-branch">
+              <div class="tree-branch-label" style="background:var(--c-qa); color:#04121c;">Black Box</div>
+              <div class="tree-leaves">
+                <div class="tree-leaf">Requirements · Specs · Use cases · User stories</div>
+                <div class="tree-leaf">Coverage = items in the test basis</div>
+              </div>
+            </div>
+            <div class="tree-branch">
+              <div class="tree-branch-label" style="background:var(--c-static); color:#04121c;">White Box</div>
+              <div class="tree-leaves">
+                <div class="tree-leaf">Code · Architecture · Detailed design</div>
+                <div class="tree-leaf">Coverage = items within the structure</div>
+              </div>
+            </div>
+            <div class="tree-branch">
+              <div class="tree-branch-label" style="background:var(--c-gold); color:#04121c;">Experience-based</div>
+              <div class="tree-leaves">
+                <div class="tree-leaf">Knowledge &amp; experience of testers, developers, users, stakeholders</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="diagram-block">
+      <div class="diagram-head"><h3 class="i18n" data-en="⚙️ Figure 3 — The Black Box Testing Process (Lecture 4, slide 3)">⚙️ الشكل 3 — عملية اختبار الصندوق الأسود (المحاضرة 4، شريحة 3)</h3><span class="badge b-dynamic">Flow Diagram</span></div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="A left-to-right process flow showing the general black box testing process as a sequence of stages: analyze requirements/specifications → select valid inputs (and invalid inputs too) → determine expected outputs → construct tests → run the tests → compare actual vs expected outputs → determine proper functioning of the SUT. The visual point is the closed comparison loop at the end: “actual output” is only meaningful because “expected output” was fixed in advance from the specification — the heart of black box testing.">تدفق عملي من اليسار لليمين يُظهر العملية العامة لاختبار الصندوق الأسود كسلسلة مراحل: تحليل المتطلبات/المواصفات ← اختيار مدخلات صالحة (وغير صالحة كذلك) ← تحديد المُخرَجات المتوقعة ← بناء الاختبارات ← تشغيل الاختبارات ← مقارنة الفعلي بالمُتوقَّع ← الحكم على الأداء الصحيح للبرمجية الخاضعة للاختبار. النقطة البصرية هي حلقة المقارنة الختامية: \"المُخرَج الفعلي\" لا معنى له إلا لأن \"المُخرَج المتوقع\" ثُبِّت مسبقًا من المواصفة — وهذا جوهر اختبار الصندوق الأسود.</p>
+        <div class="flow-wrap">
+          <div class="flow-box">Analyze<small>requirements / specs</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">Select Inputs<small>valid + invalid</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">Expected Outputs<small>fixed in advance</small></div>
+        </div>
+        <div class="flow-wrap">
+          <div class="flow-box">Construct<small>the tests</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">Run<small>the tests</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">Compare<small>actual vs expected</small></div>
+          <span class="flow-arrow">→</span>
+          <div class="flow-box">Determine<small>proper functioning</small></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="diagram-block">
+      <div class="diagram-head"><h3 class="i18n" data-en="📊 Figure 4 — Equivalence Partitioning: The Age Example (Lecture 4, slides 7–11)">📊 الشكل 4 — تقسيم الفئات المتكافئة: مثال العمر (المحاضرة 4، شريحتان 7–11)</h3><span class="badge b-qc">Partitioning Diagram</span></div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="A horizontal number line of ages from 0 to 99 split into four adjacent ranges (partitions): 0–16 “Don't hire”, 16–18 “Part-time only”, 18–55 “Full-time”, 55–99 “Don't hire”. One representative test value is picked per partition (4 test cases total) instead of testing all 100 individual ages. Each partition is an equivalence class: every member is expected to be processed the same way, so one test case per class is enough — with an optional extra test case per class if time and money allow.">خط أرقام أفقي للأعمار من 0 إلى 99 مقسوم إلى أربعة نطاقات متجاورة (أقسام): 0–16 \"لا يُوظَّف\"، و16–18 \"بدوام جزئي فقط\"، و18–55 \"بدوام كامل\"، و55–99 \"لا يُوظَّف\". تُختار قيمة اختبار مُمثِّلة واحدة لكل قسم (4 حالات اختبار فقط) بدلًا من اختبار كل الأعمار المئة. كل قسم هو فئة متكافئة: يُتوقَّع معالجة كل عضو فيها بالطريقة نفسها، لذا تكفي حالة اختبار واحدة لكل فئة — مع إمكانية إضافة حالات إضافية لكل فئة إن سمح الوقت والمال.</p>
+        <div class="flow-wrap" style="gap:0; align-items:stretch;">
+          <div class="flow-box" style="min-width:150px; flex:1; border-color:#f8717155; background:#f871711a;">0 – 16<small>Don't hire · 1 test case</small></div>
+          <div class="flow-box" style="min-width:150px; flex:1; border-color:#fbbf2455; background:#fbbf241a;">16 – 18<small>Part-time only · 1 test case</small></div>
+          <div class="flow-box" style="min-width:150px; flex:1; border-color:#34d39955; background:#34d3991a;">18 – 55<small>Full-time · 1 test case</small></div>
+          <div class="flow-box" style="min-width:150px; flex:1; border-color:#f8717155; background:#f871711a;">55 – 99<small>Don't hire · 1 test case</small></div>
+        </div>
+        <div class="note good" style="margin-top:8px;"><b class="i18n" data-en="The result:">النتيجة:</b> <span class="i18n" data-en="Test cases reduced from 100 (testing each age) to just 4 (one per equivalence class).">تقليل حالات الاختبار من 100 (اختبار كل عمر) إلى 4 فقط (واحدة لكل فئة متكافئة).</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SUMMARY ============ -->
+<section id="summary">
+  <div class="container">
+    <span class="eyebrow">04 / SUMMARY</span>
+    <h2 class="i18n" data-en="Comprehensive Summary — Key Concepts and Definitions">تلخيص شامل — المفاهيم والتعريفات الجوهرية</h2>
+    <div class="part-divider"><span class="pd-badge pd-l1">LECTURE 3</span><span class="pd-line"></span></div>
+    <table>
+      <tr><th class="i18n" data-en="Term">المصطلح</th><th class="i18n" data-en="Definition">التعريف</th></tr>
+      <tr><td class="mono">Independent Testing</td><td class="i18n" data-en="Testing tasks done by people in a specific testing role, or by people in another role (e.g., customers); independence makes testers more effective at finding defects due to differing cognitive biases.">مهام اختبار ينفّذها أشخاص في دور اختبار محدَّد، أو في دور آخر (مثل العملاء)؛ الاستقلالية تجعل المُختبِرين أكثر فعالية في إيجاد العيوب بسبب اختلاف الانحيازات الذهنية.</td></tr>
+      <tr><td><b class="i18n" data-en="5 Degrees of Independence">درجات الاستقلالية الخمس</b></td><td class="i18n" data-en="Low → high: (1) developers testing own code, (2) independent devs/testers within the team, (3) independent test team in the organization, (4) specialized testers from business/user community, (5) external testers (in-house or outsourced).">من الأدنى للأعلى: (1) المطوّر يختبر كوده، (2) مستقلون داخل الفريق، (3) فريق اختبار مستقل في المنظمة، (4) مُختبِرون متخصصون من الأعمال/المستخدمين، (5) مُختبِرون خارجيون (في الموقع أو outsourcing).</td></tr>
+      <tr><td><b class="i18n" data-en="Independence ≠ Replacement for Familiarity">الاستقلالية ليست بديلًا عن الألفة</b></td><td class="i18n" data-en="Developers can efficiently find many defects in their own code; best practice = multiple test levels, with developers participating especially at lower levels.">يمكن للمطوّرين إيجاد عيوب كثيرة بكفاءة في كودهم؛ أفضل ممارسة = مستويات اختبار متعددة مع مشاركة المطوّرين خاصة في المستويات الدنيا.</td></tr>
+      <tr><td><b class="i18n" data-en="Agile Testing Roles">أدوار الاختبار في Agile</b></td><td class="i18n" data-en="Testers may be part of the development team and of a larger independent test team; product owners may perform acceptance testing on user stories at the end of each iteration.">قد يكون المُختبِرون جزءًا من فريق التطوير ومن فريق اختبار مستقل أكبر؛ وقد ينفّذ مالكو المنتج اختبار القبول على قصص المستخدم نهاية كل تكرار.</td></tr>
+      <tr><td><b class="i18n" data-en="Purpose of a Test Technique">الغرض من تقنية الاختبار</b></td><td class="i18n" data-en="To help in identifying test conditions, test cases, and test data.">المساعدة في تحديد شروط الاختبار وحالات الاختبار وبيانات الاختبار.</td></tr>
+      <tr><td><b class="i18n" data-en="Technique Categories">فئات التقنيات</b></td><td class="i18n" data-en="Black Box (from requirements/specs), White Box (from code/structure), Experience-based (from knowledge &amp; experience of people).">الصندوق الأسود (من المتطلبات/المواصفات)، الأبيض (من الكود/البنية)، والقائم على الخبرة (من معرفة وخبرة الأشخاص).</td></tr>
+    </table>
+    <div class="part-divider" style="margin-top:32px;"><span class="pd-badge pd-l2">LECTURE 4</span><span class="pd-line"></span></div>
+    <table>
+      <tr><th class="i18n" data-en="Term">المصطلح</th><th class="i18n" data-en="Definition">التعريف</th></tr>
+      <tr><td class="mono">Black Box Testing</td><td class="i18n" data-en="A strategy in which testing is based solely on the requirements and specifications, without knowledge of the internal code. SUT = Software Under Test.">استراتيجية يكون فيها الاختبار مبنيًا فقط على المتطلبات والمواصفات، دون معرفة الكود الداخلي. SUT = البرمجية الخاضعة للاختبار.</td></tr>
+      <tr><td><b class="i18n" data-en="Process (7 steps)">العملية (7 خطوات)</b></td><td class="i18n" data-en="Analyze specs → choose valid + invalid inputs → determine expected outputs → construct tests → run tests → compare actual vs expected → determine proper functioning.">تحليل المواصفات ← اختيار مدخلات صالحة وغير صالحة ← تحديد المُخرَجات المتوقعة ← بناء الاختبارات ← تشغيلها ← مقارنة الفعلي بالمُتوقَّع ← الحكم على الأداء الصحيح.</td></tr>
+      <tr><td><b class="i18n" data-en="Key Disadvantage">العيب المحوري</b></td><td class="i18n" data-en="Exhaustive input testing (every valid/invalid combination) is almost always impossible, and the tester can never be sure how much of the SUT has been tested — some paths may never be exercised.">الاختبار الشامل للمدخلات (كل التركيبات الصالحة وغير الصالحة) مستحيل تقريبًا دائمًا، ولا يستطيع المُختبِر التأكد أبدًا من مقدار ما اختُبر من البرمجية — قد لا تُمارَس بعض المسارات أبدًا.</td></tr>
+      <tr><td><b class="i18n" data-en="Key Advantage">الميزة المحورية</b></td><td class="i18n" data-en="Formal black box testing directs the tester to efficient, effective subsets of tests — finding more defects than a randomly created equivalent number of tests.">اختبار الصندوق الأسود الرسمي يوجّه المُختبِر لمجموعات اختبار فعّالة وكفوءة — تجد عيوبًا أكثر من عدد مكافئ من الاختبارات العشوائية.</td></tr>
+      <tr><td><b class="i18n" data-en="7 Black Box Techniques">التقنيات السبع</b></td><td class="i18n" data-en="Equivalence Class, Boundary Value, Decision Table, State-Transition, Use Case, Pairwise, Domain Analysis.">الفئات المتكافئة، القيم الحدّية، جداول القرار، انتقال الحالات، قصص الاستخدام، الثنائيات (Pairwise)، تحليل النطاق.</td></tr>
+      <tr><td><span class="badge b-qa">Equivalence Partitioning</span></td><td class="i18n" data-en="Divides data into partitions (equivalence classes) whose members are expected to be processed the same way. One defect found in a class ⇒ likely all members share it; one pass ⇒ likely no other member finds it. Reduces the age example from 100 test cases to 4.">يقسّم البيانات إلى أقسام (فئات متكافئة) يُتوقَّع معالجة أعضائها بالطريقة نفسها. اكتشاف عيب في فئة ⇒ المُرجَّح أن جميع الأعضاء يشاركونه؛ ونجاح حالة ⇒ المُرجَّح ألا يكشف غيرها العيب. يقلّل مثال العمر من 100 حالة إلى 4.</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============ LEVELS ============ -->
+<section id="levels">
+  <div class="container">
+    <span class="eyebrow">05 / THREE LEVELS</span>
+    <h2 class="i18n" data-en="Simplified at 3 Levels">تبسيط على 3 مستويات</h2>
+    <div class="level-tabs">
+      <button class="level-tab active" data-level="beginner"><span class="i18n" data-en="🌱 Beginner">🌱 للمبتدئين</span></button>
+      <button class="level-tab" data-level="intermediate"><span class="i18n" data-en="🎓 University Level">🎓 مستوى جامعي</span></button>
+      <button class="level-tab" data-level="quick"><span class="i18n" data-en="⚡ Quick Review">⚡ مراجعة سريعة</span></button>
+    </div>
+    <div class="level-panel active" id="panel-beginner">
+      <div class="card">
+        <p class="i18n" data-en="Think of hiring new employees at a company with age rules:">تخيّل توظيف موظفين جدد في شركة لها قواعد حسب العمر:</p>
+        <ul style="padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="<b>Black box testing</b> is like testing a vending machine: you press buttons and check what comes out, without opening it to see the gears. You only follow the manual (the specification)."><b>اختبار الصندوق الأسود</b> مثل اختبار ماكينة بيع: تضغط الأزرار وتفحص ما يخرج، دون فتحها لرؤية التروس. تتبع الدليل (المواصفة) فقط.</li>
+          <li class="i18n" data-en="<b>Equivalence partitioning</b> is like checking a queue by age groups: instead of interviewing every single person aged 0–99, you check one person from each age group — because everyone in the group will be treated the same way."><b>تقسيم الفئات المتكافئة</b> مثل فحص طابور حسب الفئات العمرية: بدلًا من مقابلة كل شخص من سن 0 إلى 99، تفحص شخصًا واحدًا من كل فئة عمرية — لأن الجميع في الفئة ستُعامَل بالطريقة نفسها.</li>
+          <li class="i18n" data-en="<b>Independent testing</b> is why a friend spots the typos in your essay that you keep reading over: the writer's brain “auto-corrects” what it expects to see — a fresh pair of eyes (different bias) finds more."><b>الاختبار المستقل</b> هو سبب اكتشاف صديقك للأخطاء الإملائية في مقالك الذي تعيد قراءته دائمًا: دماغ الكاتب \"يصحّح تلقائيًا\" ما يتوقع رؤيته — عيون جديدة (بانحياز مختلف) تجد أكثر.</li>
+          <li class="i18n" data-en="<b>Why not test everything?</b> Testing all 100 ages — or every possible input — takes forever. The trick is picking smart representatives."><b>لماذا لا نختبر كل شيء؟</b> اختبار الأعمار المئة كلها — أو كل مدخل ممكن — يستغرق وقتًا لا ينتهي. الحيلة هي اختيار مُمثِّلين أذكياء.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="level-panel" id="panel-intermediate">
+      <div class="card i18n" data-en="<p>Lecture 3's independence ladder is really a statement about cognitive bias: every degree of separation between author and tester adds a different set of assumptions, so defect-finding effectiveness tends to rise with independence — yet the lecture explicitly guards against over-reading this, since developers find many defects in their own code cheaply (independence is not a replacement for familiarity). The pragmatic conclusion is multiple test levels with mixed independence: developers own quality at the lower levels, independent testers handle higher levels, and in Agile the boundaries blur — team testers may simultaneously belong to an independent test team, while product owners perform acceptance validation of user stories per iteration.</p><p>Lecture 4 formalizes black box testing as a closed loop against the specification: expected outputs are fixed before execution, and the pass/fail judgment is purely a comparison of actual vs expected — never an inspection of the code. Its two documented weaknesses are symmetrical: exhaustive input combination is impossible (the “Lee / $1,000,000” defect is statistically unreachable from requirements alone), and coverage of internal structure is unmeasurable, so the tester never knows what fraction of the SUT's behavior has been exercised. Equivalence partitioning answers both: it provides a formal, specification-based rule for choosing test subsets (one representative per class) that beats random selection, and it comes with a probabilistic guarantee — members of a class are treated the same, so a failing representative implicates the whole class and a passing one exonerates it. Note the boundary-overlap quirk in the slide's range code (16 appears in two classes, as do 18 and 55): with range-based implementations, values on shared boundaries are exactly where adjacent classes may behave inconsistently, which foreshadows boundary value analysis in the next lecture.</p>">
+        <p>سُلَّم الاستقلالية في المحاضرة 3 هو في جوهره بيان عن الانحياز الذهني: كل درجة انفصال بين المُؤلِّف والمُختبِر تضيف مجموعة افتراضات مختلفة، لذا تميل فعالية إيجاد العيوب للارتفاع مع الاستقلالية — لكن المحاضرة تحذّر صراحةً من المبالغة في ذلك، إذ يجد المطوّرون عيوبًا كثيرة في كودهم بكلفة منخفضة (الاستقلالية ليست بديلًا عن الألفة). الخلاصة العملية هي مستويات اختبار متعددة باستقلالية مختلطة: المطوّرون يتحملون الجودة في المستويات الدنيا، والمُختبِرون المستقلون يتولون المستويات الأعلى، وفي Agile تتلاشى الحدود — قد ينتمي مُختبِرو الفريق في الوقت نفسه لفريق اختبار مستقل أكبر، بينما ينفّذ مالكو المنتج تصديق القبول على قصص المستخدم كل تكرار.</p>
+        <p>تُشكِّل المحاضرة 4 اختبار الصندوق الأسود كحلقة مغلقة مقابل المواصفة: تُثبَّت المُخرَجات المتوقعة قبل التنفيذ، والحكم بالنجاح/الفشل هو مقارنة صرفة بين الفعلي والمتوقع — وليس فحص الكود أبدًا. نقطتا ضعفه الموثّقتان متناظرتان: الاختبار الشامل لتراكيب المدخلات مستحيل (عيب \"Lee / مليون دولار\" يتعذر الوصول إليه إحصائيًا من المتطلبات وحدها)، وتغطية البنية الداخلية غير قابلة للقياس، فلا يعرف المُختبِر أبدًا ما نسبة سلوك البرمجية الذي مورِس فعليًا. تقسيم الفئات المتكافئة يجيب عن الاثنين: يوفر قاعدة رسمية مبنية على المواصفة لاختيار مجموعات فرعية من الاختبارات (مُمثِّل واحد لكل فئة) تتفوق على الاختيار العشوائي، ويأتي بضمانة احتمالية — أعضاء الفئة يُعامَلون بالطريقة نفسها، لذا فشل المُمثِّل يُورِط الفئة كلها، ونجاحه يُبرئها. ولاحظ غرابة تداخل الحدود في كود النطاقات بالشريحة (16 يظهر في فئتين، وكذلك 18 و55): مع التنفيذات القائمة على النطاقات، القيم على الحدود المشتركة هي بالضبط المكان الذي قد تتسلك فيه الفئات المتجاورة — وهذا تمهيد لتحليل القيم الحدّية في المحاضرة القادمة.</p>
+      </div>
+    </div>
+    <div class="level-panel" id="panel-quick">
+      <div class="card">
+        <ul class="quickref-list">
+          <li>Independent testing: separation from the author → different cognitive biases → more defects found.</li>
+          <li>5 degrees (low → high): own code → in-team independent → org test team → specialized testers → external (on-site/outsourced).</li>
+          <li>Independence is NOT a replacement for familiarity; developers should still test (esp. lower levels).</li>
+          <li>Agile: testers in dev teams (+ independent team); POs do acceptance testing per iteration.</li>
+          <li>Technique purpose: identify test conditions, test cases, test data. Categories: Black Box / White Box / Experience-based.</li>
+          <li>Choice factors: complexity, SDLC model, expected defects, customer/contract, skills, docs, risks, standards, time/budget/tools.</li>
+          <li>Black box = testing based SOLELY on requirements &amp; specifications. SUT = Software Under Test.</li>
+          <li>Process: analyze specs → valid + invalid inputs → expected outputs → construct → run → compare → determine.</li>
+          <li>Disadvantage: exhaustive testing impossible; never sure how much was tested (hidden "Lee/$1,000,000" case).</li>
+          <li>Advantage: efficient + effective subsets &gt; random tests. 7 techniques: Equivalence Class, Boundary Value, Decision Table, State-Transition, Use Case, Pairwise, Domain Analysis.</li>
+          <li>Equivalence partitioning: same treatment per class ⇒ 1 test per class; age example: 100 cases → 4.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUIZ ============ -->
+<section id="quiz">
+  <div class="container">
+    <span class="eyebrow">06 / INTERACTIVE QUIZ</span>
+    <h2 class="i18n" data-en="Interactive Quiz">اختبار تفاعلي</h2>
+    <p class="lead i18n" data-en="Covers both lectures, including two matching questions. Answer each question, then press “Check Answer” — your final score appears at the bottom.">يغطي المحاضرتين، بما فيها سؤالا مطابقة. أجب عن كل سؤال ثم اضغط "تحقق من الإجابة" — النتيجة النهائية تظهر أسفل الصفحة.</p>
+    <div class="quiz-progress">
+      <div class="quiz-score"><span class="i18n" data-en="Score:">النتيجة:</span> <span id="scoreNow">0</span> / <span id="scoreTotal">0</span></div>
+      <div class="quiz-bar"><div class="quiz-bar-fill" id="quizBarFill"></div></div>
+    </div>
+    <div id="quizContainer"></div>
+    <div class="final-score" id="finalScore">
+      <div class="big" id="finalScoreText">0 / 0</div>
+      <p id="finalScoreMsg" style="margin-top:8px; color:var(--text-dim);"></p>
+      <button class="reset-btn" onclick="resetQuiz()"><span class="i18n" data-en="🔄 Try Again">🔄 إعادة المحاولة</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TIPS ============ -->
+<section id="tips">
+  <div class="container">
+    <span class="eyebrow">07 / PRO TIPS</span>
+    <h2 class="i18n" data-en="Pro Tips">نصائح احترافية</h2>
+    <div class="grid grid-2" style="align-items:start;">
+      <div class="card">
+        <h3 class="i18n" data-en="💡 How to Understand Instead of Memorize">💡 كيف تفهم بدلًا من الحفظ</h3>
+        <div class="tip-item"><span class="tip-icon">🔍</span><div class="i18n" data-en="Link the independence ladder to bias: every extra degree of independence = more distance from the author's assumptions = a different bias = defects the author is blind to become visible.">اربط سُلَّم الاستقلالية بالانحياز: كل درجة استقلالية إضافية = مسافة أكبر من افتراضات المُؤلِّف = انحياز مختلف = عيوب كان المُؤلِّف عميًا عنها تصبح مرئية.</div></div>
+        <div class="tip-item"><span class="tip-icon">✍️</span><div class="i18n" data-en="Black box = “what the system should do” (specification). White box = “how the system is built” (structure). Experience-based = “where problems usually hide” (gut feeling of people).">الصندوق الأسود = \"ماذا يجب أن يفعل النظام\" (المواصفة). الأبيض = \"كيف بُني النظام\" (البنية). القائم على الخبرة = \"أين تختبئ المشكلات عادة\" (حدس الأشخاص).</div></div>
+        <div class="tip-item"><span class="tip-icon">📐</span><div class="i18n" data-en="For equivalence partitioning, always ask two questions: (1) what does “processed the same way” mean here? (2) which ranges share boundaries? Boundaries are where classes touch — the next lecture's topic.">في تقسيم الفئات المتكافئة، اسأل دائمًا سؤالين: (1) ماذا يعني \"مُعالَجة بالطريقة نفسها\" هنا؟ (2) أي النطاقات تتشارك الحدود؟ الحدود هي حيث تلتقي الفئات — موضوع المحاضرة القادمة.</div></div>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="🏋️ Suggested Hands-On Practice">🏋️ تدريب عملي مقترح</h3>
+        <div class="tip-item"><span class="tip-icon">1️⃣</span><div class="tip-icon" style="display:none;"></div><div class="i18n" data-en="Answer Assignment No. 3 from the slides in writing: three benefits of test independence (fresh bias, no author blindness, broader domain expertise) and three drawbacks (cost, distance from the code, missing familiarity with implementation details).">أجب كتابيًا عن الواجب رقم 3 من الشرائح: ثلاث فوائد لاستقلالية الاختبار (انحياز جديد، لا عمى عن المُؤلِّف، خبرة مجال أوسع) وثلاثة عيوب (تكلفة، بُعد عن الكود، غياب الألفة بتفاصيل التنفيذ).</div></div>
+        <div class="tip-item"><span class="tip-icon">2️⃣</span><div class="i18n" data-en="Pick a real form (e.g., a signup page) and write its equivalence classes yourself: valid email format, invalid email format, password too short, password acceptable — one test case per class.">اختر نموذجًا حقيقيًا (مثل صفحة تسجيل) واكتب فئاته المتكافئة بنفسك: بريد صالح، بريد غير صالح، كلمة مرور قصيرة جدًا، كلمة مرور مقبولة — حالة اختبار واحدة لكل فئة.</div></div>
+        <div class="tip-item"><span class="tip-icon">3️⃣</span><div class="i18n" data-en="Rewrite the age module's range conditions from memory, then deliberately introduce the slide's boundary overlaps (16, 18, 55) and predict which age value exposes each overlap.">أعد كتابة شروط نطاقات وحدة العمر من الذاكرة، ثم أدرج عمدًا تداخلات الحدود من الشريحة (16، 18، 55) وتوقّع أي قيمة عمر يكشف كل تداخل.</div></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:16px;">
+      <h3 class="i18n" data-en="⚠️ Common Mistakes Students Make on This Exact Topic">⚠️ أخطاء شائعة يقع فيها الطلاب في هذا الموضوع تحديدًا</h3>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Saying “black box means testing without requirements”:</b> the exact opposite — black box testing is based SOLELY on requirements and specifications. What the tester does NOT see is the internal code."><b>القول إن \"الصندوق الأسود يعني الاختبار بدون متطلبات\":</b> العكس تمامًا — اختبار الصندوق الأسود مبني فقط على المتطلبات والمواصفات. ما لا يراه المُختبِر هو الكود الداخلي.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Thinking one test per class GUARANTEES finding all defects:</b> the guarantee is probabilistic (“likely to detect”), not absolute. Bad implementations (one if per age) can break the equivalence assumption entirely — remember the slide: then each age really does need its own test."><b>الاعتقاد بأن اختبار واحد لكل فئة يضمن إيجاد كل العيوب:</b> الضمانة احتمالية (\"يُرجَّح الكشف\") وليست مطلقة. التنفيذات السيئة (if لكل عمر) قد تُهدم افتراض التكافؤ تمامًا — تذكّر الشريحة: حينها يحتاج كل عمر فعلًا إلى اختباره الخاص.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Listing the independence degrees in the wrong order:</b> the slide explicitly orders them “from low level of independence to high level” — starting with NO independence (developers testing their own code) and ending with external testers."><b>ترتيب درجات الاستقلالية بترتيب خاطئ:</b> تُرتّبها الشريحة صراحةً \"من المستوى الأدنى للاستقلالية إلى الأعلى\" — بدءًا من عدم الاستقلالية (المطوّر يختبر كوده) وانتهاءً بالمُختبِرين الخارجيين.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Confusing the test basis of each category:</b> Black box basis = requirements/specs/use cases/user stories; White box basis = code/architecture/detailed design; Experience basis = knowledge of people. Mixing these up is the most common exam trap."><b>الخلط بين أساس الاختبار لكل فئة:</b> أساس الصندوق الأسود = المتطلبات/المواصفات/قصص الاستخدام؛ أساس الأبيض = الكود/المعمارية/التصميم التفصيلي؛ أساس الخبرة = معرفة الأشخاص. الخلط بينها أشهر فخ امتحاني.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="i18n" data-en="Interactive review sheet — Software Testing Course, Lectures 3 &amp; 4">مرجع مراجعة تفاعلي — Software Testing Course، المحاضرتان 3 و4</footer>
+
+<script>
+let currentLang = 'ar';
+function setLang(lang){
+  currentLang = lang;
+  document.getElementById('htmlRoot').setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  document.getElementById('htmlRoot').setAttribute('lang', lang);
+  document.getElementById('btnAr').classList.toggle('active', lang === 'ar');
+  document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+  document.querySelectorAll('.i18n').forEach(el => {
+    if(!el.hasAttribute('data-ar-cache')){ el.setAttribute('data-ar-cache', el.innerHTML); }
+    const ar = el.getAttribute('data-ar-cache');
+    const en = el.getAttribute('data-en');
+    el.innerHTML = (lang === 'en' && en) ? en : ar;
+  });
+  QUIZ_LANG = lang;
+  renderQuiz(true);
+}
+(function(){
+  const links = document.querySelectorAll('.nav-scroll a');
+  const sections = Array.from(links).map(a => document.querySelector(a.getAttribute('href')));
+  function onScroll(){
+    let idx = 0;
+    const y = window.scrollY + 120;
+    sections.forEach((s,i) => { if(s && s.offsetTop <= y) idx = i; });
+    links.forEach((l,i) => l.classList.toggle('active', i===idx));
+    const active = links[idx];
+    if(active){
+      const wrap = document.getElementById('navScroll');
+      wrap.scrollTo({left: active.offsetLeft - wrap.clientWidth/2 + active.clientWidth/2, behavior:'smooth'});
+    }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+document.querySelectorAll('.level-tab').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.level-tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.level-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.level).classList.add('active');
+  });
+});
+
+let QUIZ_LANG = 'ar';
+const QUIZ = [
+  {type:'mcq', prompt:'اختبار الصندوق الأسود هو استراتيجية يكون فيها الاختبار مبنيًا على:', promptEn:'Black box testing is a strategy in which testing is based on:',
+   options:['الكود الداخلي وتفاصيل تصميمه','المتطلبات والمواصفات فقط','خبرة المُختبِر الشخصية فقط','آراء المستخدمين النهائيين فقط'],
+   optionsEn:['The internal code and its design details','The requirements and specifications only','The tester\'s personal experience only','End users\' opinions only'],
+   correct:1, explain:'اختبار الصندوق الأسود استراتيجية يكون فيها الاختبار مبنيًا فقط على المتطلبات والمواصفات — دون النظر إلى الكود الداخلي.', explainEn:'Black box testing is a strategy in which testing is based solely on the requirements and specifications — without looking at the internal code.'},
+  {type:'mcq', prompt:'ماذا يعني الاختصار SUT المستخدم في المحاضرة؟', promptEn:'What does the acronym SUT used in the lecture mean?',
+   options:['Software Under Test — البرمجية الخاضعة للاختبار','System Unified Testing','Software Utility Tool','Specification Under Testing'],
+   optionsEn:['Software Under Test','System Unified Testing','Software Utility Tool','Specification Under Testing'],
+   correct:0, explain:'SUT = Software Under Test، أي البرمجية الخاضعة للاختبار.', explainEn:'SUT = Software Under Test — the software being tested.'},
+  {type:'tf', prompt:'في اختبار الصندوق الأسود، يُختار اختبار المدخلات الصالحة فقط ولا حاجة لاختبار المدخلات غير الصالحة.', promptEn:'In black box testing, only valid inputs need to be tested; invalid inputs are unnecessary.',
+   correct:false, explain:'خاطئ. يجب أيضًا اختيار مدخلات غير صالحة للتحقق من أن البرمجية تكتشفها وتتعامل معها بشكل صحيح.', explainEn:'False. Invalid inputs must also be chosen to verify that the SUT detects them and handles them properly.'},
+  {type:'mcq', prompt:'ما الخطوة الأولى في العملية العامة لاختبار الصندوق الأسود؟', promptEn:'What is the FIRST step in the general black box testing process?',
+   options:['تشغيل الاختبارات','تحديد المُخرَجات المتوقعة','تحليل المتطلبات أو المواصفات','مقارنة المُخرَجات الفعلية بالمُتوقَّعة'],
+   optionsEn:['Running the tests','Determining the expected outputs','Analyzing the requirements or specifications','Comparing actual with expected outputs'],
+   correct:2, explain:'العملية تبدأ بتحليل المتطلبات أو المواصفات، ثم اختيار المدخلات، وتحديد المُخرَجات المتوقعة، وبناء الاختبارات وتشغيلها، ثم المقارنة والحكم.', explainEn:'The process starts by analyzing the requirements/specifications, then selecting inputs, determining expected outputs, constructing and running tests, then comparing and determining proper functioning.'},
+  {type:'mcq', prompt:'لماذا يزيد الاستقلالية من فعالية المُختبِر في إيجاد العيوب؟', promptEn:'Why does independence often make a tester more effective at finding defects?',
+   options:['لأنه أرخص للمنظمة','لأن المُختبِر يملك أدوات أفضل','لأن المُختبِر أذكى من المطوّر دائمًا','بسبب الاختلاف بين الانحيازات الذهنية للمُؤلِّف والمُختبِر'],
+   optionsEn:['Because it is cheaper for the organization','Because the tester has better tools','Because the tester is always smarter than the developer','Due to differences between the author\'s and the tester\'s cognitive biases'],
+   correct:3, explain:'درجة معينة من الاستقلالية تجعل المُختبِر أكثر فعالية في إيجاد العيوب بسبب الاختلافات بين الانحيازات الذهنية لدى مُؤلِّف العمل والمُختبِر.', explainEn:'A certain degree of independence makes the tester more effective at finding defects due to differences between the author\'s and the tester\'s cognitive biases.'},
+  {type:'mcq', prompt:'ما المستوى الأدنى من درجات استقلالية الاختبار؟', promptEn:'Which is the LOWEST degree of test independence?',
+   options:['مُختبِرون خارجيون (استعانة بمصادر خارجية)','لا يوجد مُختبِرون مستقلون: المطوّرون يختبرون كودهم بأنفسهم','فريق اختبار مستقل داخل المنظمة','مُختبِرون مستقلون من مجتمع المستخدمين'],
+   optionsEn:['External independent testers (outsourcing)','No independent testers: developers testing their own code','An independent test team within the organization','Independent testers from the user community'],
+   correct:1, explain:'الدرجات من الأدنى للأعلى: (1) المطوّرون يختبرون كودهم بأنفسهم — بدون أي استقلالية، ثم المستقلون داخل الفريق، ثم الفريق المستقل في المنظمة، ثم المتخصصون، وأخيرًا الخارجيون.', explainEn:'Low → high: (1) developers testing their own code — no independence, then in-team independents, an independent org test team, specialized testers, and finally external testers.'},
+  {type:'mcq', prompt:'أي مما يلي يُعد المستوى الأعلى من الاستقلالية؟', promptEn:'Which of the following counts as the HIGHEST degree of independence?',
+   options:['مُختبِرون مستقلون خارجيون عن المنظمة (في الموقع أو outsourcing)','مطوّرون يختبرون منتجات زملائهم','فريق اختبار مستقل يتبع إدارة المشروع','مُختبِرون من منظمة الأعمال'],
+   optionsEn:['Independent testers external to the organization (on-site or outsourced)','Developers testing colleagues\' products','An independent test team reporting to project management','Testers from the business organization'],
+   correct:0, explain:'المستوى الأعلى هو المُختبِرون المستقلون الخارجيون عن المنظمة، إما في الموقع (in-house) أو خارج الموقع (outsourcing).', explainEn:'The highest level is independent testers external to the organization, either on-site (in-house) or off-site (outsourcing).'},
+  {type:'tf', prompt:'الاستقلالية بديل كامل عن الألفة، فلا داعي لمشاركة المطوّرين في الاختبار أبدًا.', promptEn:'Independence is a full replacement for familiarity, so developers never need to participate in testing.',
+   correct:false, explain:'خاطئ. الاستقلالية ليست بديلًا عن الألفة، والمطوّرون يستطيعون إيجاد عيوب كثيرة بكفاءة في كودهم. يُفضَّل مستويات اختبار متعددة مع مشاركة المطوّرين خاصة في المستويات الدنيا.', explainEn:'False. Independence is not a replacement for familiarity, and developers can efficiently find many defects in their own code. Multiple test levels with developer participation (especially lower levels) are preferred.'},
+  {type:'fill', prompt:'أكمل: الغرض من تقنية الاختبار هو المساعدة في تحديد شروط الاختبار، وحالات الاختبار، و______. ', promptEn:'Fill in: the purpose of a test technique is to help identify test conditions, test cases, and ______.',
+   accept:['test data','بيانات الاختبار'], explain:'الإجابة: بيانات الاختبار (Test Data) — الغرض هو تحديد شروط الاختبار وحالات الاختبار وبيانات الاختبار.', explainEn:'Answer: test data — the purpose is to help identify test conditions, test cases, and test data.'},
+  {type:'mcq', prompt:'من أي مصدر تُشتقّ شروط الاختبار في تقنيات الصندوق الأسود؟', promptEn:'In black box techniques, test conditions are derived from a test basis that may include:',
+   options:['الكود والمعمارية والتصميم التفصيلي','معرفة وخبرة المُختبِرين فقط','المتطلبات والمواصفات وقصص الاستخدام وقصص المستخدم','سجلات الأخطاء التاريخية فقط'],
+   optionsEn:['Code, architecture, and detailed design','Only testers\' knowledge and experience','Software requirements, specifications, use cases, and user stories','Only historical bug logs'],
+   correct:2, explain:'في الصندوق الأسود، يُشتقّ كل شيء من أساس اختبار يشمل متطلبات البرمجيات والمواصفات وقصص الاستخدام وقصص المستخدم. الكود والمعمارية أساس الصندوق الأبيض، ومعرفة الأشخاص أساس تقنيات الخبرة.', explainEn:'In black box, everything derives from a test basis including software requirements, specifications, use cases, and user stories. Code/architecture is the white box basis; people\'s knowledge is the experience-based basis.'},
+  {type:'multi', prompt:'أي مما يلي من العوامل التي تحدد اختيار تقنيات الاختبار؟ (اختر كل ما ينطبق)', promptEn:'Which of the following are factors in choosing which test techniques to use? (select all)',
+   options:['تعقيد المكوّن أو النظام','مستويات وأنواع المخاطر','لون شعار الشركة','معرفة المُختبِر ومهاراته'],
+   optionsEn:['Component or system complexity','Risk levels and types','The color of the company logo','Tester knowledge and skills'],
+   correctSet:[0,1,3], explain:'من العوامل: التعقيد، نموذج دورة الحياة، العيوب المتوقعة، متطلبات العميل/العقد، مهارات المُختبِر، التوثيق المتاح، المخاطر، المعايير التنظيمية، والوقت والميزانية والأدوات. لون الشعار ليس من بينها.', explainEn:'Factors include: complexity, SDLC model, expected defect types, customer/contractual requirements, tester skills, available documentation, risks, regulatory standards, and time/budget/tools. Logo color is not among them.'},
+  {type:'mcq', prompt:'لماذا يُعد الاختبار الشامل للمدخلات (Exhaustive Input Testing) غير عملي في الصندوق الأسود؟', promptEn:'Why is exhaustive input testing impractical in black box testing?',
+   options:['لأنه يتطلب إنشاء كل تركيبة ممكنة من المدخلات الصالحة وغير الصالحة','لأن المواصفات غير مكتوبة دائمًا','لأن المُختبِرين غير مدربين','لأن الأدوات الآلية غير موجودة'],
+   optionsEn:['It would require creating every possible combination of valid and invalid inputs','Because specifications are never written','Because testers are untrained','Because automated tools do not exist'],
+   correct:0, explain:'لإيجاد كل عيب، على المُختبِر إنشاء كل تركيبة ممكنة من بيانات المدخلات، الصالحة وغير الصالحة — وهذا مستحيل تقريبًا دائمًا.', explainEn:'To find every defect, the tester would have to create every possible combination of input data, both valid and invalid — almost always impossible.'},
+  {type:'mcq', prompt:'في مثال الشريحة، ما الذي يُظهره كود \"if (name == \"Lee\" && ...) send a check for $1,000,000\" عن اختبار الصندوق الأسود؟', promptEn:'In the slide example, what does the code “if (name == \"Lee\" && ...) send a check for $1,000,000” demonstrate about black box testing?',
+   options:['أن الصندوق الأسود يجد كل العيوب','أن المُختبِر لا يمكنه التأكد أبدًا من مقدار ما اختُبر، وقد لا تُمارَس بعض المسارات أبدًا','أن الكود يجب أن يُراجع دائمًا بواسطة المدير','أن الاختبار العشوائي أفضل من المنهجي'],
+   optionsEn:['That black box finds every defect','That the tester can never be sure how much of the SUT has been tested, and some paths may never be exercised','That code should always be reviewed by a manager','That random testing beats systematic testing'],
+   correct:1, explain:'احتمال أن يختار مُختبِر الصندوق الأسود حالة تكتشف هذه الميزة الخفية شبه معدوم — لا يوجد متطلب يصفها، فبعض مسارات التنفيذ قد لا تُمارَس أبدًا.', explainEn:'The probability a black box tester selects a test case discovering this hidden feature is practically zero — no requirement describes it, so some execution paths may never be exercised.'},
+  {type:'mcq', prompt:'ما الميزة الرئيسية لاختبار الصندوق الأسود الرسمي مقارنة بالاختبارات العشوائية؟', promptEn:'What is the key advantage of formal black box testing over randomly created tests?',
+   options:['يجد كل العيوب دائمًا','يوجّه المُختبِر لمجموعات اختبار فعّالة وكفوءة تجد عيوبًا أكثر من العشوائي المكافئ','لا يحتاج إلى مواصفات إطلاقًا','يعمل بدون تشغيل البرمجية'],
+   optionsEn:['It always finds every defect','It directs the tester to efficient, effective test subsets that find more defects than an equivalent number of random tests','It needs no specifications at all','It works without executing the software'],
+   correct:1, explain:'رغم أنه لا يمكننا اختبار كل شيء، الاختبار الرسمي يوجّه المُختبِر لمجموعات فرعية فعّالة وكفوءة — تجد عيوبًا أكثر من عدد مكافئ من الاختبارات العشوائية.', explainEn:'Even though we can\'t test everything, formal black box testing directs the tester to efficient and effective subsets — finding more defects than a randomly created equivalent number of tests.'},
+  {type:'mcq', prompt:'أي مما يلي ليس من تقنيات الصندوق الأسود السبع المذكورة في المحاضرة؟', promptEn:'Which of the following is NOT one of the seven black box techniques named in the lecture?',
+   options:['Equivalence Class','Boundary Value','Mutation Testing','Pairwise'],
+   optionsEn:['Equivalence Class','Boundary Value','Mutation Testing','Pairwise'],
+   correct:2, explain:'التقنيات السبع: Equivalence Class وBoundary Value وDecision Table وState-Transition وUse Case وPairwise وDomain Analysis. Mutation Testing ليست من بينها.', explainEn:'The seven: Equivalence Class, Boundary Value, Decision Table, State-Transition, Use Case, Pairwise, Domain Analysis. Mutation Testing is not among them.'},
+  {type:'mcq', prompt:'تقسيم الفئات المتكافئة يقسّم البيانات بحيث:', promptEn:'Equivalence partitioning divides data into partitions such that:',
+   options:['كل قسم يُعالَج بطريقة مختلفة عن الأقسام الأخرى','كل عضو في القسم الواحد يُتوقَّع أن يُعالَج بالطريقة نفسها','كل قيمة تُختبر على حدة دائمًا','تنقسم البيانات إلى نصفين متساويين'],
+   optionsEn:['Each partition is processed differently from the others','All members of a given partition are expected to be processed the same way','Every value is always tested individually','Data is split into two equal halves'],
+   correct:1, explain:'التقسيم يُنشئ أقسامًا (فئات متكافئة) يُتوقَّع أن تُعالَج جميع أعضاء القسم الواحد بالطريقة نفسها.', explainEn:'It divides data into partitions (equivalence classes) in such a way that all the members of a given partition are expected to be processed in the same way.'},
+  {type:'tf', prompt:'في مثال التوظيف حسب العمر، يُقلِّل أسلوب الفئات المتكافئة عدد حالات الاختبار من 100 إلى 4.', promptEn:'In the hiring-by-age example, the equivalence class approach reduces the number of test cases from 100 to 4.',
+   correct:true, explain:'صحيح — نختبر قيمة مُمثِّلة واحدة من كل فئة من الفئات الأربع (0–16، 16–18، 18–55، 55–99) بدلًا من اختبار كل عمر من 0 إلى 99.', explainEn:'True — we test one representative value from each of the four classes (0–16, 16–18, 18–55, 55–99) instead of every age from 0 to 99.'},
+  {type:'mcq', prompt:'في مثال العمر، لماذا كانت حالة (العمر = 2 ⇐ نتيجة \"Hire\") إخفاقًا؟', promptEn:'In the age example, why is the case (Age = 2 → result \"Hire\") a failure?',
+   options:['لأن النتيجة بطيئة','لأن قاعدة المنظمة تنص على عدم توظيف فئة 0–16 أصلًا','لأن العمر 2 أصغر من أن يعمل في أي مكان','لأن النظام أعطى النتيجة نفسها لكل الفئات'],
+   optionsEn:['Because the result was slow','Because the organization\'s rule says the 0–16 class should NOT be hired at all','Because age 2 is too young to work anywhere','Because the system gave the same result for all classes'],
+   correct:1, explain:'الشريحة تعرض Age = 2 نتج عنها Hire مع علامة Fail: فئة 0–16 يجب أن تنتهي بـ\"Don\'t hire\"، فحصول \"Hire\" يعني عيبًا في تلك الفئة.', explainEn:'The slide shows Age = 2 yielding Hire, marked Fail: the 0–16 class should end in “Don\'t hire”, so getting “Hire” means a defect in that class.'},
+  {type:'mcq', prompt:'وفقًا للخاصيتين الأساسيتين للفئات المتكافئة: إذا لم تكشف حالة اختبار عن عيب في فئتها، فماذا نتوقع لبقية حالات الفئة نفسها؟', promptEn:'Per the two key properties of equivalence classes: if one test case does NOT detect a defect in its class, what do we expect for other test cases in the same class?',
+   options:['ستكشف حالات أخرى العيب بالتأكيد','من غير المُرجَّح أن تكشف أي حالة أخرى العيب','يجب اختبار كل قيمة على حدة','لا علاقة للنتائج داخل الفئة الواحدة'],
+   optionsEn:['Other cases will definitely find it','No other test case in the same class is likely to detect the defect','Every value must be tested individually','Results within one class are unrelated'],
+   correct:1, explain:'الخاصية الثانية: إذا لم تكشف حالة واحدة عن العيب، من غير المُرجَّح أن تكشف حالات أخرى في نفس الفئة ذلك العيب.', explainEn:'Property 2: if one test case does not detect a defect, no other test cases in the same equivalence class are likely to detect the defect.'},
+  {type:'match', prompt:'طابق كل فئة من فئات تقنيات الاختبار بأساس اختبارها الصحيح:', promptEn:'Match each category of test techniques to its correct test basis:',
+   listA:['Black Box','White Box','Experience-based'], 
+   listB:['الكود، معمارية البرمجية، التصميم التفصيلي','معرفة وخبرة المُختبِرين والمطوّرين والمستخدمين وأصحاب المصلحة','المتطلبات، المواصفات، قصص الاستخدام، قصص المستخدم'],
+   listBEn:['Code, software architecture, detailed design','Knowledge and experience of testers, developers, users and stakeholders','Software requirements, specifications, use cases, user stories'],
+   correctMap:[2,0,1],
+   explain:'Black Box = المتطلبات/المواصفات/القصص (c)؛ White Box = الكود/المعمارية/التصميم (a)؛ Experience-based = معرفة وخبرة الأشخاص (b).',
+   explainEn:'Black Box = requirements/specs/use cases (c); White Box = code/architecture/detailed design (a); Experience-based = people\'s knowledge and experience (b).'},
+  {type:'match', prompt:'طابق كل نطاق عمري في مثال التوظيف بالقرار الصحيح:', promptEn:'Match each age range in the hiring example to its correct decision:',
+   listA:['0 – 16','16 – 18','18 – 55','55 – 99'],
+   listB:['Can hire as a full-time employee','Don\'t hire','Can hire on a part-time basis only','Don\'t hire (second instance)'],
+   listBEn:['Can hire as a full-time employee','Don\'t hire','Can hire on a part-time basis only','Don\'t hire (second instance)'],
+   correctMap:[1,2,0,3],
+   explain:'0–16 لا يُوظَّف؛ 16–18 بدوام جزئي فقط؛ 18–55 بدوام كامل؛ 55–99 لا يُوظَّف.',
+   explainEn:'0–16 don\'t hire; 16–18 part-time only; 18–55 full-time; 55–99 don\'t hire.'}
+];
+
+let userAnswers = new Array(QUIZ.length).fill(null);
+let checked = new Array(QUIZ.length).fill(false);
+let score = 0;
+const TYPE_LABELS = { ar: {mcq:'اختيار من متعدد', tf:'صح / خطأ', multi:'اختيار متعدد الإجابات', fill:'إكمال الفراغ', match:'مطابقة قوائم'}, en: {mcq:'Multiple Choice', tf:'True / False', multi:'Multiple Select', fill:'Fill in the Blank', match:'Match the Lists'} };
+
+function renderQuiz(preserveState){
+  const c = document.getElementById('quizContainer');
+  c.innerHTML = '';
+  document.getElementById('scoreTotal').textContent = QUIZ.length;
+  QUIZ.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'q-card'; card.id = 'q-'+qi;
+    const typeLabel = TYPE_LABELS[QUIZ_LANG][q.type];
+    const prompt = (QUIZ_LANG === 'en' && q.promptEn) ? q.promptEn : q.prompt;
+    let optsHtml = '';
+    if(q.type === 'mcq'){
+      const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+      optsHtml = '<div class="opt-list">' + options.map((opt,oi)=>`<label class="opt" id="opt-${qi}-${oi}"><input type="radio" name="q${qi}" value="${oi}" onchange="selectAnswer(${qi}, ${oi})"><span>${opt}</span></label>`).join('') + '</div>';
+    } else if(q.type === 'tf'){
+      const trueLabel = QUIZ_LANG === 'en' ? '✅ True' : '✅ صح (True)';
+      const falseLabel = QUIZ_LANG === 'en' ? '❌ False' : '❌ خطأ (False)';
+      optsHtml = `<div class="opt-list"><label class="opt" id="opt-${qi}-1"><input type="radio" name="q${qi}" value="true" onchange="selectAnswer(${qi}, true)"><span>${trueLabel}</span></label><label class="opt" id="opt-${qi}-0"><input type="radio" name="q${qi}" value="false" onchange="selectAnswer(${qi}, false)"><span>${falseLabel}</span></label></div>`;
+    } else if(q.type === 'multi'){
+      const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+      optsHtml = '<div class="opt-list">' + options.map((opt,oi)=>`<label class="opt" id="opt-${qi}-${oi}"><input type="checkbox" name="q${qi}" value="${oi}" onchange="toggleMulti(${qi}, ${oi})"><span>${opt}</span></label>`).join('') + '</div>';
+    } else if(q.type === 'fill'){
+      const placeholder = QUIZ_LANG === 'en' ? 'Type your answer here…' : 'اكتب إجابتك هنا…';
+      optsHtml = `<input type="text" class="fill-input" id="fill-${qi}" placeholder="${placeholder}" oninput="userAnswers[${qi}] = this.value; document.getElementById('checkbtn-${qi}').disabled = !this.value.trim();">`;
+    } else if(q.type === 'match'){
+      const listA = q.listA;
+      const listB = (QUIZ_LANG === 'en' && q.listBEn) ? q.listBEn : q.listB;
+      const letters = 'abcdefgh';
+      optsHtml = '<div class="match-wrap">' + listA.map((a,ai)=>{
+        const opts = listB.map((b,bi)=>`<option value="${bi}">${letters[bi]}) ${b}</option>`).join('');
+        return `<div class="match-row" id="mrow-${qi}-${ai}"><div class="match-a"><b>${ai+1}.</b> ${a}</div><select id="msel-${qi}-${ai}" onchange="selectMatch(${qi})"><option value="" disabled selected>${QUIZ_LANG==='en'?'Choose a match…':'اختر التطابق…'}</option>${opts}</select></div>`;
+      }).join('') + '</div>';
+    }
+    const checkLabel = QUIZ_LANG === 'en' ? 'Check Answer' : 'تحقق من الإجابة';
+    const qLabel = QUIZ_LANG === 'en' ? 'Question' : 'سؤال';
+    const needsDisable = (q.type==='fill' || q.type==='match');
+    card.innerHTML = `<div class="q-meta"><span class="q-type-tag">${qLabel} ${qi+1} · ${typeLabel}</span></div><div class="q-prompt">${prompt}</div>${optsHtml}<button class="check-btn" id="checkbtn-${qi}" onclick="checkAnswer(${qi})" ${needsDisable ? 'disabled':''}>${checkLabel}</button><div class="q-feedback" id="feedback-${qi}"></div>`;
+    c.appendChild(card);
+  });
+  if(!preserveState){ userAnswers = new Array(QUIZ.length).fill(null); checked = new Array(QUIZ.length).fill(false); score = 0; }
+  updateScoreBar();
+  document.getElementById('finalScore').classList.remove('show');
+}
+function selectAnswer(qi, val){ userAnswers[qi] = val; }
+function toggleMulti(qi, oi){
+  if(!Array.isArray(userAnswers[qi])) userAnswers[qi] = [];
+  const idx = userAnswers[qi].indexOf(oi);
+  if(idx === -1) userAnswers[qi].push(oi); else userAnswers[qi].splice(idx,1);
+}
+function selectMatch(qi){
+  const q = QUIZ[qi];
+  const sels = q.listA.map((_,ai)=>document.getElementById(`msel-${qi}-${ai}`).value);
+  const allFilled = sels.every(v => v !== '');
+  userAnswers[qi] = sels.map(v=>Number(v));
+  document.getElementById('checkbtn-'+qi).disabled = !allFilled;
+}
+function checkAnswer(qi){
+  if(checked[qi]) return;
+  const q = QUIZ[qi];
+  let isCorrect = false;
+  const fb = document.getElementById('feedback-'+qi);
+  const explain = (QUIZ_LANG === 'en' && q.explainEn) ? q.explainEn : q.explain;
+  if(q.type === 'mcq'){
+    const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+    if(userAnswers[qi] === null){ alert(QUIZ_LANG==='en' ? 'Please choose an answer first' : 'من فضلك اختر إجابة أولًا'); return; }
+    isCorrect = Number(userAnswers[qi]) === q.correct;
+    for(let i=0;i<options.length;i++){ const el = document.getElementById(`opt-${qi}-${i}`); if(i === q.correct) el.classList.add('correct-flash'); else if(i === Number(userAnswers[qi])) el.classList.add('wrong-flash'); }
+  } else if(q.type === 'tf'){
+    if(userAnswers[qi] === null){ alert(QUIZ_LANG==='en' ? 'Please choose an answer first' : 'من فضلك اختر إجابة أولًا'); return; }
+    const chosen = (userAnswers[qi] === true || userAnswers[qi] === 'true');
+    isCorrect = chosen === q.correct;
+    document.getElementById(q.correct ? `opt-${qi}-1` : `opt-${qi}-0`).classList.add('correct-flash');
+    if(!isCorrect) document.getElementById(q.correct ? `opt-${qi}-0` : `opt-${qi}-1`).classList.add('wrong-flash');
+  } else if(q.type === 'multi'){
+    const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+    const chosen = Array.isArray(userAnswers[qi]) ? userAnswers[qi].slice().sort() : [];
+    const correctSet = q.correctSet.slice().sort();
+    isCorrect = chosen.length === correctSet.length && chosen.every((v,i)=>v===correctSet[i]);
+    for(let i=0;i<options.length;i++){ const el = document.getElementById(`opt-${qi}-${i}`); if(q.correctSet.includes(i)) el.classList.add('correct-flash'); else if(chosen.includes(i)) el.classList.add('wrong-flash'); }
+  } else if(q.type === 'fill'){
+    const val = (userAnswers[qi] || '').trim().toLowerCase();
+    isCorrect = q.accept.some(a => a.toLowerCase() === val || val.includes(a.toLowerCase()));
+    document.getElementById('fill-'+qi).style.borderColor = isCorrect ? 'var(--ok)' : 'var(--bad)';
+  } else if(q.type === 'match'){
+    const chosen = userAnswers[qi] || [];
+    isCorrect = chosen.length === q.correctMap.length && chosen.every((v,i)=>v===q.correctMap[i]);
+    q.listA.forEach((_,ai)=>{
+      const row = document.getElementById(`mrow-${qi}-${ai}`);
+      document.getElementById(`msel-${qi}-${ai}`).disabled = true;
+      if(chosen[ai] === q.correctMap[ai]) row.classList.add('correct-flash'); else row.classList.add('wrong-flash');
+    });
+  }
+  checked[qi] = true;
+  if(isCorrect) score++;
+  fb.className = 'q-feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+  const correctTag = QUIZ_LANG==='en' ? '✅ <b>Correct!</b> ' : '✅ <b>إجابة صحيحة!</b> ';
+  const wrongTag = QUIZ_LANG==='en' ? '❌ <b>Not quite.</b> ' : '❌ <b>إجابة غير صحيحة.</b> ';
+  fb.innerHTML = (isCorrect ? correctTag : wrongTag) + explain;
+  document.getElementById('checkbtn-'+qi).disabled = true;
+  document.querySelectorAll(`#q-${qi} input`).forEach(inp => inp.disabled = true);
+  updateScoreBar();
+  if(checked.every(Boolean)) showFinalScore();
+}
+function updateScoreBar(){
+  document.getElementById('scoreNow').textContent = score;
+  const answered = checked.filter(Boolean).length;
+  document.getElementById('quizBarFill').style.width = (QUIZ.length ? (answered / QUIZ.length) * 100 : 0) + '%';
+}
+function showFinalScore(){
+  const el = document.getElementById('finalScore');
+  const pct = Math.round((score/QUIZ.length)*100);
+  document.getElementById('finalScoreText').textContent = `${score} / ${QUIZ.length} (${pct}%)`;
+  let msg = '';
+  if(QUIZ_LANG === 'en'){
+    if(pct >= 85) msg = 'Excellent! You are fully ready for both lectures. 🎉';
+    else if(pct >= 60) msg = 'Good! Review the questions you missed via the Full Explanation section.';
+    else msg = 'It is recommended to revisit the Full Explanation and 3 Levels sections before trying again.';
+  } else {
+    if(pct >= 85) msg = 'ممتاز! أنت جاهز تمامًا للمحاضرتين. 🎉';
+    else if(pct >= 60) msg = 'جيد! راجع الأسئلة التي أخطأت فيها من قسم الشرح الكامل.';
+    else msg = 'يُنصح بمراجعة قسمي الشرح الكامل و3 مستويات قبل إعادة المحاولة.';
+  }
+  document.getElementById('finalScoreMsg').textContent = msg;
+  el.classList.add('show');
+}
+function resetQuiz(){
+  userAnswers = new Array(QUIZ.length).fill(null);
+  checked = new Array(QUIZ.length).fill(false);
+  score = 0;
+  document.getElementById('finalScore').classList.remove('show');
+  renderQuiz(true);
+  document.getElementById('quiz').scrollIntoView({behavior:'smooth'});
+}
+renderQuiz(false);
+</script>
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v31edd6df95cf4e85bb4c19e7a9bdbcba1788362987495" integrity="sha512-iIg7k2xntmwu6/uSb5tpc/hySgZc4eoL31yB29W6tJFo2akwjPWcEqnCEdJvGexCL0KEQwVYv5BlowfhVz26hg==" data-cf-beacon='{"version":"2024.11.0","token":"4edd5f8ec12a48cfa682ab8261b80a79","spa":2}' crossorigin="anonymous"></script>
+</body>
+</html>

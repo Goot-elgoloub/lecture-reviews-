@@ -1,5 +1,7 @@
 {
-  "web-engineering": [],
+  "web-engineering": [
+    "lec4-html-table-and-fixed.html"
+  ],
   "information-security": [
     "CH1_info-network-security-concepts-review.html",
     "CH2_malware-social-engineering-review.html"

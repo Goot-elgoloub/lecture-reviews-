@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مرجع المراجعة | Recurrence Relations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0e16;
+    --bg-alt:#0d1220;
+    --card:#121a2b;
+    --card2:#0f1524;
+    --border:#212b40;
+    --border-soft:#1a2336;
+    --text:#e7ecf5;
+    --text-dim:#93a1bd;
+    --text-faint:#5c6a89;
+    --accent:#38bdf8;
+    --accent-soft:#38bdf822;
+
+    --c-o1:#94a3b8;
+    --c-ologn:#a78bfa;
+    --c-on:#38bdf8;
+    --c-onlogn:#34d399;
+    --c-on2:#fbbf24;
+    --c-on3:#fb923c;
+    --c-o2n:#f87171;
+
+    --ok:#34d399;
+    --bad:#f87171;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 600px at 85% -10%, #12203a55, transparent 60%),
+      radial-gradient(900px 500px at -10% 20%, #1a123655, transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'Tajawal', sans-serif;
+    line-height:1.75;
+  }
+  html[dir="ltr"] body{font-family:'Fira Code','Tajawal',sans-serif;}
+  code, .mono, .eq, .term-en{
+    font-family:'Fira Code', monospace;
+    direction:ltr;
+    unicode-bidi:isolate;
+  }
+  a{color:var(--accent);}
+  h1,h2,h3,h4{font-weight:800; margin:0 0 .5em;}
+  p{margin:0 0 1em; color:var(--text);}
+  .container{max-width:1080px; margin:0 auto; padding:0 20px;}
+
+  .lang-toggle{
+    position:fixed; top:16px; z-index:200;
+    inset-inline-end:16px;
+    display:flex; background:#0d1524ee; border:1px solid var(--border);
+    border-radius:999px; padding:4px; backdrop-filter:blur(8px);
+    box-shadow:0 4px 18px #00000055;
+  }
+  .lang-toggle button{
+    border:none; background:transparent; color:var(--text-dim); font-family:'Fira Code',monospace;
+    font-weight:600; font-size:.78rem; padding:7px 14px; border-radius:999px; cursor:pointer; transition:.2s;
+  }
+  .lang-toggle button.active{background:var(--accent); color:#04121c;}
+
+  .hero{position:relative; padding:70px 0 50px; overflow:hidden; border-bottom:1px solid var(--border-soft);}
+  .hero-bg-curve{position:absolute; inset:0; opacity:.35; pointer-events:none;}
+  .hero .kicker{
+    display:inline-block; font-family:'Fira Code',monospace; font-size:.78rem;
+    letter-spacing:.12em; color:var(--accent); background:var(--accent-soft);
+    border:1px solid #38bdf844; padding:5px 12px; border-radius:999px; margin-bottom:18px;
+  }
+  .hero h1{font-size:2.4rem; line-height:1.25; max-width:780px;}
+  .hero h1 .glow{color:var(--accent); text-shadow:0 0 30px #38bdf866;}
+  .hero p.sub{font-size:1.08rem; color:var(--text-dim); max-width:640px;}
+  @media(max-width:640px){ .hero h1{font-size:1.7rem;} .lang-toggle{top:10px;} }
+
+  .nav-wrap{position:sticky; top:0; z-index:50; background:#0a0e16dd; backdrop-filter:blur(10px); border-bottom:1px solid var(--border-soft);}
+  .nav-scroll{display:flex; gap:6px; overflow-x:auto; padding:10px 20px; max-width:1080px; margin:0 auto; scrollbar-width:none;}
+  .nav-scroll::-webkit-scrollbar{display:none;}
+  .nav-scroll a{
+    flex:none; white-space:nowrap; font-size:.86rem; font-weight:500;
+    color:var(--text-dim); text-decoration:none; padding:8px 14px; border-radius:999px; border:1px solid transparent; transition:.2s;
+  }
+  .nav-scroll a:hover{color:var(--text); border-color:var(--border);}
+  .nav-scroll a.active{color:#04121c; background:var(--accent); font-weight:700;}
+
+  section{padding:56px 0; border-bottom:1px solid var(--border-soft);}
+  section:last-of-type{border-bottom:none;}
+  .eyebrow{font-family:'Fira Code',monospace; font-size:.75rem; color:var(--accent); letter-spacing:.1em; margin-bottom:8px; display:block;}
+  section > .container > h2{font-size:1.7rem; margin-bottom:.25em;}
+  section > .container > p.lead{color:var(--text-dim); max-width:720px; margin-bottom:2em; font-size:1.02rem;}
+
+  .grid{display:grid; gap:16px;}
+  .grid-2{grid-template-columns:repeat(2,1fr);}
+  .grid-3{grid-template-columns:repeat(3,1fr);}
+  .grid-4{grid-template-columns:repeat(4,1fr);}
+  .grid-5{grid-template-columns:repeat(5,1fr);}
+  @media(max-width:860px){ .grid-2,.grid-3,.grid-4,.grid-5{grid-template-columns:1fr;} }
+
+  .card{background:linear-gradient(180deg, var(--card), var(--card2)); border:1px solid var(--border); border-radius:var(--radius); padding:22px 22px;}
+  .card h3{font-size:1.12rem; margin-bottom:.4em;}
+  .card h3 .num{color:var(--accent); font-family:'Fira Code',monospace; margin-left:6px;}
+  .card.tinted{border-color:#38bdf844; background:linear-gradient(180deg,#0f1a2c,#0d1524);}
+
+  .badge{display:inline-flex; align-items:center; gap:6px; font-size:.72rem; font-weight:700; font-family:'Fira Code',monospace; padding:3px 10px; border-radius:999px; letter-spacing:.03em;}
+  .b-o1{color:var(--c-o1); background:#94a3b81a; border:1px solid #94a3b855;}
+  .b-ologn{color:var(--c-ologn); background:#a78bfa1a; border:1px solid #a78bfa55;}
+  .b-on{color:var(--c-on); background:#38bdf81a; border:1px solid #38bdf855;}
+  .b-onlogn{color:var(--c-onlogn); background:#34d3991a; border:1px solid #34d39955;}
+  .b-on2{color:var(--c-on2); background:#fbbf241a; border:1px solid #fbbf2455;}
+  .b-on3{color:var(--c-on3); background:#fb923c1a; border:1px solid #fb923c55;}
+  .b-o2n{color:var(--c-o2n); background:#f871711a; border:1px solid #f8717155;}
+
+  pre{background:#080b12; border:1px solid var(--border); border-radius:10px; padding:16px 18px; overflow-x:auto; direction:ltr; text-align:left; font-family:'Fira Code',monospace; font-size:.88rem; color:#c9e6ff; margin:12px 0;}
+  .line-note{display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-top:1px dashed var(--border-soft);}
+  .line-note:first-child{border-top:none;}
+  .line-note .ln{font-family:'Fira Code',monospace; font-size:.78rem; color:var(--accent); background:#0d1524; border:1px solid var(--border); border-radius:6px; padding:2px 8px; flex:none; margin-top:2px;}
+
+  table{width:100%; border-collapse:collapse; margin:14px 0; font-size:.95rem;}
+  th,td{padding:11px 12px; text-align:start; border-bottom:1px solid var(--border-soft);}
+  th{color:var(--accent); font-family:'Fira Code',monospace; font-size:.78rem; letter-spacing:.04em; border-bottom:1px solid var(--border);}
+  tr:hover td{background:#ffffff05;}
+  td .mono{color:#c9e6ff;}
+
+  .note{border-radius:10px; border:1px solid #fbbf2444; background:#fbbf240d; padding:14px 16px; font-size:.95rem; color:#f3e2b0;}
+  .note.good{border-color:#34d39944; background:#34d3990d; color:#bdf3da;}
+  .note.info{border-color:#38bdf844; background:#38bdf80d; color:#bfe6fb;}
+  .note.warn{border-color:#f8717144; background:#f871710d; color:#fbd7d7;}
+
+  .diagram-block{border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:22px; background:var(--card);}
+  .diagram-head{padding:16px 20px; border-bottom:1px solid var(--border-soft); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px;}
+  .diagram-head h3{margin:0;}
+  .diagram-body{padding:20px;}
+  .curve-legend{display:flex; flex-wrap:wrap; gap:8px; margin:14px 0;}
+  .curve-row{display:flex; align-items:center; gap:10px; padding:6px 0;}
+  .curve-swatch{width:26px; height:4px; border-radius:3px; flex:none;}
+
+  .visual-diagram{background:#080b12; border:1px solid var(--border); border-radius:10px; padding:18px; margin:14px 0; overflow-x:auto;}
+  .row-track{display:flex; align-items:center; gap:6px; margin:8px 0; font-family:'Fira Code',monospace; font-size:.8rem; direction:ltr;}
+  .row-track .row-label{width:80px; flex:none; color:var(--accent);}
+  .row-track .box{width:18px; height:18px; border-radius:4px; background:#38bdf8; flex:none;}
+  .row-track .dots{color:var(--text-faint); flex:none;}
+  .row-track .row-note{color:var(--text-dim); margin-inline-start:10px; white-space:nowrap;}
+
+  .tree-wrap{font-family:'Fira Code',monospace; direction:ltr; text-align:left; font-size:.86rem; color:#d7e6f7;}
+
+  .level-tabs{display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap;}
+  .level-tab{padding:9px 16px; border-radius:10px; border:1px solid var(--border); background:var(--card2); color:var(--text-dim); cursor:pointer; font-family:'Tajawal',sans-serif; font-weight:700; font-size:.9rem;}
+  .level-tab.active{background:var(--accent); color:#04121c; border-color:var(--accent);}
+  .level-panel{display:none;}
+  .level-panel.active{display:block;}
+  .quickref-list{list-style:none; padding:0; margin:0; font-family:'Fira Code',monospace; direction:ltr; text-align:left;}
+  .quickref-list li{padding:10px 14px; margin-bottom:6px; border-radius:8px; background:#0d1524; border:1px solid var(--border-soft); font-size:.86rem; color:#d7e6f7;}
+
+  .quiz-progress{display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px 18px; gap:14px; flex-wrap:wrap;}
+  .quiz-score{font-family:'Fira Code',monospace; font-weight:600; color:var(--accent); font-size:1.05rem;}
+  .quiz-bar{flex:1; min-width:140px; height:8px; border-radius:99px; background:#1a2336; overflow:hidden;}
+  .quiz-bar-fill{height:100%; width:0%; background:linear-gradient(90deg,#38bdf8,#34d399); transition:width .3s;}
+
+  .q-card{border:1px solid var(--border); background:var(--card); border-radius:var(--radius); padding:20px 22px; margin-bottom:16px;}
+  .q-card .q-meta{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; gap:10px; flex-wrap:wrap;}
+  .q-type-tag{font-family:'Fira Code',monospace; font-size:.7rem; color:var(--text-faint); border:1px solid var(--border); padding:2px 9px; border-radius:999px;}
+  .q-prompt{font-weight:700; font-size:1.02rem; margin-bottom:14px;}
+  .q-prompt code{background:#0d1524; padding:1px 6px; border-radius:5px; font-size:.9em;}
+  .opt-list{display:flex; flex-direction:column; gap:8px;}
+  .opt{display:flex; align-items:center; gap:10px; padding:11px 14px; border-radius:10px; border:1px solid var(--border); background:var(--card2); cursor:pointer; transition:.15s; font-size:.95rem;}
+  .opt:hover{border-color:#38bdf866;}
+  .opt input{accent-color:var(--accent); width:16px; height:16px; flex:none;}
+  .opt.correct-flash{border-color:var(--ok); background:#34d3991a;}
+  .opt.wrong-flash{border-color:var(--bad); background:#f871711a;}
+  .fill-input{width:100%; max-width:320px; background:#0d1524; border:1px solid var(--border); border-radius:9px; padding:11px 14px; color:var(--text); font-family:'Fira Code',monospace; font-size:.95rem; direction:ltr; text-align:left;}
+  .fill-input:focus{outline:none; border-color:var(--accent);}
+  .check-btn{margin-top:14px; background:var(--accent); color:#04121c; border:none; padding:9px 20px; border-radius:9px; font-weight:700; cursor:pointer; font-family:'Tajawal',sans-serif; font-size:.9rem;}
+  .check-btn:disabled{opacity:.5; cursor:default;}
+  .check-btn:hover:not(:disabled){filter:brightness(1.1);}
+  .q-feedback{margin-top:12px; padding:12px 14px; border-radius:10px; font-size:.9rem; display:none;}
+  .q-feedback.show{display:block;}
+  .q-feedback.correct{background:#34d3991a; border:1px solid #34d39955; color:#c8f5e2;}
+  .q-feedback.incorrect{background:#f871711a; border:1px solid #f8717155; color:#fbd7d7;}
+  .final-score{text-align:center; padding:30px 20px; border-radius:var(--radius); border:1px solid var(--accent); background:linear-gradient(180deg,#0f1a2c,#0d1524); margin-top:20px; display:none;}
+  .final-score.show{display:block;}
+  .final-score .big{font-size:2.4rem; font-weight:800; color:var(--accent); font-family:'Fira Code',monospace;}
+  .reset-btn{margin-top:14px; background:transparent; border:1px solid var(--border); color:var(--text); padding:9px 20px; border-radius:9px; cursor:pointer; font-family:'Tajawal',sans-serif; font-weight:700;}
+
+  .match-wrap{display:flex; flex-direction:column; gap:10px;}
+  .match-row{display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:10px; border:1px solid var(--border); background:var(--card2); flex-wrap:wrap;}
+  .match-row .match-a{flex:1; min-width:160px; font-size:.95rem;}
+  .match-row select{background:#0d1524; color:var(--text); border:1px solid var(--border); border-radius:8px; padding:8px 10px; font-family:'Tajawal',sans-serif; font-size:.88rem; min-width:220px; max-width:100%;}
+  .match-row select:focus{outline:none; border-color:var(--accent);}
+  .match-row.correct-flash{border-color:var(--ok); background:#34d3991a;}
+  .match-row.wrong-flash{border-color:var(--bad); background:#f871711a;}
+
+  .tip-item, .mistake-item{display:flex; gap:12px; padding:14px 0; border-top:1px solid var(--border-soft);}
+  .tip-item:first-child, .mistake-item:first-child{border-top:none;}
+  .tip-icon, .mistake-icon{flex:none; font-size:1.2rem; line-height:1.4;}
+
+  footer{padding:30px 0 60px; text-align:center; color:var(--text-faint); font-size:.85rem;}
+</style>
+</head>
+<body>
+
+<div class="lang-toggle">
+  <button id="btnAr" class="active" onclick="setLang('ar')">AR · عربي</button>
+  <button id="btnEn" onclick="setLang('en')">EN</button>
+</div>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <svg class="hero-bg-curve" viewBox="0 0 1080 260" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M0,255 C 250,250 500,180 620,90 C 720,20 780,-30 850,-60" stroke="#f87171" stroke-width="2" fill="none"/>
+    <path d="M0,257 C 300,253 600,220 720,150 C 820,90 900,40 980,-10" stroke="#fb923c" stroke-width="2" fill="none"/>
+    <path d="M0,258 C 350,255 650,230 780,190 C 900,150 980,120 1080,80" stroke="#fbbf24" stroke-width="2" fill="none"/>
+    <path d="M0,259 C 400,256 700,240 850,220 C 950,205 1020,195 1080,185" stroke="#34d399" stroke-width="2" fill="none"/>
+    <path d="M0,260 C 400,258 750,248 900,240 C 1000,235 1050,232 1080,229" stroke="#38bdf8" stroke-width="2" fill="none"/>
+    <path d="M0,260 C 450,259 800,254 1080,251" stroke="#a78bfa" stroke-width="2" fill="none"/>
+  </svg>
+  <div class="container">
+    <span class="kicker">LECTURE 6 · REVIEW SHEET</span>
+    <h1><span class="i18n" data-en="Recurrence">Recurrence</span> <span class="glow i18n" data-en="Relations">Relations</span></h1>
+    <p class="sub i18n" data-en="An interactive review sheet — how to mathematically model a recursive algorithm's cost, solve recurrences by expansion and substitution, read asymptotic expressions, and apply the Master Theorem's three cases.">مرجع مراجعة تفاعلي — كيف نُشكِّل نموذجًا رياضيًا لتكلفة خوارزمية تكرارية-ذاتية، وحلّ علاقات التكرار بالتوسيع والاستبدال، وقراءة التعبيرات المقاربة، وتطبيق حالات نظرية Master الثلاث.</p>
+  </div>
+</header>
+
+<!-- ============ STICKY NAV ============ -->
+<div class="nav-wrap">
+  <nav class="nav-scroll" id="navScroll">
+    <a href="#overview" class="i18n" data-en="Overview">نظرة عامة</a>
+    <a href="#explain" class="i18n" data-en="Full Explanation">الشرح الكامل</a>
+    <a href="#diagrams" class="i18n" data-en="Diagrams &amp; Charts">الرسومات والمخططات</a>
+    <a href="#summary" class="i18n" data-en="Summary Table">جدول التلخيص</a>
+    <a href="#levels" class="i18n" data-en="3 Levels">3 مستويات</a>
+    <a href="#quiz" class="i18n" data-en="Interactive Quiz">الاختبار التفاعلي</a>
+    <a href="#tips" class="i18n" data-en="Pro Tips">نصائح احترافية</a>
+  </nav>
+</div>
+
+<!-- ============ 1. OVERVIEW ============ -->
+<section id="overview">
+  <div class="container">
+    <span class="eyebrow">01 / OVERVIEW</span>
+    <h2 class="i18n" data-en="Lecture Overview">نظرة عامة على المحاضرة</h2>
+    <p class="lead i18n" data-en="Lecture 6 answers the question left open by Divide and Conquer: if an algorithm calls itself, how do we calculate its running time mathematically? It introduces recurrence relations as a cost model, solves them by expansion and by substitution, reviews asymptotic notation (dominant terms, Big O vs. Big Theta, growth-rate comparisons), builds the Merge Sort recurrence and its recursion tree, and culminates in the Master Theorem — a three-case shortcut for solving Divide-and-Conquer recurrences without step-by-step expansion.">
+      تجيب المحاضرة السادسة على السؤال الذي تركته Divide and Conquer مفتوحًا: إذا استدعت خوارزمية نفسها، كيف نحسب زمن تشغيلها رياضيًا؟ تُقدّم علاقات التكرار (recurrence relations) كنموذج تكلفة، وتحلّها بالتوسيع وبالاستبدال، وتُراجع الترميز المقارب (الحد المهيمن، Big O مقابل Big Theta، مقارنة معدلات النمو)، وتبني علاقة تكرار Merge Sort وشجرة استدعائها، وتختتم بنظرية Master — اختصار بثلاث حالات لحل علاقات تكرار فرّق تسد دون توسيع خطوة بخطوة.
+    </p>
+
+    <div class="grid grid-2">
+      <div class="card tinted">
+        <h3 class="i18n" data-en="🎯 The Core Idea">🎯 الفكرة المحورية</h3>
+        <p class="i18n" data-en="A recurrence relation is a mathematical model of an algorithm's cost — it describes the running time of a recursive algorithm in terms of the running time on smaller inputs. Once you can write the recurrence, you have three tools to solve it: expand it level by level, guess-and-prove it by substitution, or — for the common Divide-and-Conquer shape — classify it instantly with the Master Theorem.">علاقة التكرار نموذج رياضي لتكلفة خوارزمية — تصف زمن تشغيل خوارزمية تكرارية-ذاتية بدلالة زمن التشغيل على مدخلات أصغر. بمجرد أن تستطيع كتابة علاقة التكرار، لديك ثلاث أدوات لحلّها: توسيعها مستوى بمستوى، تخمينها وإثباتها بالاستبدال، أو — لشكل فرّق تسد الشائع — تصنيفها فوريًا بنظرية Master.</p>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="🧠 Key Concepts in This Lecture">🧠 أهم المفاهيم في هذه المحاضرة</h3>
+        <ul style="margin:0; padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="The three components of a recurrence: recursive part, outside work, base case">المكوّنات الثلاثة لعلاقة التكرار: الجزء التكراري، العمل الخارجي، الحالة الأساسية</li>
+          <li class="i18n" data-en="Solving by expansion (level-by-level) and by substitution (guess → substitute → prove)">الحل بالتوسيع (مستوى بمستوى) وبالاستبدال (تخمين ← استبدال ← إثبات)</li>
+          <li class="i18n" data-en="Dominant terms, Big O (upper bound) vs. Big Theta (tight bound)">الحدود المهيمنة، Big O (الحد الأعلى) مقابل Big Theta (الحد المُحكَم)</li>
+          <li class="i18n" data-en="Growth-rate ordering: log n &lt; n &lt; n log n &lt; n² &lt; n³ &lt; 2ⁿ">ترتيب معدلات النمو: log n &lt; n &lt; n log n &lt; n² &lt; n³ &lt; 2ⁿ</li>
+          <li class="i18n" data-en="The recursion tree method applied to Merge Sort">طريقة شجرة الاستدعاء مُطبَّقة على Merge Sort</li>
+          <li class="i18n" data-en="The Master Theorem's general form and its three cases">الصيغة العامة لنظرية Master وحالاتها الثلاث</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid grid-3" style="margin-top:16px;">
+      <div class="card">
+        <h3 class="i18n" data-en="🛠️ Skills Gained">🛠️ المهارات المكتسبة</h3>
+        <p style="color:var(--text-dim); margin:0;" class="i18n" data-en="Translating a recursive algorithm directly into its recurrence equation.">ترجمة خوارزمية تكرارية-ذاتية مباشرة إلى معادلة تكرارها.</p>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="🌳 Tree &amp; Proof Thinking">🌳 التفكير بالشجرة والإثبات</h3>
+        <p style="color:var(--text-dim); margin:0;" class="i18n" data-en="Visualizing per-level cost and proving bounds by induction.">تصوّر التكلفة لكل مستوى وإثبات الحدود بالاستقراء.</p>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="⚖️ Fast Classification">⚖️ تصنيف سريع</h3>
+        <p style="color:var(--text-dim); margin:0;" class="i18n" data-en="Applying the Master Theorem's three-case comparison to classify recurrences instantly.">تطبيق مقارنة نظرية Master الثلاثية لتصنيف علاقات التكرار فوريًا.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. FULL EXPLANATION ============ -->
+<section id="explain">
+  <div class="container">
+    <span class="eyebrow">02 / FULL EXPLANATION</span>
+    <h2 class="i18n" data-en="Full Explanation of Every Section">الشرح الكامل لكل قسم</h2>
+    <p class="lead i18n" data-en="Each card covers one part of the lecture in order, without dropping information from the slides.">كل بطاقة تغطي جزءًا من المحاضرة بالترتيب، دون تجاوز أي معلومة من الشرائح.</p>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.1</span> <span class="i18n" data-en="Where We Left Off — and Where We're Going">أين توقفنا — وإلى أين نتجه</span></h3>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Previous Lecture">المحاضرة السابقة</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="We explored Divide and Conquer as a design strategy — splitting problems into smaller subproblems, solving each recursively, then combining results.">استكشفنا Divide and Conquer كاستراتيجية تصميم — تقسيم المسائل إلى مسائل فرعية أصغر، حلّ كل منها تكراريًا، ثم دمج النتائج.</p></div>
+        <div class="card" style="padding:14px;"><b class="i18n" data-en="Today's Focus">تركيز اليوم</b><p style="color:var(--text-dim); font-size:.9rem; margin-top:6px;" class="i18n" data-en="How do we mathematically analyze recursive algorithms? If an algorithm calls itself, how do we calculate its running time?">كيف نُحلّل الخوارزميات التكرارية-ذاتية رياضيًا؟ إذا استدعت خوارزمية نفسها، كيف نحسب زمن تشغيلها؟</p></div>
+      </div>
+      <div class="note info" style="margin-top:10px;"><b class="i18n" data-en="Learning Objectives:">أهداف التعلّم:</b> <span class="i18n" data-en="Understand recurrence relations · Build recurrence equations from algorithms · Solve simple recursive recurrences · Apply the Master Theorem.">فهم علاقات التكرار · بناء معادلات تكرار من الخوارزميات · حلّ علاقات تكرار بسيطة · تطبيق نظرية Master.</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.2</span> <span class="i18n" data-en="What Is a Recurrence Relation?">ما هي علاقة التكرار؟</span></h3>
+      <p class="i18n" data-en="A recurrence relation describes an algorithm's running time in terms of smaller input sizes — a mathematical model of recursive structure.">علاقة التكرار تصف زمن تشغيل خوارزمية بدلالة أحجام مدخلات أصغر — نموذج رياضي للبنية التكرارية-الذاتية.</p>
+      <div class="note good" class="i18n" data-en="A recurrence relation is a mathematical model of an algorithm's cost.">علاقة التكرار نموذج رياضي لتكلفة خوارزمية.</div>
+      <p style="margin-top:8px;"><b class="i18n" data-en="Example — Binary Search:">مثال — Binary Search:</b></p>
+      <pre>T(n) = T(n/2) + c</pre>
+      <div class="line-note"><span class="ln">T(n)</span><div class="i18n" data-en="Running time for input size n.">زمن التشغيل لحجم مدخل n.</div></div>
+      <div class="line-note"><span class="ln">T(n/2)</span><div class="i18n" data-en="Time for the smaller subproblem.">زمن المسألة الفرعية الأصغر.</div></div>
+      <div class="line-note"><span class="ln">c</span><div class="i18n" data-en="Constant work at the current level.">عمل ثابت عند المستوى الحالي.</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.3</span> <span class="i18n" data-en="Components of a Recurrence Relation">مكوّنات علاقة التكرار</span></h3>
+      <p class="i18n" data-en="Every recurrence has three parts that together fully describe the algorithm's cost.">لكل علاقة تكرار ثلاثة أجزاء تصف معًا تكلفة الخوارزمية كاملة.</p>
+      <table>
+        <tr><th>#</th><th class="i18n" data-en="Part">الجزء</th><th class="i18n" data-en="Form">الصيغة</th><th class="i18n" data-en="Description">الوصف</th></tr>
+        <tr><td>1</td><td><b class="i18n" data-en="Recursive Part">الجزء التكراري-الذاتي</b></td><td class="mono">T(n/2) <span class="i18n" data-en="or">أو</span> 2T(n/2)</td><td class="i18n" data-en="The cost of solving smaller subproblems.">تكلفة حلّ المسائل الفرعية الأصغر.</td></tr>
+        <tr><td>2</td><td><b class="i18n" data-en="Outside Work">العمل الخارجي</b></td><td class="mono">+ c <span class="i18n" data-en="or">أو</span> + n</td><td class="i18n" data-en="Operations performed at the current level — dividing and combining.">العمليات المُنفَّذة عند المستوى الحالي — التقسيم والدمج.</td></tr>
+        <tr><td>3</td><td><b class="i18n" data-en="Base Case">الحالة الأساسية</b></td><td class="mono">T(1) = c</td><td class="i18n" data-en="The stopping condition — the smallest input size.">شرط التوقف — أصغر حجم مدخل.</td></tr>
+      </table>
+      <div class="note info" style="margin-top:8px;" class="i18n" data-en="Binary Search: T(n) = T(n/2) + c, with base case T(1) = c. The equation mirrors the algorithm's structure.">Binary Search: T(n) = T(n/2) + c، بحالة أساسية T(1) = c. المعادلة تُطابق بنية الخوارزمية.</div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.4</span> <span class="i18n" data-en="Solving a Simple Recurrence (Expansion Method)">حلّ علاقة تكرار بسيطة (طريقة التوسيع)</span></h3>
+      <p class="i18n" data-en="Consider T(n) = T(n/2) + c. Each expansion adds one more level of work:">اعتبر T(n) = T(n/2) + c. كل توسيع يُضيف مستوى عمل آخر:</p>
+      <pre>Level 1:  T(n) = T(n/2) + c
+Level 2:  T(n) = T(n/4) + 2c
+Level 3:  T(n) = T(n/8) + 3c
+...
+After k levels:  T(n) = T(n/2^k) + kc</pre>
+      <div class="note good" class="i18n" data-en="Recursion stops when n/2ᵏ = 1, so k = log₂ n. Result: T(n) = Θ(log n). Repeated division by 2 produces logarithmic depth.">يتوقف الاستدعاء-الذاتي عندما n/2ᵏ = 1، إذن k = log₂ n. النتيجة: T(n) = Θ(log n). القسمة المتكررة على 2 تُنتج عمقًا لوغاريتميًا.</div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.5</span> <span class="i18n" data-en="Identifying the Dominant Term">تحديد الحد المهيمن</span></h3>
+      <p class="i18n" data-en="For any polynomial or asymptotic expression, focus on the term that grows fastest as n → ∞. Lower-order terms and constants fade into insignificance.">لأي تعبير متعدد حدود أو مقارب، ركّز على الحد الذي ينمو الأسرع مع n → ∞. الحدود الأدنى رتبة والثوابت تصبح غير ذات أهمية.</p>
+      <table>
+        <tr><th class="i18n" data-en="Expression">التعبير</th><th class="i18n" data-en="Dominant">المهيمن</th><th class="i18n" data-en="Complexity">التعقيد</th></tr>
+        <tr><td class="mono">T(n) = 3n² + 5n + 7</td><td class="mono">n²</td><td><span class="badge b-on2">Θ(n²)</span></td></tr>
+        <tr><td class="mono">T(n) = 8n + 20</td><td class="mono">n</td><td><span class="badge b-on">Θ(n)</span></td></tr>
+        <tr><td class="mono">T(n) = 4n³ + 2n² + n + 1</td><td class="mono">n³</td><td><span class="badge b-on3">Θ(n³)</span></td></tr>
+        <tr><td class="mono">T(n) = n log₂ n + 10n</td><td class="mono">n log n</td><td><span class="badge b-onlogn">Θ(n log n)</span></td></tr>
+      </table>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.6</span> <span class="i18n" data-en="Reading Asymptotic Expressions">قراءة التعبيرات المقاربة</span></h3>
+      <table>
+        <tr><th class="i18n" data-en="Expression">التعبير</th><th class="i18n" data-en="Dominant Term">الحد المهيمن</th><th class="i18n" data-en="Complexity">التعقيد</th></tr>
+        <tr><td class="mono">4n + 10</td><td class="mono">n</td><td class="mono">Θ(n)</td></tr>
+        <tr><td class="mono">3n² + 7n + 4</td><td class="mono">n²</td><td class="mono">Θ(n²)</td></tr>
+        <tr><td class="mono">2n³ + n² + 5</td><td class="mono">n³</td><td class="mono">Θ(n³)</td></tr>
+        <tr><td class="mono">n log₂ n + 10n</td><td class="mono">n log n</td><td class="mono">Θ(n log n)</td></tr>
+      </table>
+      <div class="note info"><b class="i18n" data-en="Key Principle — as n becomes large:">المبدأ الأساسي — مع تزايد n:</b> <span class="i18n" data-en="Lower-order terms become less significant · Constant factors do not affect asymptotic growth · The dominant growth rate determines Θ.">الحدود الأدنى رتبة تصبح أقل أهمية · العوامل الثابتة لا تؤثر على النمو المقارب · معدل النمو المهيمن يُحدّد Θ.</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.7</span> <span class="i18n" data-en="Big O vs. Big Theta">Big O مقابل Big Theta</span></h3>
+      <table>
+        <tr><th class="i18n" data-en="Notation">الترميز</th><th class="i18n" data-en="Name">الاسم</th><th class="i18n" data-en="Meaning">المعنى</th></tr>
+        <tr><td class="mono">f(n) = O(g(n))</td><td><b class="i18n" data-en="Big O — Upper Bound">Big O — الحد الأعلى</b></td><td class="i18n" data-en="f(n) grows no faster than g(n). It's a ceiling — the algorithm won't take longer than this.">f(n) لا تنمو أسرع من g(n). إنه سقف — لن تستغرق الخوارزمية أطول من هذا.</td></tr>
+        <tr><td class="mono">f(n) = Θ(g(n))</td><td><b class="i18n" data-en="Big Theta — Tight Bound">Big Theta — الحد المُحكَم</b></td><td class="i18n" data-en="f(n) and g(n) share the same asymptotic growth rate. It's a precise characterization.">f(n) وg(n) تتشاركان نفس معدل النمو المقارب. إنه توصيف دقيق.</td></tr>
+      </table>
+      <div class="note warn"><b class="i18n" data-en="Exam Tip:">نصيحة امتحان:</b> <span class="i18n" data-en="n = O(n²) is true, but n = Θ(n²) is false. The tightest description is n = Θ(n). A Big O bound can be correct without being the tightest.">n = O(n²) صحيحة، لكن n = Θ(n²) خاطئة. الوصف الأدق هو n = Θ(n). حد Big O قد يكون صحيحًا دون أن يكون الأدق.</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.8</span> <span class="i18n" data-en="Quick Asymptotic Practice">تدريب سريع على التحليل المقارب</span></h3>
+      <p class="i18n" data-en="Before solving, ask yourself: Do I already have an expression, or do I need to build a recurrence?">قبل الحل، اسأل نفسك: هل لديّ تعبير جاهز، أم أحتاج لبناء علاقة تكرار؟</p>
+      <table>
+        <tr><th class="i18n" data-en="Question">السؤال</th><th class="i18n" data-en="Dominant Term">الحد المهيمن</th><th class="i18n" data-en="Answer">الإجابة</th></tr>
+        <tr><td class="mono">f(n) = 5n + 2</td><td class="mono">n</td><td class="mono">Θ(n)</td></tr>
+        <tr><td class="mono">f(n) = 3n² + 7n + 1</td><td class="mono">n²</td><td class="mono">Θ(n²)</td></tr>
+        <tr><td class="mono">f(n) = 7n³ + 100n² + 5000</td><td class="mono">n³</td><td class="mono">Θ(n³)</td></tr>
+      </table>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.9</span> <span class="i18n" data-en="Comparing Growth Rates">مقارنة معدلات النمو</span></h3>
+      <p class="i18n" data-en="As n → ∞, growth rate is everything. A function may be larger for small inputs but eventually be dominated by a faster-growing function.">مع n → ∞، معدل النمو هو كل شيء. قد تكون دالة أكبر عند مدخلات صغيرة لكنها تُهيمَن عليها في النهاية بدالة أسرع نموًا.</p>
+      <div class="note good" class="i18n" data-en="For example, n² = O(2ⁿ) ✓ but 2ⁿ ≠ O(n²) ✗ — exponential dominates polynomial.">مثال: n² = O(2ⁿ) ✓ لكن 2ⁿ ≠ O(n²) ✗ — الأسّي يُهيمن على كثير الحدود.</div>
+      <div class="note info" style="margin-top:8px;"><b class="i18n" data-en="Growth Order:">ترتيب النمو:</b> <span class="mono">log n &lt; n &lt; n log n &lt; n² &lt; n³ &lt; 2ⁿ</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.10</span> <span class="i18n" data-en="Big O &amp; Big Theta — True or False?">Big O و Big Theta — صح أم خطأ؟</span></h3>
+      <table>
+        <tr><th class="i18n" data-en="Statement">العبارة</th><th class="i18n" data-en="Answer">الإجابة</th><th class="i18n" data-en="Why">لماذا</th></tr>
+        <tr><td class="mono">n ∈ O(n²)</td><td>✓ <span class="i18n" data-en="True">صح</span></td><td class="i18n" data-en="Upper bound holds.">الحد الأعلى يصمد.</td></tr>
+        <tr><td class="mono">n² ∈ O(n²)</td><td>✓ <span class="i18n" data-en="True">صح</span></td><td class="i18n" data-en="Same growth rate.">نفس معدل النمو.</td></tr>
+        <tr><td class="mono">n² ∈ O(n)</td><td>✗ <span class="i18n" data-en="False">خطأ</span></td><td class="i18n" data-en="n² grows faster.">n² تنمو أسرع.</td></tr>
+        <tr><td class="mono">log n ∈ O(n)</td><td>✓ <span class="i18n" data-en="True">صح</span></td><td class="i18n" data-en="Log is slower.">اللوغاريتم أبطأ.</td></tr>
+        <tr><td class="mono">n² ∈ Θ(n)</td><td>✗ <span class="i18n" data-en="False">خطأ</span></td><td class="i18n" data-en="Not a tight bound.">ليس حدًا مُحكَمًا.</td></tr>
+      </table>
+      <div class="note warn" style="margin-top:6px;" class="i18n" data-en="Remember: Big O → upper bound. Big Θ → tight bound. A statement can be Big O correct without being the tightest description.">تذكّر: Big O ← حد أعلى. Big Θ ← حد مُحكَم. قد تكون عبارة صحيحة بـBig O دون أن تكون الوصف الأدق.</div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.11</span> <span class="i18n" data-en="Merge Sort Recurrence">علاقة تكرار Merge Sort</span></h3>
+      <p class="i18n" data-en="Merge Sort follows the Divide and Conquer pattern exactly, producing a classic recurrence.">يتبع Merge Sort نمط Divide and Conquer بالضبط، مُنتجًا علاقة تكرار كلاسيكية.</p>
+      <div class="grid grid-3">
+        <div class="card" style="padding:14px;"><span class="badge b-on">Divide</span><p style="color:var(--text-dim); font-size:.88rem; margin-top:6px;" class="i18n" data-en="Split array into two halves.">قسّم المصفوفة إلى نصفين.</p></div>
+        <div class="card" style="padding:14px;"><span class="badge b-onlogn">Conquer</span><p style="color:var(--text-dim); font-size:.88rem; margin-top:6px;" class="i18n" data-en="Sort each half recursively.">رتّب كل نصف تكراريًا.</p></div>
+        <div class="card" style="padding:14px;"><span class="badge b-on2">Combine</span><p style="color:var(--text-dim); font-size:.88rem; margin-top:6px;" class="i18n" data-en="Merge results in O(n) time.">ادمج النتائج بزمن O(n).</p></div>
+      </div>
+      <pre>T(n) = 2T(n/2) + n</pre>
+      <div class="line-note"><span class="ln">2T(n/2)</span><div class="i18n" data-en="Two recursive calls on half-sized inputs.">استدعاءان تكراريان-ذاتيان على مدخلات نصف الحجم.</div></div>
+      <div class="line-note"><span class="ln">n</span><div class="i18n" data-en="Cost of the merge operation.">تكلفة عملية الدمج.</div></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.12</span> <span class="i18n" data-en="Recursion Tree Method">طريقة شجرة الاستدعاء</span></h3>
+      <p class="i18n" data-en="The recursion tree visualizes cost at every level of recursion, making the total complexity intuitive. See the full tree below in Diagrams.">تُصوِّر شجرة الاستدعاء التكلفة عند كل مستوى من الاستدعاء-الذاتي، مما يجعل التعقيد الكلي بديهيًا. انظر الشجرة الكاملة أدناه في قسم الرسومات.</p>
+      <div class="note good"><b class="i18n" data-en="Reading the Tree:">قراءة الشجرة:</b> <span class="i18n" data-en="Each level costs exactly n · Number of levels: log₂ n · Total cost: n × log n.">كل مستوى يكلّف n بالضبط · عدد المستويات: log₂ n · التكلفة الكلية: n × log n.</span></div>
+      <p style="margin-top:8px;"><b class="i18n" data-en="Result:">النتيجة:</b> <span class="mono">T(n) = O(n log n)</span> — <span class="i18n" data-en="the recursion tree shows exactly where the complexity comes from — each level contributes equally.">تُظهر شجرة الاستدعاء بالضبط من أين يأتي التعقيد — كل مستوى يُسهم بالتساوي.</span></p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.13</span> <span class="i18n" data-en="The Substitution Method">طريقة الاستبدال</span></h3>
+      <p class="i18n" data-en="Proves an asymptotic bound through a three-step process: Guess → Substitute → Prove.">تُثبت حدًا مقاربًا عبر عملية من ثلاث خطوات: تخمين ← استبدال ← إثبات.</p>
+      <div class="note info"><b class="i18n" data-en="Example:">مثال:</b> <span class="i18n" data-en="T(n) = T(n/2) + 1. Guess T(n) = O(log n). Assume T(n/2) ≤ c log₂(n/2) + d, substitute to get T(n) ≤ c log₂(n/2) + d + 1. Since log₂(n/2) = log₂ n − 1, the bound holds for appropriate c.">T(n) = T(n/2) + 1. نُخمّن T(n) = O(log n). نفترض T(n/2) ≤ c log₂(n/2) + d، نستبدل لنحصل على T(n) ≤ c log₂(n/2) + d + 1. بما أن log₂(n/2) = log₂ n − 1، يصمد الحد لـc مناسبة.</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.14</span> <span class="i18n" data-en="The Master Theorem">نظرية Master</span></h3>
+      <p class="i18n" data-en="A powerful shortcut for solving recurrences of Divide and Conquer algorithms — no step-by-step expansion needed.">اختصار قوي لحلّ علاقات تكرار خوارزميات فرّق تسد — بلا حاجة للتوسيع خطوة بخطوة.</p>
+      <pre>General Form:        T(n) = aT(n/b) + f(n)
+Example — Merge Sort: T(n) = 2T(n/2) + n</pre>
+      <table>
+        <tr><th class="i18n" data-en="Symbol">الرمز</th><th class="i18n" data-en="Meaning">المعنى</th><th class="i18n" data-en="Merge Sort Value">قيمة Merge Sort</th></tr>
+        <tr><td class="mono">a</td><td class="i18n" data-en="Number of subproblems">عدد المسائل الفرعية</td><td class="mono">a = 2 — <span class="i18n" data-en="two subproblems">مسألتان فرعيتان</span></td></tr>
+        <tr><td class="mono">n/b</td><td class="i18n" data-en="Size of each subproblem">حجم كل مسألة فرعية</td><td class="mono">b = 2 — <span class="i18n" data-en="each half the size">كل منها نصف الحجم</span></td></tr>
+        <tr><td class="mono">f(n)</td><td class="i18n" data-en="Work outside recursion">العمل خارج الاستدعاء-الذاتي</td><td class="mono">f(n) = n — <span class="i18n" data-en="merge cost">تكلفة الدمج</span></td></tr>
+      </table>
+      <div class="note warn" class="i18n" data-en="The Master Theorem is a shortcut, not a replacement for understanding.">نظرية Master اختصار، وليست بديلًا عن الفهم.</div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.15</span> <span class="i18n" data-en="The Three Cases of the Master Theorem">حالات نظرية Master الثلاث</span></h3>
+      <p class="i18n" data-en="For T(n) = aT(n/b) + f(n), compare f(n) with n^(log_b a).">لـT(n) = aT(n/b) + f(n)، قارن f(n) بـn^(log_b a).</p>
+      <table>
+        <tr><th class="i18n" data-en="Case">الحالة</th><th class="i18n" data-en="Condition">الشرط</th><th class="i18n" data-en="Result">النتيجة</th></tr>
+        <tr><td><b class="i18n" data-en="Case 1 — Recursive Dominates">الحالة 1 — التكرار-الذاتي يُهيمن</b></td><td class="mono">f(n) = O(n^(log_b a − ε))</td><td class="mono">T(n) = Θ(n^(log_b a))</td></tr>
+        <tr><td><b class="i18n" data-en="Case 2 — Balanced">الحالة 2 — متوازن</b></td><td class="mono">f(n) = Θ(n^(log_b a))</td><td class="mono">T(n) = Θ(n^(log_b a) log n)</td></tr>
+        <tr><td><b class="i18n" data-en="Case 3 — Non-Recursive Dominates">الحالة 3 — غير التكراري-الذاتي يُهيمن</b></td><td class="mono">f(n) = Ω(n^(log_b a + ε)) <span class="i18n" data-en="and regularity holds">وشرط الانتظام يصمد</span></td><td class="mono">T(n) = Θ(f(n))</td></tr>
+      </table>
+      <div class="note good" style="margin-top:6px;"><b class="i18n" data-en="Strategy:">الاستراتيجية:</b> <span class="mono">Calculate → Compare → Classify → Solve</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.16</span> <span class="i18n" data-en="Applying the Master Theorem: Binary Search">تطبيق نظرية Master: Binary Search</span></h3>
+      <pre>T(n) = T(n/2) + 1</pre>
+      <table>
+        <tr><th class="i18n" data-en="Step">الخطوة</th><th class="i18n" data-en="Value">القيمة</th></tr>
+        <tr><td class="i18n" data-en="Parameters">المُعاملات</td><td class="mono">a = 1, b = 2 — <span class="i18n" data-en="one subproblem, half the size">مسألة فرعية واحدة، نصف الحجم</span></td></tr>
+        <tr><td>f(n)</td><td class="mono">f(n) = 1 — <span class="i18n" data-en="constant comparison work">عمل مقارنة ثابت</span></td></tr>
+        <tr><td class="mono">n^(log_b a)</td><td class="mono">n^(log₂ 1) = n⁰ = 1 — <span class="i18n" data-en="matches f(n) → Case 2">يُطابق f(n) ← الحالة 2</span></td></tr>
+      </table>
+      <div class="note good"><b class="i18n" data-en="Result:">النتيجة:</b> <span class="mono">T(n) = O(log n)</span></div>
+      <p style="margin-top:8px; color:var(--text-dim); font-size:.9rem;" class="i18n" data-en="The three methods in one view: Recurrence Relations model recursive cost; the Recursion Tree visualizes per-level work; the Master Theorem classifies in 3 cases.">الطرق الثلاث في نظرة واحدة: علاقات التكرار تُشكّل التكلفة التكرارية-الذاتية؛ شجرة الاستدعاء تُصوّر العمل لكل مستوى؛ نظرية Master تُصنِّف في 3 حالات.</p>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.17</span> <span class="i18n" data-en="When the Master Theorem Does NOT Apply">متى لا تنطبق نظرية Master</span></h3>
+      <p class="i18n" data-en="Master Theorem only applies to T(n) = aT(n/b) + f(n). Verify the form first.">تنطبق نظرية Master فقط على T(n) = aT(n/b) + f(n). تحقّق من الصيغة أولًا.</p>
+      <table>
+        <tr><th class="i18n" data-en="Case">الحالة</th><th class="i18n" data-en="Example">مثال</th><th class="i18n" data-en="Why It Fails">لماذا تفشل</th></tr>
+        <tr><td><b class="i18n" data-en="Constant Reduction">إنقاص ثابت</b></td><td class="mono">T(n) = T(n−1) + n</td><td class="i18n" data-en="Size shrinks by a constant, not a fraction.">يتناقص الحجم بثابت، لا بكسر.</td></tr>
+        <tr><td><b class="i18n" data-en="Unequal Subproblems">مسائل فرعية غير متساوية</b></td><td class="mono">T(n) = T(n/2) + T(n/3) + n</td><td class="i18n" data-en="Subproblems must share the same divisor b.">يجب أن تتشارك المسائل الفرعية نفس القاسم b.</td></tr>
+        <tr><td><b class="i18n" data-en="Non Divide-and-Conquer">ليست فرّق تسد</b></td><td class="i18n" data-en="Any form outside the D&amp;C paradigm">أي صيغة خارج نموذج فرّق تسد</td><td class="i18n" data-en="Recurrences outside the D&amp;C paradigm don't fit.">علاقات التكرار خارج نموذج فرّق تسد لا تُناسب.</td></tr>
+      </table>
+      <div class="note warn" style="margin-top:6px;" class="i18n" data-en="💡 Exam Tip: Identify the recurrence form before applying the theorem.">💡 نصيحة امتحان: حدّد صيغة علاقة التكرار قبل تطبيق النظرية.</div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.18</span> <span class="i18n" data-en="Recognizing Recurrence Patterns">التعرّف على أنماط علاقات التكرار</span></h3>
+      <p class="i18n" data-en="The structure of a recurrence reveals its complexity. Ask: How does n change? How many recursive calls? How much work per level?">بنية علاقة التكرار تكشف تعقيدها. اسأل: كيف يتغيّر n؟ كم استدعاءً تكراريًا-ذاتيًا؟ كم العمل لكل مستوى؟</p>
+      <table>
+        <tr><th class="i18n" data-en="Recurrence">علاقة التكرار</th><th class="i18n" data-en="Key Pattern">النمط الأساسي</th><th class="i18n" data-en="Complexity">التعقيد</th></tr>
+        <tr><td class="mono">T(n) = T(n/2) + 1</td><td class="i18n" data-en="Divide by 2">القسمة على 2</td><td class="mono">Θ(log n)</td></tr>
+        <tr><td class="mono">T(n) = T(n − 1) + 1</td><td class="i18n" data-en="Reduce by 1">الإنقاص بواحد</td><td class="mono">Θ(n)</td></tr>
+        <tr><td class="mono">T(n) = 2T(n/2) + n</td><td class="i18n" data-en="Two halves + linear work">نصفان + عمل خطي</td><td class="mono">Θ(n log n)</td></tr>
+      </table>
+      <div class="note good" style="margin-top:6px;"><b class="i18n" data-en="Key Idea:">فكرة أساسية:</b> <span class="i18n" data-en="n/2 → logarithmic depth. n−1 → linear depth. More recursive calls → more total work.">n/2 ← عمق لوغاريتمي. n−1 ← عمق خطي. استدعاءات تكرارية-ذاتية أكثر ← عمل كلي أكثر.</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:16px;">
+      <h3><span class="num">6.19</span> <span class="i18n" data-en="Master Theorem Challenge (2 Worked Examples)">تحدي نظرية Master (مثالان محلولان)</span></h3>
+      <p class="i18n" data-en="Identify a, b, and f(n) — then compare f(n) to n^(log_b a) to select the case.">حدّد a وb وf(n) — ثم قارن f(n) بـn^(log_b a) لاختيار الحالة.</p>
+      <div class="grid grid-2">
+        <div class="card" style="padding:14px; border-color:#34d39944;">
+          <b class="i18n" data-en="Challenge 1 — Case 2">التحدي 1 — الحالة 2</b>
+          <pre style="margin-top:8px;">T(n) = 4T(n/2) + n²</pre>
+          <p style="color:var(--text-dim); font-size:.88rem;" class="mono">a = 4, b = 2, f(n) = n²</p>
+          <p style="color:var(--text-dim); font-size:.88rem;" class="mono">n^(log₂4) = n² = f(n)</p>
+          <div class="note good" style="margin-top:6px;"><b class="i18n" data-en="Result:">النتيجة:</b> <span class="mono">T(n) = Θ(n² log n)</span></div>
+        </div>
+        <div class="card" style="padding:14px; border-color:#fbbf2444;">
+          <b class="i18n" data-en="Challenge 2 — Case 3">التحدي 2 — الحالة 3</b>
+          <pre style="margin-top:8px;">T(n) = 4T(n/2) + n³</pre>
+          <p style="color:var(--text-dim); font-size:.88rem;" class="i18n" data-en="n³ grows faster than n^(log₂4) = n².">n³ تنمو أسرع من n^(log₂4) = n².</p>
+          <p style="color:var(--text-dim); font-size:.88rem;" class="i18n" data-en="Regularity condition holds.">شرط الانتظام يصمد.</p>
+          <div class="note good" style="margin-top:6px;"><b class="i18n" data-en="Result:">النتيجة:</b> <span class="mono">T(n) = Θ(n³)</span></div>
+        </div>
+      </div>
+      <div class="note info" style="margin-top:10px;"><b class="i18n" data-en="Exam Strategy:">استراتيجية امتحان:</b> <span class="mono">a → b → f(n) → Compare → Case → Result</span></div>
+    </div>
+
+    <div class="card" style="margin-bottom:0;">
+      <h3><span class="num">6.20</span> <span class="i18n" data-en="Lecture Summary: From Algorithm to Complexity">ملخص المحاضرة: من الخوارزمية إلى التعقيد</span></h3>
+      <div class="flow-wrap" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; direction:ltr; justify-content:center; margin:10px 0;">
+        <span class="badge b-on">Algorithm</span><span style="color:var(--text-faint);">→</span>
+        <span class="badge b-ologn">Recurrence</span><span style="color:var(--text-faint);">→</span>
+        <span class="badge b-onlogn">Solve</span><span style="color:var(--text-faint);">→</span>
+        <span class="badge b-on2">Classify</span>
+      </div>
+      <table>
+        <tr><th class="i18n" data-en="Method">الطريقة</th><th class="i18n" data-en="What it does">ماذا تفعل</th></tr>
+        <tr><td><b class="i18n" data-en="Recursion Tree">شجرة الاستدعاء</b></td><td class="i18n" data-en="Visualize work per level; sum to find total cost.">تُصوِّر العمل لكل مستوى؛ تُجمَع لإيجاد التكلفة الكلية.</td></tr>
+        <tr><td><b class="i18n" data-en="Substitution Method">طريقة الاستبدال</b></td><td class="i18n" data-en="Guess a bound, substitute, and prove by induction.">خمّن حدًا، استبدل، وأثبت بالاستقراء.</td></tr>
+        <tr><td><b class="i18n" data-en="Master Theorem">نظرية Master</b></td><td class="i18n" data-en="Classify divide-and-conquer recurrences in three cases.">صنِّف علاقات تكرار فرّق تسد في ثلاث حالات.</td></tr>
+      </table>
+      <div class="note good" style="margin-top:10px;"><b class="i18n" data-en="Final Takeaway:">الخلاصة النهائية:</b> <span class="i18n" data-en="Don't memorize recurrences in isolation — understand how the algorithm produces the recurrence, and how the recurrence yields the complexity. Understanding why an algorithm behaves as it does is more powerful than knowing the algorithm alone.">لا تحفظ علاقات التكرار بمعزل — افهم كيف تُنتج الخوارزمية علاقة التكرار، وكيف تُعطي علاقة التكرار التعقيد. فهم لماذا تتصرف الخوارزمية كما تتصرف أقوى من معرفة الخوارزمية وحدها.</span></div>
+      <p style="margin-top:8px; color:var(--text-dim); font-size:.9rem;"><b class="i18n" data-en="Looking Ahead:">نظرة للأمام:</b> <span class="mono">Strategy → Model → Solve → Analyze</span></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. DIAGRAMS ============ -->
+<section id="diagrams">
+  <div class="container">
+    <span class="eyebrow">03 / DIAGRAMS &amp; CHARTS</span>
+    <h2 class="i18n" data-en="Explaining the Diagrams">شرح الرسومات والمخططات</h2>
+    <p class="lead i18n" data-en="A precise text description of every diagram in the lecture, tied to the theory behind it.">وصف نصي دقيق لكل مخطط في المحاضرة، مرتبط بالنظرية خلفه.</p>
+
+    <div class="diagram-block">
+      <div class="diagram-head"><h3 class="i18n" data-en="📈 Diagram 1 — Growth-Rate Ordering (slide 10)">📈 مخطط 1 — ترتيب معدلات النمو (شريحة 10)</h3><span class="badge b-on2">Curve Comparison</span></div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="Six curves plotted on the same axes, from flattest to steepest as n grows: logarithmic (log n), linear (n), linearithmic (n log n), quadratic (n²), cubic (n³), and exponential (2ⁿ). The exponential curve stays low for small n but rockets upward and crosses all the others as n increases — the visual proof that n² = O(2ⁿ) but 2ⁿ ≠ O(n²): no matter how large the polynomial's exponent, an exponential function eventually dominates it.">ست منحنيات مرسومة على نفس المحاور، من الأكثر استواءً إلى الأكثر انحدارًا مع تزايد n: لوغاريتمي (log n)، خطي (n)، لوغاريتمي-خطي (n log n)، تربيعي (n²)، تكعيبي (n³)، وأسّي (2ⁿ). يبقى المنحنى الأسّي منخفضًا عند n الصغيرة لكنه ينطلق للأعلى ويتقاطع مع كل الأخرى مع تزايد n — الدليل البصري على أن n² = O(2ⁿ) لكن 2ⁿ ≠ O(n²): مهما كبر أس كثير الحدود، تُهيمن عليه دالة أسّية في النهاية.</p>
+        <div class="curve-legend">
+          <div class="curve-row"><div class="curve-swatch" style="background:var(--c-o1);"></div><span class="mono">log n</span></div>
+          <div class="curve-row"><div class="curve-swatch" style="background:var(--c-on);"></div><span class="mono">n</span></div>
+          <div class="curve-row"><div class="curve-swatch" style="background:var(--c-onlogn);"></div><span class="mono">n log n</span></div>
+          <div class="curve-row"><div class="curve-swatch" style="background:var(--c-on2);"></div><span class="mono">n²</span></div>
+          <div class="curve-row"><div class="curve-swatch" style="background:var(--c-on3);"></div><span class="mono">n³</span></div>
+          <div class="curve-row"><div class="curve-swatch" style="background:var(--c-o2n);"></div><span class="mono">2ⁿ</span></div>
+        </div>
+        <div class="note info" class="i18n" data-en="Growth Order: log n &lt; n &lt; n log n &lt; n² &lt; n³ &lt; 2ⁿ — this exact order is the single most testable fact from this diagram.">ترتيب النمو: log n &lt; n &lt; n log n &lt; n² &lt; n³ &lt; 2ⁿ — هذا الترتيب بالضبط هو أكثر حقيقة قابلة للاختبار من هذا المخطط.</div>
+      </div>
+    </div>
+
+    <div class="diagram-block">
+      <div class="diagram-head"><h3 class="i18n" data-en="🌳 Diagram 2 — Merge Sort Recursion Tree (slide 13)">🌳 مخطط 2 — شجرة استدعاء Merge Sort (شريحة 13)</h3><span class="badge b-onlogn">Recursion Tree</span></div>
+      <div class="diagram-body">
+        <p class="i18n" data-en="A binary tree where the root is labeled “n” (the full problem), and each level below splits into two nodes of half the size: n/2 and n/2 at level 1, n/4 (×4) at level 2, and so on, down to leaves of size 1. Beside the tree, a running total shows each level's combined cost is exactly n — because although each node is half the size of its parent, there are twice as many nodes, so the per-level total stays constant at n all the way down.">شجرة ثنائية جذرها موسوم "n" (المسألة الكاملة)، وكل مستوى أسفله ينقسم لعقدتين نصف الحجم: n/2 وn/2 عند المستوى 1، n/4 (×4) عند المستوى 2، وهكذا حتى أوراق بحجم 1. بجانب الشجرة، مجموع جارٍ يُظهر أن تكلفة كل مستوى مجتمعة هي n بالضبط — لأنه رغم أن كل عقدة نصف حجم أصلها، يوجد ضعف عدد العقد، فيبقى المجموع لكل مستوى ثابتًا عند n حتى الأسفل.</p>
+        <div class="visual-diagram">
+          <div class="tree-wrap">
+            <pre>Level 0 (1 node):     [ n ]                      cost = n
+                        /      \
+Level 1 (2 nodes):  [n/2]    [n/2]                 cost = n/2 + n/2 = n
+                    /   \      /   \
+Level 2 (4 nodes): [n/4][n/4][n/4][n/4]             cost = 4×(n/4) = n
+                     ...                 ...
+Level log₂n:       [1][1][1][1] ... [1][1]          cost = n×1 = n
+
+Number of levels: log₂ n
+Total cost: n × log₂ n  →  T(n) = O(n log n)</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. SUMMARY TABLE ============ -->
+<section id="summary">
+  <div class="container">
+    <span class="eyebrow">04 / SUMMARY</span>
+    <h2 class="i18n" data-en="Comprehensive Summary — Key Concepts and Definitions">تلخيص شامل — المفاهيم والتعريفات الجوهرية</h2>
+    <table>
+      <tr><th class="i18n" data-en="Term">المصطلح</th><th class="i18n" data-en="Definition">التعريف</th></tr>
+      <tr><td class="mono">Recurrence Relation</td><td class="i18n" data-en="A mathematical model of an algorithm's cost; describes running time in terms of smaller input sizes.">نموذج رياضي لتكلفة خوارزمية؛ يصف زمن التشغيل بدلالة أحجام مدخلات أصغر.</td></tr>
+      <tr><td><b class="i18n" data-en="3 Components">المكوّنات الثلاثة</b></td><td class="i18n" data-en="Recursive Part (T(n/2)) + Outside Work (+c or +n) + Base Case (T(1)=c).">الجزء التكراري-الذاتي (T(n/2)) + العمل الخارجي (+c أو +n) + الحالة الأساسية (T(1)=c).</td></tr>
+      <tr><td><b class="i18n" data-en="Expansion Method">طريقة التوسيع</b></td><td class="i18n" data-en="Expand level by level until the base case; count the levels (k) and total work.">وسِّع مستوى بمستوى حتى الحالة الأساسية؛ عُدّ المستويات (k) والعمل الكلي.</td></tr>
+      <tr><td><b class="i18n" data-en="Substitution Method">طريقة الاستبدال</b></td><td class="i18n" data-en="Guess a bound → substitute into the recurrence → prove by induction.">خمّن حدًا ← استبدله في علاقة التكرار ← أثبت بالاستقراء.</td></tr>
+      <tr><td class="mono">Big O vs. Θ</td><td class="i18n" data-en="O = upper bound (ceiling, may not be tight). Θ = tight bound (exact growth rate).">O = حد أعلى (سقف، قد لا يكون مُحكَمًا). Θ = حد مُحكَم (معدل نمو دقيق).</td></tr>
+      <tr><td><b class="i18n" data-en="Growth Order">ترتيب النمو</b></td><td class="mono">log n &lt; n &lt; n log n &lt; n² &lt; n³ &lt; 2ⁿ</td></tr>
+      <tr><td><b class="i18n" data-en="Recursion Tree">شجرة الاستدعاء</b></td><td class="i18n" data-en="Visualizes per-level cost; levels × cost-per-level = total complexity.">تُصوِّر التكلفة لكل مستوى؛ المستويات × التكلفة لكل مستوى = التعقيد الكلي.</td></tr>
+      <tr><td><b class="i18n" data-en="Master Theorem (general form)">نظرية Master (الصيغة العامة)</b></td><td class="mono">T(n) = aT(n/b) + f(n)</td></tr>
+      <tr><td><b class="i18n" data-en="Master Theorem (3 cases)">نظرية Master (3 حالات)</b></td><td class="i18n" data-en="Compare f(n) to n^(log_b a): Case 1 (recursive dominates) → Θ(n^(log_b a)); Case 2 (balanced) → Θ(n^(log_b a) log n); Case 3 (f(n) dominates + regularity) → Θ(f(n)).">قارن f(n) بـn^(log_b a): الحالة 1 (التكراري-الذاتي يُهيمن) ← Θ(n^(log_b a))؛ الحالة 2 (متوازن) ← Θ(n^(log_b a) log n)؛ الحالة 3 (f(n) يُهيمن + الانتظام) ← Θ(f(n)).</td></tr>
+      <tr><td><b class="i18n" data-en="When Master Theorem Fails">متى تفشل نظرية Master</b></td><td class="i18n" data-en="Constant reduction (T(n−1)+n), unequal subproblems (T(n/2)+T(n/3)+n), or non-D&amp;C recurrences.">إنقاص ثابت (T(n−1)+n)، مسائل فرعية غير متساوية (T(n/2)+T(n/3)+n)، أو علاقات تكرار ليست فرّق تسد.</td></tr>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 5. THREE LEVELS ============ -->
+<section id="levels">
+  <div class="container">
+    <span class="eyebrow">05 / THREE LEVELS</span>
+    <h2 class="i18n" data-en="Simplified at 3 Levels">تبسيط على 3 مستويات</h2>
+    <div class="level-tabs">
+      <button class="level-tab active" data-level="beginner"><span class="i18n" data-en="🌱 Beginner">🌱 للمبتدئين</span></button>
+      <button class="level-tab" data-level="intermediate"><span class="i18n" data-en="🎓 University Level">🎓 مستوى جامعي</span></button>
+      <button class="level-tab" data-level="quick"><span class="i18n" data-en="⚡ Quick Review">⚡ مراجعة سريعة</span></button>
+    </div>
+
+    <div class="level-panel active" id="panel-beginner">
+      <div class="card">
+        <p class="i18n" data-en="Think of a recurrence relation like a recipe that calls itself:">تخيّل علاقة التكرار مثل وصفة تستدعي نفسها:</p>
+        <ul style="padding-inline-start:20px; color:var(--text-dim);">
+          <li class="i18n" data-en="“To bake this cake, first bake a half-size cake (that's the recursive part), then spend a little time frosting it (that's the outside work), and if the cake is already bite-sized, just eat it — don't bake further (that's the base case).”">"لتخبز هذه الكعكة، اخبز أولًا كعكة نصف الحجم (هذا الجزء التكراري-الذاتي)، ثم اقضِ وقتًا قليلًا لتزيينها (هذا العمل الخارجي)، وإذا كانت الكعكة بحجم قضمة أصلًا، كُلها فقط — لا تخبز أكثر (هذه الحالة الأساسية)."</li>
+          <li class="i18n" data-en="The <b>recursion tree</b> is like drawing out every “half-cake-within-a-half-cake” until you hit bite-sized pieces, then adding up all the frosting time across every layer."><b>شجرة الاستدعاء</b> مثل رسم كل "نصف كعكة داخل نصف كعكة" حتى تصل لقطع بحجم قضمة، ثم جمع كل وقت التزيين عبر كل الطبقات.</li>
+          <li class="i18n" data-en="<b>Big O</b> is saying “I'll be done in at most an hour” (a safe ceiling); <b>Big Theta</b> is saying “I'll be done in exactly 45 minutes” (the precise truth)."><b>Big O</b> مثل قول "سأنتهي خلال ساعة على الأكثر" (سقف آمن)؛ <b>Big Theta</b> مثل قول "سأنتهي خلال 45 دقيقة بالضبط" (الحقيقة الدقيقة).</li>
+          <li class="i18n" data-en="The <b>Master Theorem</b> is a lookup table: once you know how many mini-cakes you're baking and how big they are, you don't have to draw the whole tree — you just check which “case” you're in."><b>نظرية Master</b> جدول بحث جاهز: بمجرد معرفة كم كعكة مصغرة تخبز وكم حجمها، لست مضطرًا لرسم الشجرة كاملة — تتحقق فقط من "الحالة" التي أنت فيها.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="level-panel" id="panel-intermediate">
+      <div class="card i18n" data-en="<p>A recurrence relation formalizes recursive cost as T(n) = [recursive calls] + [outside work], anchored by a base case T(1) = c. Three independent tools solve it. Expansion unrolls the recurrence level by level until the base case is reached, counts the number of levels k (which depends on how fast n shrinks — division gives k = log_b n, subtraction gives k = n), and sums the outside work across all k levels. Substitution instead guesses the answer's asymptotic form up front, plugs that guess back into the recurrence one level down, and shows algebraically that the guess remains consistent — this proves a bound rather than deriving one, which is why it requires a reasonable starting guess.</p><p>The Master Theorem is a closed-form shortcut specifically for the Divide-and-Conquer shape T(n) = aT(n/b) + f(n): it replaces the recursion tree's level-by-level summation with a single comparison between f(n) (the non-recursive work) and n^(log_b a) (what the recursive part alone would cost). When the recursive part dominates (Case 1), the recursive cost wins; when they're equal (Case 2), the log n factor comes from the equal contributions summing across log n levels — exactly what the recursion tree showed for Merge Sort; when f(n) dominates (Case 3), the top-level work overwhelms everything below it, subject to a regularity condition that prevents pathological f(n) behavior. The theorem's precondition — the exact form aT(n/b) + f(n) with a constant divisor b shared across equal-sized subproblems — is also its boundary: subtractive recurrences, unequal subproblem sizes, or non-D&amp;C structures fall outside it entirely and need expansion or substitution instead.</p>">
+        <p>
+          تُصيغ علاقة التكرار التكلفة التكرارية-الذاتية رسميًا كـT(n) = [استدعاءات تكرارية-ذاتية] + [عمل خارجي]، مُرتكِزة على حالة أساسية T(1) = c. ثلاث أدوات مستقلة تحلّها. التوسيع يفكّ علاقة التكرار مستوى بمستوى حتى الوصول للحالة الأساسية، يعدّ عدد المستويات k (الذي يعتمد على سرعة تناقص n — القسمة تُعطي k = log_b n، والطرح يُعطي k = n)، ويجمع العمل الخارجي عبر كل المستويات k. أما الاستبدال فيُخمّن صيغة الإجابة المقاربة مُسبقًا، يُدخل هذا التخمين في علاقة التكرار مستوى أدنى، ويُظهر جبريًا أن التخمين يبقى متّسقًا — هذا يُثبت حدًا بدلًا من اشتقاقه، ولهذا يتطلب تخمينًا بدئيًا معقولًا.
+        </p>
+        <p>
+          نظرية Master اختصار بصيغة مُغلَقة خاص بشكل فرّق تسد T(n) = aT(n/b) + f(n): يستبدل الجمع مستوى بمستوى لشجرة الاستدعاء بمقارنة واحدة بين f(n) (العمل غير التكراري-الذاتي) وn^(log_b a) (ما ستُكلّفه المسائل الفرعية وحدها). عندما يُهيمن الجزء التكراري-الذاتي (الحالة 1)، تفوز التكلفة التكرارية-الذاتية؛ عندما يتساويان (الحالة 2)، يأتي عامل log n من جمع المساهمات المتساوية عبر log n مستوى — تمامًا ما أظهرته شجرة الاستدعاء لـMerge Sort؛ عندما يُهيمن f(n) (الحالة 3)، يطغى عمل المستوى الأعلى على كل ما تحته، رهنًا بشرط انتظام يمنع سلوك f(n) الشاذ. شرط النظرية المسبق — الصيغة بالضبط aT(n/b) + f(n) بقاسم ثابت b مشترك عبر مسائل فرعية متساوية الحجم — هو أيضًا حدودها: علاقات التكرار الطرحية، أو أحجام المسائل الفرعية غير المتساوية، أو البنى غير فرّق تسد تقع خارجها تمامًا وتحتاج التوسيع أو الاستبدال بدلًا منها.
+        </p>
+      </div>
+    </div>
+
+    <div class="level-panel" id="panel-quick">
+      <div class="card">
+        <ul class="quickref-list">
+          <li>Recurrence = T(n) = [recursive part] + [outside work], base case T(1)=c.</li>
+          <li>Binary Search: T(n) = T(n/2) + c -> Theta(log n).</li>
+          <li>Merge Sort: T(n) = 2T(n/2) + n -> Theta(n log n).</li>
+          <li>Expansion: unroll level by level, find k levels, sum work.</li>
+          <li>Substitution: Guess -> Substitute -> Prove by induction.</li>
+          <li>Dominant term: largest-growing term as n -> infinity; constants/lower terms ignored.</li>
+          <li>Big O = upper bound (ceiling, maybe not tight). Big Theta = tight bound (exact).</li>
+          <li>Growth order: log n < n < n log n < n^2 < n^3 < 2^n.</li>
+          <li>Recursion tree: levels x cost-per-level = total. Merge Sort: log n levels x n = n log n.</li>
+          <li>Master Theorem: T(n) = aT(n/b) + f(n). Compare f(n) to n^(log_b a).</li>
+          <li>Case 1 (recursive dominates): T(n)=Theta(n^(log_b a)). Case 2 (balanced): x log n. Case 3 (f(n) dominates + regularity): Theta(f(n)).</li>
+          <li>Master Theorem does NOT apply to: T(n-1)+n, T(n/2)+T(n/3)+n, or non-D&C recurrences.</li>
+          <li>Challenge: T(n)=4T(n/2)+n^2 -> Case 2 -> Theta(n^2 log n). T(n)=4T(n/2)+n^3 -> Case 3 -> Theta(n^3).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. QUIZ ============ -->
+<section id="quiz">
+  <div class="container">
+    <span class="eyebrow">06 / INTERACTIVE QUIZ</span>
+    <h2 class="i18n" data-en="Interactive Quiz">اختبار تفاعلي</h2>
+    <p class="lead i18n" data-en="Includes two matching questions. Answer each question, then press “Check Answer” — your final score appears at the bottom.">يتضمن سؤالي مطابقة. أجب عن كل سؤال ثم اضغط "تحقق من الإجابة" — النتيجة النهائية تظهر أسفل الصفحة.</p>
+
+    <div class="quiz-progress">
+      <div class="quiz-score"><span class="i18n" data-en="Score:">النتيجة:</span> <span id="scoreNow">0</span> / <span id="scoreTotal">0</span></div>
+      <div class="quiz-bar"><div class="quiz-bar-fill" id="quizBarFill"></div></div>
+    </div>
+
+    <div id="quizContainer"></div>
+
+    <div class="final-score" id="finalScore">
+      <div class="big" id="finalScoreText">0 / 0</div>
+      <p id="finalScoreMsg" style="margin-top:8px; color:var(--text-dim);"></p>
+      <button class="reset-btn" onclick="resetQuiz()"><span class="i18n" data-en="🔄 Try Again">🔄 إعادة المحاولة</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. PRO TIPS ============ -->
+<section id="tips">
+  <div class="container">
+    <span class="eyebrow">07 / PRO TIPS</span>
+    <h2 class="i18n" data-en="Pro Tips">نصائح احترافية</h2>
+
+    <div class="grid grid-2" style="align-items:start;">
+      <div class="card">
+        <h3 class="i18n" data-en="💡 How to Understand Instead of Memorize">💡 كيف تفهم بدلًا من الحفظ</h3>
+        <div class="tip-item"><span class="tip-icon">🔍</span><div class="i18n" data-en="Always write the recurrence straight from the algorithm's structure: count how many recursive calls, how much smaller each input gets, and what non-recursive work happens at each call — those three things ARE the recurrence.">اكتب دائمًا علاقة التكرار مباشرة من بنية الخوارزمية: عُدّ كم استدعاءً تكراريًا-ذاتيًا، وكم يصغر كل مدخل، وما العمل غير التكراري-الذاتي عند كل استدعاء — هذه الأشياء الثلاثة هي علاقة التكرار نفسها.</div></div>
+        <div class="tip-item"><span class="tip-icon">✍️</span><div class="i18n" data-en="For the Master Theorem, always compute n^(log_b a) FIRST, then compare it to f(n) — trying to guess the case before this comparison is the most common source of errors.">لنظرية Master، احسب دائمًا n^(log_b a) أولًا، ثم قارنه بـf(n) — محاولة تخمين الحالة قبل هذه المقارنة هي أكثر مصدر شائع للأخطاء.</div></div>
+        <div class="tip-item"><span class="tip-icon">📐</span><div class="i18n" data-en="Anchor the growth-rate order to a story you can recall instantly: log n barely grows, n grows steadily, n² and n³ explode, and 2ⁿ eventually beats everything.">اربط ترتيب معدلات النمو بقصة تتذكرها فورًا: log n بالكاد تنمو، n تنمو بثبات، n² وn³ تنفجران، وفي النهاية 2ⁿ تتفوق على الجميع.</div></div>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="🏋️ Suggested Hands-On Practice">🏋️ تدريب عملي مقترح</h3>
+        <div class="tip-item"><span class="tip-icon">1️⃣</span><div class="i18n" data-en="Derive T(n) = T(n/2) + c for Binary Search by expansion yourself on paper, writing out levels 1 through 4 before jumping to the general k-level formula.">اشتق T(n) = T(n/2) + c لـBinary Search بالتوسيع بنفسك على ورقة، بكتابة المستويات من 1 إلى 4 قبل القفز للصيغة العامة لمستوى k.</div></div>
+        <div class="tip-item"><span class="tip-icon">2️⃣</span><div class="i18n" data-en="Draw the full Merge Sort recursion tree for a concrete n (e.g. n=16), labeling every level's node count, node size, and per-level total.">ارسم شجرة استدعاء Merge Sort الكاملة لـn مُحدَّدة (مثل n=16)، مُسمِّيًا عدد العقد وحجمها ومجموع كل مستوى.</div></div>
+        <div class="tip-item"><span class="tip-icon">3️⃣</span><div class="i18n" data-en="Classify 5 new made-up recurrences of the form aT(n/b)+f(n) using the Master Theorem, then check each against the “when it does NOT apply” list to practice spotting invalid forms too.">صنِّف 5 علاقات تكرار مُخترَعة جديدة بصيغة aT(n/b)+f(n) باستخدام نظرية Master، ثم تحقق من كل منها مقابل قائمة "متى لا تنطبق" لتتدرّب على رصد الصيغ غير الصالحة أيضًا.</div></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h3 class="i18n" data-en="⚠️ Common Mistakes Students Make on This Exact Topic">⚠️ أخطاء شائعة يقع فيها الطلاب في هذا الموضوع تحديدًا</h3>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Treating Big O and Big Theta as interchangeable:</b> n = O(n²) is a true but loose statement; n = Θ(n²) is false because Θ demands the SAME growth rate, not just an upper ceiling. Always give the tightest bound you can justify."><b>معاملة Big O وBig Theta كأنهما قابلان للتبادل:</b> n = O(n²) عبارة صحيحة لكنها فضفاضة؛ n = Θ(n²) خاطئة لأن Θ تتطلب نفس معدل النمو، وليس مجرد سقف أعلى. أعطِ دائمًا أدقّ حد يمكنك تبريره.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Applying the Master Theorem to any recursive-looking equation:</b> it only works for the exact form T(n) = aT(n/b) + f(n) with a constant divisor b shared by equal-sized subproblems. T(n) = T(n−1) + n and T(n) = T(n/2) + T(n/3) + n both fall outside it."><b>تطبيق نظرية Master على أي معادلة تبدو تكرارية-ذاتية:</b> تعمل فقط للصيغة بالضبط T(n) = aT(n/b) + f(n) بقاسم ثابت b مشترك بين مسائل فرعية متساوية الحجم. T(n) = T(n−1) + n وT(n) = T(n/2) + T(n/3) + n كلاهما يقع خارجها.</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Forgetting to compute n^(log_b a) before comparing:</b> you cannot pick a Master Theorem case by “feel” — always compute this value explicitly first, then compare it to f(n)."><b>نسيان حساب n^(log_b a) قبل المقارنة:</b> لا يمكنك اختيار حالة نظرية Master "بالحدس" — احسب دائمًا هذه القيمة صراحةً أولًا، ثم قارنها بـf(n).</div></div>
+      <div class="mistake-item"><span class="mistake-icon">❌</span><div class="i18n" data-en="<b>Confusing “n − 1” reduction with “n / 2” division in growth-rate terms:</b> subtracting 1 each time gives n levels (linear depth); dividing by 2 each time gives log₂ n levels (logarithmic depth) — a huge practical difference."><b>الخلط بين إنقاص "n − 1" وقسمة "n / 2" من ناحية معدل النمو:</b> الطرح بواحد كل مرة يُعطي n مستوى (عمق خطي)؛ القسمة على 2 كل مرة تُعطي log₂ n مستوى (عمق لوغاريتمي) — فرق عملي هائل.</div></div>
+    </div>
+  </div>
+</section>
+
+<footer class="i18n" data-en="Interactive review sheet — Lecture 6: Recurrence Relations">
+  مرجع مراجعة تفاعلي — Lecture 6: Recurrence Relations
+</footer>
+
+<script>
+/* ===== LANGUAGE TOGGLE ===== */
+let currentLang = 'ar';
+function setLang(lang){
+  currentLang = lang;
+  document.getElementById('htmlRoot').setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+  document.getElementById('htmlRoot').setAttribute('lang', lang);
+  document.getElementById('btnAr').classList.toggle('active', lang === 'ar');
+  document.getElementById('btnEn').classList.toggle('active', lang === 'en');
+
+  document.querySelectorAll('.i18n').forEach(el => {
+    if(!el.hasAttribute('data-ar-cache')){
+      el.setAttribute('data-ar-cache', el.innerHTML);
+    }
+    const ar = el.getAttribute('data-ar-cache');
+    const en = el.getAttribute('data-en');
+    el.innerHTML = (lang === 'en' && en) ? en : ar;
+  });
+
+  QUIZ_LANG = lang;
+  renderQuiz(true);
+}
+
+/* ===== sticky nav active-state on scroll ===== */
+(function(){
+  const links = document.querySelectorAll('.nav-scroll a');
+  const sections = Array.from(links).map(a => document.querySelector(a.getAttribute('href')));
+  function onScroll(){
+    let idx = 0;
+    const y = window.scrollY + 120;
+    sections.forEach((s,i) => { if(s && s.offsetTop <= y) idx = i; });
+    links.forEach((l,i) => l.classList.toggle('active', i===idx));
+    const active = links[idx];
+    if(active){
+      const wrap = document.getElementById('navScroll');
+      const target = active.offsetLeft - wrap.clientWidth/2 + active.clientWidth/2;
+      wrap.scrollTo({left: target, behavior:'smooth'});
+    }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+
+/* ===== level tabs ===== */
+document.querySelectorAll('.level-tab').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.level-tab').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.level-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-'+btn.dataset.level).classList.add('active');
+  });
+});
+
+/* ===== QUIZ DATA (bilingual) ===== */
+let QUIZ_LANG = 'ar';
+const QUIZ = [
+  {type:'mcq', prompt:'ما هي علاقة التكرار (Recurrence Relation)؟', promptEn:'What is a Recurrence Relation?',
+   options:['قائمة بكل متغيرات البرنامج','نموذج رياضي لتكلفة خوارزمية، يصف زمن التشغيل بدلالة أحجام مدخلات أصغر','اسم آخر لترميز Big O','جدول زمني لتسليم المشروع'],
+   optionsEn:['A list of all a program\'s variables','A mathematical model of an algorithm\'s cost, describing running time in terms of smaller input sizes','Another name for Big O notation','A project delivery schedule'],
+   correct:1, explain:'علاقة التكرار نموذج رياضي لتكلفة خوارزمية — تصف زمن تشغيل خوارزمية تكرارية-ذاتية بدلالة أحجام مدخلات أصغر.', explainEn:'A recurrence relation is a mathematical model of an algorithm\'s cost — it describes a recursive algorithm\'s running time in terms of smaller input sizes.'},
+  {type:'mcq', prompt:'ما مكوّنات علاقة التكرار الثلاثة؟', promptEn:'What are the three components of a recurrence relation?',
+   options:['المتغير، الحلقة، الشرط','الجزء التكراري-الذاتي، العمل الخارجي، الحالة الأساسية','الإدخال، المعالجة، الإخراج','التصميم، التنفيذ، الاختبار'],
+   optionsEn:['Variable, loop, condition','Recursive Part, Outside Work, Base Case','Input, processing, output','Design, implementation, testing'],
+   correct:1, explain:'المكوّنات الثلاثة: الجزء التكراري-الذاتي (مثل T(n/2))، العمل الخارجي (مثل +c أو +n)، والحالة الأساسية (مثل T(1)=c).', explainEn:'The three components: the Recursive Part (e.g. T(n/2)), Outside Work (e.g. +c or +n), and the Base Case (e.g. T(1)=c).'},
+  {type:'fill', prompt:'أكمل: إذا كانت T(n) = T(n/2) + c، فإن T(n) = Θ(______).', promptEn:'Fill in: if T(n) = T(n/2) + c, then T(n) = Θ(______).',
+   accept:['log n','logn','log(n)'], explain:'بالتوسيع، يتوقف الاستدعاء-الذاتي عندما n/2ᵏ=1، إذن k=log₂n، فينتج T(n) = Θ(log n).', explainEn:'By expansion, recursion stops when n/2ᵏ=1, so k=log₂n, giving T(n) = Θ(log n).'},
+  {type:'mcq', prompt:'أي حد هو المهيمن في T(n) = 4n³ + 2n² + n + 1؟', promptEn:'Which term is dominant in T(n) = 4n³ + 2n² + n + 1?',
+   options:['n','n²','n³','الثابت 1'], optionsEn:['n','n²','n³','The constant 1'],
+   correct:2, explain:'n³ هو الحد الذي ينمو الأسرع مع n → ∞، فيُحدّد التعقيد: Θ(n³).', explainEn:'n³ is the fastest-growing term as n → ∞, so it determines the complexity: Θ(n³).'},
+  {type:'mcq', prompt:'ما الفرق الجوهري بين Big O وBig Theta؟', promptEn:'What is the fundamental difference between Big O and Big Theta?',
+   options:['لا فرق، مترادفان تمامًا','Big O حد أعلى فقط؛ Big Theta حد مُحكَم (نفس معدل النمو بالضبط)','Big Theta أضعف من Big O دائمًا','Big O يُستخدَم فقط للخوارزميات التكرارية-ذاتية'],
+   optionsEn:['No difference, they are exact synonyms','Big O is only an upper bound; Big Theta is a tight bound (the exact same growth rate)','Big Theta is always weaker than Big O','Big O is only used for recursive algorithms'],
+   correct:1, explain:'Big O سقف — لا تنمو الدالة أسرع منه، لكنه قد لا يكون دقيقًا. Big Theta توصيف دقيق — نفس معدل النمو بالضبط.', explainEn:'Big O is a ceiling — the function doesn\'t grow faster than it, but it may not be exact. Big Theta is a precise characterization — the exact same growth rate.'},
+  {type:'tf', prompt:'العبارة n² ∈ Θ(n) صحيحة.', promptEn:'The statement n² ∈ Θ(n) is true.',
+   correct:false, explain:'خاطئ. n² تنمو أسرع من n، فليست حدًا مُحكَمًا لها — n² ∈ Θ(n) خاطئة.', explainEn:'False. n² grows faster than n, so it is not a tight bound for it — n² ∈ Θ(n) is false.'},
+  {type:'mcq', prompt:'وفقًا لترتيب معدلات النمو في المحاضرة، أيهما الأبطأ نموًا؟', promptEn:'Per the lecture\'s growth-rate ordering, which grows the slowest?',
+   options:['n²','n log n','log n','2ⁿ'], optionsEn:['n²','n log n','log n','2ⁿ'],
+   correct:2, explain:'الترتيب: log n < n < n log n < n² < n³ < 2ⁿ. فـlog n هي الأبطأ نموًا.', explainEn:'The order is: log n < n < n log n < n² < n³ < 2ⁿ. So log n grows the slowest.'},
+  {type:'mcq', prompt:'ما علاقة تكرار Merge Sort؟', promptEn:'What is the Merge Sort recurrence?',
+   options:['T(n) = T(n/2) + c','T(n) = 2T(n/2) + n','T(n) = T(n−1) + n','T(n) = T(n/2) + T(n/3) + n'],
+   optionsEn:['T(n) = T(n/2) + c','T(n) = 2T(n/2) + n','T(n) = T(n−1) + n','T(n) = T(n/2) + T(n/3) + n'],
+   correct:1, explain:'Merge Sort: استدعاءان تكراريان-ذاتيان على نصفين (2T(n/2)) زائد تكلفة الدمج الخطية (n).', explainEn:'Merge Sort: two recursive calls on halves (2T(n/2)) plus the linear merge cost (n).'},
+  {type:'mcq', prompt:'في شجرة استدعاء Merge Sort، كم تكلفة كل مستوى؟', promptEn:'In the Merge Sort recursion tree, what is the cost of each level?',
+   options:['n بالضبط عند كل مستوى','تتناقص بمقدار النصف في كل مستوى','تتضاعف في كل مستوى','ثابتة دائمًا بغض النظر عن n'],
+   optionsEn:['Exactly n at every level','Halves at every level','Doubles at every level','Always constant regardless of n'],
+   correct:0, explain:'رغم أن كل عقدة نصف حجم أصلها، يتضاعف عدد العقد، فتبقى تكلفة كل مستوى n بالضبط — عدد المستويات log₂n، فالإجمالي n log n.', explainEn:'Although each node is half the size of its parent, the number of nodes doubles, so each level\'s cost stays exactly n — with log₂n levels, the total is n log n.'},
+  {type:'mcq', prompt:'ما خطوات طريقة الاستبدال (Substitution Method) بالترتيب؟', promptEn:'What are the steps of the Substitution Method, in order?',
+   options:['قارن ← صنّف ← احسب','خمّن ← استبدل ← أثبت','قسّم ← اغزُ ← ادمج','افحص ← صحّح ← أعد الاختبار'],
+   optionsEn:['Compare → Classify → Calculate','Guess → Substitute → Prove','Divide → Conquer → Combine','Test → Fix → Retest'],
+   correct:1, explain:'طريقة الاستبدال: تخمين حد مقارب ← استبداله في علاقة التكرار ← إثبات صموده بالاستقراء.', explainEn:'Substitution method: guess an asymptotic bound → substitute it into the recurrence → prove it holds by induction.'},
+  {type:'mcq', prompt:'في نظرية Master، ماذا تقارن f(n) بها لاختيار الحالة؟', promptEn:'In the Master Theorem, what do you compare f(n) against to select the case?',
+   options:['a فقط','b فقط','n^(log_b a)','T(1)'], optionsEn:['a alone','b alone','n^(log_b a)','T(1)'],
+   correct:2, explain:'نُقارن f(n) بـn^(log_b a) — ما كانت ستُكلّفه المسائل الفرعية وحدها لو لم يكن هناك عمل خارجي.', explainEn:'We compare f(n) to n^(log_b a) — what the recursive part alone would cost if there were no outside work.'},
+  {type:'multi', prompt:'أي مما يلي صيغ لا تنطبق عليها نظرية Master مباشرة؟ (اختر كل ما ينطبق)', promptEn:'Which of the following forms does the Master Theorem NOT directly apply to? (select all)',
+   options:['T(n) = T(n−1) + n','T(n) = 2T(n/2) + n','T(n) = T(n/2) + T(n/3) + n','T(n) = 4T(n/2) + n²'],
+   optionsEn:['T(n) = T(n−1) + n','T(n) = 2T(n/2) + n','T(n) = T(n/2) + T(n/3) + n','T(n) = 4T(n/2) + n²'],
+   correctSet:[0,2], explain:'T(n)=T(n−1)+n إنقاص ثابت وليس قسمة؛ وT(n)=T(n/2)+T(n/3)+n مسائل فرعية بقواسم مختلفة. كلاهما خارج صيغة aT(n/b)+f(n) القياسية. الخياران الآخران يُناسبان الصيغة تمامًا.', explainEn:'T(n)=T(n−1)+n is constant reduction, not division; T(n)=T(n/2)+T(n/3)+n has subproblems with different divisors. Both fall outside the standard aT(n/b)+f(n) form. The other two fit the form perfectly.'},
+  {type:'mcq', prompt:'لعلاقة التكرار T(n) = 4T(n/2) + n²، ما الحالة والنتيجة الصحيحتان؟', promptEn:'For the recurrence T(n) = 4T(n/2) + n², what is the correct case and result?',
+   options:['الحالة 1، T(n)=Θ(n)','الحالة 2، T(n)=Θ(n² log n)','الحالة 3، T(n)=Θ(n³)','لا تنطبق نظرية Master'],
+   optionsEn:['Case 1, T(n)=Θ(n)','Case 2, T(n)=Θ(n² log n)','Case 3, T(n)=Θ(n³)','The Master Theorem does not apply'],
+   correct:1, explain:'a=4, b=2, f(n)=n²؛ n^(log₂4)=n²=f(n) — متوازن، الحالة 2، فتكون النتيجة T(n)=Θ(n² log n).', explainEn:'a=4, b=2, f(n)=n²; n^(log₂4)=n²=f(n) — balanced, Case 2, giving the result T(n)=Θ(n² log n).'},
+  {type:'match', prompt:'طابق كل خوارزمية/علاقة تكرار بتعقيدها الصحيح:', promptEn:'Match each algorithm/recurrence to its correct complexity:',
+   listA:['T(n) = T(n/2) + 1','T(n) = T(n − 1) + 1','T(n) = 2T(n/2) + n','T(n) = T(n/2) + T(n/3) + n'],
+   listB:['Θ(n) — تخرج عن النموذج القياسي لكن لها حدّ خطي بالتحليل المباشر','Θ(log n) — القسمة على 2 تُنتج عمقًا لوغاريتميًا','Θ(n log n) — نصفان بعمل خطي خارجي','Θ(n) — الإنقاص بواحد يُنتج عمقًا خطيًا'],
+   listBEn:['Θ(n) — falls outside the standard form but has a linear bound by direct analysis','Θ(log n) — dividing by 2 produces logarithmic depth','Θ(n log n) — two halves with linear outside work','Θ(n) — reducing by 1 produces linear depth'],
+   correctMap:[1,3,2,0],
+   explain:'T(n/2)+1 ← Θ(log n) (قسمة)؛ T(n−1)+1 ← Θ(n) (طرح)؛ 2T(n/2)+n ← Θ(n log n) (Merge Sort)؛ T(n/2)+T(n/3)+n ← Θ(n) تقريبًا لكنها خارج صيغة Master القياسية.',
+   explainEn:'T(n/2)+1 → Θ(log n) (division); T(n−1)+1 → Θ(n) (subtraction); 2T(n/2)+n → Θ(n log n) (Merge Sort); T(n/2)+T(n/3)+n → roughly Θ(n) but falls outside the standard Master form.'},
+  {type:'match', prompt:'طابق كل حالة من حالات نظرية Master الثلاث بشرطها الصحيح:', promptEn:'Match each of the Master Theorem\'s three cases to its correct condition:',
+   listA:['Case 1 — Recursive Dominates','Case 2 — Balanced','Case 3 — Non-Recursive Dominates'],
+   listB:['f(n) = Θ(n^(log_b a)) — النتيجة Θ(n^(log_b a) log n)','f(n) = Ω(n^(log_b a + ε)) مع شرط الانتظام — النتيجة Θ(f(n))','f(n) = O(n^(log_b a − ε)) — النتيجة Θ(n^(log_b a))'],
+   listBEn:['f(n) = Θ(n^(log_b a)) — result Θ(n^(log_b a) log n)','f(n) = Ω(n^(log_b a + ε)) with regularity condition — result Θ(f(n))','f(n) = O(n^(log_b a − ε)) — result Θ(n^(log_b a))'],
+   correctMap:[2,0,1],
+   explain:'الحالة 1 (التكراري-الذاتي يُهيمن): f(n)=O(n^(log_b a − ε))؛ الحالة 2 (متوازن): f(n)=Θ(n^(log_b a))؛ الحالة 3 (f(n) يُهيمن): f(n)=Ω(n^(log_b a + ε)) مع الانتظام.',
+   explainEn:'Case 1 (recursive dominates): f(n)=O(n^(log_b a − ε)); Case 2 (balanced): f(n)=Θ(n^(log_b a)); Case 3 (f(n) dominates): f(n)=Ω(n^(log_b a + ε)) with regularity.'}
+];
+
+let userAnswers = new Array(QUIZ.length).fill(null);
+let checked = new Array(QUIZ.length).fill(false);
+let score = 0;
+
+const TYPE_LABELS = {
+  ar: {mcq:'اختيار من متعدد', tf:'صح / خطأ', multi:'اختيار متعدد الإجابات', fill:'إكمال الفراغ', match:'مطابقة قوائم'},
+  en: {mcq:'Multiple Choice', tf:'True / False', multi:'Multiple Select', fill:'Fill in the Blank', match:'Match the Lists'}
+};
+
+function renderQuiz(preserveState){
+  const c = document.getElementById('quizContainer');
+  c.innerHTML = '';
+  document.getElementById('scoreTotal').textContent = QUIZ.length;
+
+  QUIZ.forEach((q, qi) => {
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = 'q-'+qi;
+
+    const typeLabel = TYPE_LABELS[QUIZ_LANG][q.type];
+    const prompt = (QUIZ_LANG === 'en' && q.promptEn) ? q.promptEn : q.prompt;
+
+    let optsHtml = '';
+    if(q.type === 'mcq'){
+      const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+      optsHtml = '<div class="opt-list">' + options.map((opt,oi)=>
+        `<label class="opt" id="opt-${qi}-${oi}">
+          <input type="radio" name="q${qi}" value="${oi}" onchange="selectAnswer(${qi}, ${oi})">
+          <span>${opt}</span>
+        </label>`).join('') + '</div>';
+    } else if(q.type === 'tf'){
+      const trueLabel = QUIZ_LANG === 'en' ? '✅ True' : '✅ صح (True)';
+      const falseLabel = QUIZ_LANG === 'en' ? '❌ False' : '❌ خطأ (False)';
+      optsHtml = `<div class="opt-list">
+        <label class="opt" id="opt-${qi}-1"><input type="radio" name="q${qi}" value="true" onchange="selectAnswer(${qi}, true)"><span>${trueLabel}</span></label>
+        <label class="opt" id="opt-${qi}-0"><input type="radio" name="q${qi}" value="false" onchange="selectAnswer(${qi}, false)"><span>${falseLabel}</span></label>
+      </div>`;
+    } else if(q.type === 'multi'){
+      const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+      optsHtml = '<div class="opt-list">' + options.map((opt,oi)=>
+        `<label class="opt" id="opt-${qi}-${oi}">
+          <input type="checkbox" name="q${qi}" value="${oi}" onchange="toggleMulti(${qi}, ${oi})">
+          <span>${opt}</span>
+        </label>`).join('') + '</div>';
+    } else if(q.type === 'fill'){
+      const placeholder = QUIZ_LANG === 'en' ? 'Type your answer here…' : 'اكتب إجابتك هنا…';
+      optsHtml = `<input type="text" class="fill-input" id="fill-${qi}" placeholder="${placeholder}" oninput="userAnswers[${qi}] = this.value; document.getElementById('checkbtn-${qi}').disabled = !this.value.trim();">`;
+    } else if(q.type === 'match'){
+      const listA = q.listA;
+      const listB = (QUIZ_LANG === 'en' && q.listBEn) ? q.listBEn : q.listB;
+      const letters = 'abcdefgh';
+      optsHtml = '<div class="match-wrap">' + listA.map((a,ai)=>{
+        const opts = listB.map((b,bi)=>`<option value="${bi}">${letters[bi]}) ${b}</option>`).join('');
+        return `<div class="match-row" id="mrow-${qi}-${ai}"><div class="match-a"><b>${ai+1}.</b> ${a}</div><select id="msel-${qi}-${ai}" onchange="selectMatch(${qi})"><option value="" disabled selected>${QUIZ_LANG==='en'?'Choose a match…':'اختر التطابق…'}</option>${opts}</select></div>`;
+      }).join('') + '</div>';
+    }
+
+    const checkLabel = QUIZ_LANG === 'en' ? 'Check Answer' : 'تحقق من الإجابة';
+    const qLabel = QUIZ_LANG === 'en' ? 'Question' : 'سؤال';
+    const needsDisable = (q.type==='fill' || q.type==='match');
+
+    card.innerHTML = `
+      <div class="q-meta">
+        <span class="q-type-tag">${qLabel} ${qi+1} · ${typeLabel}</span>
+      </div>
+      <div class="q-prompt">${prompt.replace(/\n/g,'<br>')}</div>
+      ${optsHtml}
+      <button class="check-btn" id="checkbtn-${qi}" onclick="checkAnswer(${qi})" ${needsDisable ? 'disabled':''}>${checkLabel}</button>
+      <div class="q-feedback" id="feedback-${qi}"></div>
+    `;
+    c.appendChild(card);
+  });
+
+  if(!preserveState){
+    userAnswers = new Array(QUIZ.length).fill(null);
+    checked = new Array(QUIZ.length).fill(false);
+    score = 0;
+  }
+  updateScoreBar();
+  document.getElementById('finalScore').classList.remove('show');
+}
+
+function selectAnswer(qi, val){ userAnswers[qi] = val; }
+function toggleMulti(qi, oi){
+  if(!Array.isArray(userAnswers[qi])) userAnswers[qi] = [];
+  const idx = userAnswers[qi].indexOf(oi);
+  if(idx === -1) userAnswers[qi].push(oi); else userAnswers[qi].splice(idx,1);
+}
+function selectMatch(qi){
+  const q = QUIZ[qi];
+  const sels = q.listA.map((_,ai)=>document.getElementById(`msel-${qi}-${ai}`).value);
+  const allFilled = sels.every(v => v !== '');
+  userAnswers[qi] = sels.map(v=>Number(v));
+  document.getElementById('checkbtn-'+qi).disabled = !allFilled;
+}
+
+function checkAnswer(qi){
+  if(checked[qi]) return;
+  const q = QUIZ[qi];
+  let isCorrect = false;
+  const fb = document.getElementById('feedback-'+qi);
+  const explain = (QUIZ_LANG === 'en' && q.explainEn) ? q.explainEn : q.explain;
+
+  if(q.type === 'mcq'){
+    const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+    if(userAnswers[qi] === null){ alert(QUIZ_LANG==='en' ? 'Please choose an answer first' : 'من فضلك اختر إجابة أولًا'); return; }
+    isCorrect = Number(userAnswers[qi]) === q.correct;
+    for(let i=0;i<options.length;i++){
+      const el = document.getElementById(`opt-${qi}-${i}`);
+      if(i === q.correct) el.classList.add('correct-flash');
+      else if(i === Number(userAnswers[qi])) el.classList.add('wrong-flash');
+    }
+  } else if(q.type === 'tf'){
+    if(userAnswers[qi] === null){ alert(QUIZ_LANG==='en' ? 'Please choose an answer first' : 'من فضلك اختر إجابة أولًا'); return; }
+    const chosen = (userAnswers[qi] === true || userAnswers[qi] === 'true');
+    isCorrect = chosen === q.correct;
+    const correctId = q.correct ? `opt-${qi}-1` : `opt-${qi}-0`;
+    const wrongId = q.correct ? `opt-${qi}-0` : `opt-${qi}-1`;
+    document.getElementById(correctId).classList.add('correct-flash');
+    if(!isCorrect) document.getElementById(wrongId).classList.add('wrong-flash');
+  } else if(q.type === 'multi'){
+    const options = (QUIZ_LANG === 'en' && q.optionsEn) ? q.optionsEn : q.options;
+    const chosen = Array.isArray(userAnswers[qi]) ? userAnswers[qi].slice().sort() : [];
+    const correctSet = q.correctSet.slice().sort();
+    isCorrect = chosen.length === correctSet.length && chosen.every((v,i)=>v===correctSet[i]);
+    for(let i=0;i<options.length;i++){
+      const el = document.getElementById(`opt-${qi}-${i}`);
+      const shouldBeCorrect = q.correctSet.includes(i);
+      const wasChosen = chosen.includes(i);
+      if(shouldBeCorrect) el.classList.add('correct-flash');
+      else if(wasChosen) el.classList.add('wrong-flash');
+    }
+  } else if(q.type === 'fill'){
+    const val = (userAnswers[qi] || '').trim().toLowerCase();
+    isCorrect = q.accept.some(a => a.toLowerCase() === val || val.includes(a.toLowerCase()));
+    const input = document.getElementById('fill-'+qi);
+    input.style.borderColor = isCorrect ? 'var(--ok)' : 'var(--bad)';
+  } else if(q.type === 'match'){
+    const chosen = userAnswers[qi] || [];
+    isCorrect = chosen.length === q.correctMap.length && chosen.every((v,i)=>v===q.correctMap[i]);
+    q.listA.forEach((_,ai)=>{
+      const row = document.getElementById(`mrow-${qi}-${ai}`);
+      document.getElementById(`msel-${qi}-${ai}`).disabled = true;
+      if(chosen[ai] === q.correctMap[ai]) row.classList.add('correct-flash'); else row.classList.add('wrong-flash');
+    });
+  }
+
+  checked[qi] = true;
+  if(isCorrect) score++;
+  fb.className = 'q-feedback show ' + (isCorrect ? 'correct' : 'incorrect');
+  const correctTag = QUIZ_LANG==='en' ? '✅ <b>Correct!</b> ' : '✅ <b>إجابة صحيحة!</b> ';
+  const wrongTag = QUIZ_LANG==='en' ? '❌ <b>Not quite.</b> ' : '❌ <b>إجابة غير صحيحة.</b> ';
+  fb.innerHTML = (isCorrect ? correctTag : wrongTag) + explain;
+  document.getElementById('checkbtn-'+qi).disabled = true;
+  document.querySelectorAll(`#q-${qi} input`).forEach(inp => inp.disabled = true);
+
+  updateScoreBar();
+  if(checked.every(Boolean)) showFinalScore();
+}
+
+function updateScoreBar(){
+  document.getElementById('scoreNow').textContent = score;
+  const answered = checked.filter(Boolean).length;
+  const pct = QUIZ.length ? (answered / QUIZ.length) * 100 : 0;
+  document.getElementById('quizBarFill').style.width = pct + '%';
+}
+
+function showFinalScore(){
+  const el = document.getElementById('finalScore');
+  const pct = Math.round((score/QUIZ.length)*100);
+  document.getElementById('finalScoreText').textContent = `${score} / ${QUIZ.length} (${pct}%)`;
+  let msg = '';
+  if(QUIZ_LANG === 'en'){
+    if(pct >= 85) msg = 'Excellent! You\'re fully ready for Recurrence Relations. 🎉';
+    else if(pct >= 60) msg = 'Good! Review the questions you missed via the “Full Explanation” section.';
+    else msg = 'It\'s recommended to revisit the “Full Explanation” and “3 Levels” sections before trying again.';
+  } else {
+    if(pct >= 85) msg = 'ممتاز! أنت جاهز تمامًا لموضوع Recurrence Relations. 🎉';
+    else if(pct >= 60) msg = 'جيد! راجع الأسئلة التي أخطأت فيها من خلال قسم "الشرح الكامل".';
+    else msg = 'يُنصح بمراجعة قسم "الشرح الكامل" و"3 مستويات" مرة أخرى قبل إعادة المحاولة.';
+  }
+  document.getElementById('finalScoreMsg').textContent = msg;
+  el.classList.add('show');
+}
+
+function resetQuiz(){
+  userAnswers = new Array(QUIZ.length).fill(null);
+  checked = new Array(QUIZ.length).fill(false);
+  score = 0;
+  document.getElementById('finalScore').classList.remove('show');
+  renderQuiz(true);
+  document.getElementById('quiz').scrollIntoView({behavior:'smooth'});
+}
+
+renderQuiz(false);
+</script>
+
+</body>
+</html>

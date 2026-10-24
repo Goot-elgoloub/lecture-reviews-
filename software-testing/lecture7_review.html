@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ورقة مراجعة تفاعلية — تقنيات تصميم حالات الاختبار</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0a0e16;
+      color: #e7ecf5;
+      font-family: 'Tajawal', sans-serif;
+      line-height: 1.7;
+      font-size: clamp(0.95rem, 1.1vw, 1.05rem);
+      min-height: 100vh;
+      overflow-x: hidden; /* safety net, but components must not overflow */
+    }
+    body[dir="ltr"] { font-family: 'Tajawal', 'Segoe UI', sans-serif; }
+    h1, h2, h3, h4 { font-weight: 700; line-height: 1.3; margin-block: 0.5em; }
+    a { color: #38bdf8; text-decoration: none; }
+    a:hover, a:focus-visible { text-decoration: underline; }
+    img { max-width: 100%; height: auto; display: block; }
+    button, input, select { font: inherit; }
+    :focus-visible { outline: 3px solid #38bdf8; outline-offset: 3px; }
+
+    /* ===== UTILITIES ===== */
+    .container {
+      width: min(100% - 2rem, 1200px);
+      margin-inline: auto;
+    }
+    .visually-hidden {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+    .term-en { font-family: 'Fira Code', monospace; font-size: 0.9em; direction: ltr; unicode-bidi: isolate; }
+    .code-block {
+      direction: ltr; text-align: left; background: #0f1524; border: 1px solid #212b40;
+      border-radius: 8px; padding: 1rem; overflow-x: auto; max-width: 100%;
+      font-family: 'Fira Code', monospace; font-size: 0.9rem; line-height: 1.5;
+      white-space: pre; tab-size: 4; margin-block: 1rem;
+    }
+    .code-block code { font-family: inherit; }
+    .table-wrapper { max-width: 100%; overflow-x: auto; margin-block: 1rem; border-radius: 8px; border: 1px solid #212b40; }
+    table { width: 100%; border-collapse: collapse; min-width: 280px; }
+    caption { text-align: start; font-weight: 700; padding: 0.5rem; color: #93a1bd; }
+    th, td { padding: 0.6rem 0.8rem; border-bottom: 1px solid #212b40; text-align: start; }
+    th { background: #121a2b; font-weight: 700; }
+    tr:last-child td { border-bottom: none; }
+
+    /* ===== CARDS & BADGES ===== */
+    .card {
+      background: linear-gradient(135deg, #121a2b 0%, #0f1524 100%);
+      border: 1px solid #212b40;
+      border-radius: 12px;
+      padding: 1.25rem;
+      margin-block: 1rem;
+    }
+    .card.tinted { background: linear-gradient(135deg, #1a2338 0%, #121a2b 100%); }
+    .badge {
+      display: inline-block; padding: 0.2rem 0.6rem; border-radius: 999px;
+      font-size: 0.75rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; margin-inline-end: 0.5rem;
+    }
+    .badge.source { background: #1e3a5f; color: #93c5fd; }
+    .badge.explain { background: #1e3b2e; color: #6ee7b7; }
+    .badge.access { background: #3b2e1e; color: #fcd34d; }
+    .badge.takeaway { background: #3b1e3b; color: #f0abfc; }
+    .badge.additional { background: #3b1e1e; color: #fca5a5; }
+    .note {
+      border-inline-start: 4px solid #38bdf8; padding: 0.75rem 1rem;
+      background: #0f1524; border-radius: 0 8px 8px 0; margin-block: 1rem;
+    }
+    .note.good { border-color: #34d399; }
+    .note.info { border-color: #38bdf8; }
+
+    /* ===== GRID ===== */
+    .grid { display: grid; gap: 1rem; }
+    .grid-2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); }
+    .grid-3 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+    .grid-4 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); }
+
+    /* ===== HERO ===== */
+    .hero {
+      position: relative;
+      padding: clamp(2rem, 5vw, 4rem) 1rem;
+      text-align: center;
+      overflow: hidden;
+      border-bottom: 1px solid #212b40;
+    }
+    .hero-svg {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      pointer-events: none; opacity: 0.15; z-index: 0;
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero h1 {
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      margin-block: 0.5rem;
+      background: linear-gradient(90deg, #38bdf8, #a78bfa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p { max-width: 60ch; margin-inline: auto; color: #93a1bd; }
+    .kicker {
+      display: inline-block; font-size: 0.8rem; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: #38bdf8; border: 1px solid #38bdf8;
+      padding: 0.25rem 0.75rem; border-radius: 999px;
+    }
+
+    /* ===== NAV ===== */
+    .main-nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10, 14, 22, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #212b40;
+      padding: 0.5rem 0;
+    }
+    .nav-scroll {
+      display: flex; gap: 0.25rem;
+      overflow-x: auto; scroll-behavior: smooth;
+      padding: 0.25rem 1rem;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+    }
+    .nav-scroll::-webkit-scrollbar { height: 4px; }
+    .nav-scroll::-webkit-scrollbar-thumb { background: #212b40; border-radius: 2px; }
+    .nav-scroll a {
+      flex: 0 0 auto; padding: 0.5rem 0.9rem; border-radius: 8px;
+      color: #93a1bd; font-weight: 500; font-size: 0.9rem;
+      white-space: nowrap; transition: background 0.2s, color 0.2s;
+    }
+    .nav-scroll a:hover, .nav-scroll a:focus-visible { background: #1a2338; color: #e7ecf5; }
+    .nav-scroll a[aria-current="true"] { background: #38bdf8; color: #0a0e16; font-weight: 700; }
+
+    /* ===== LANGUAGE TOGGLE ===== */
+    .lang-switch {
+      display: inline-flex; border: 1px solid #212b40; border-radius: 999px;
+      overflow: hidden; margin-block: 0.5rem;
+    }
+    .lang-switch button {
+      background: transparent; border: none; color: #93a1bd;
+      padding: 0.4rem 1rem; cursor: pointer; font-weight: 500;
+      transition: background 0.2s, color 0.2s;
+    }
+    .lang-switch button[aria-pressed="true"] { background: #38bdf8; color: #0a0e16; font-weight: 700; }
+    .lang-switch button:hover:not([aria-pressed="true"]) { background: #1a2338; }
+
+    /* ===== SECTION HEADINGS ===== */
+    .section-title {
+      font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+      margin-block: 2rem 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid #212b40;
+      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+    }
+    .section-title .num {
+      font-size: 0.9em; color: #38bdf8; font-family: 'Fira Code', monospace;
+    }
+
+    /* ===== LECTURE INDEX ===== */
+    .lecture-index {
+      background: #121a2b; border: 1px solid #212b40; border-radius: 12px;
+      padding: 1rem; margin-block: 1.5rem;
+    }
+    .lecture-index summary {
+      cursor: pointer; font-weight: 700; font-size: 1.1rem;
+      padding: 0.5rem; list-style: none;
+    }
+    .lecture-index summary::-webkit-details-marker { display: none; }
+    .lecture-index summary::before { content: "▶ "; color: #38bdf8; }
+    .lecture-index[open] summary::before { content: "▼ "; }
+    .index-list { display: grid; gap: 0.4rem; padding: 0.5rem; }
+    .index-list a { display: block; padding: 0.4rem 0.75rem; border-radius: 6px; background: #0f1524; }
+    .index-list a:hover, .index-list a:focus-visible { background: #1a2338; }
+
+    /* ===== SLIDE / PAGE SECTIONS ===== */
+    .slide-section {
+      background: #0f1524; border: 1px solid #212b40; border-radius: 12px;
+      padding: clamp(1rem, 2vw, 1.5rem); margin-block: 1.5rem;
+      scroll-margin-top: 80px;
+    }
+    .slide-section h2 {
+      font-size: clamp(1.1rem, 2vw, 1.4rem);
+      color: #38bdf8; margin-top: 0;
+      border-bottom: 1px solid #212b40; padding-bottom: 0.5rem;
+    }
+    .source-content { background: #0a0e16; padding: 0.75rem 1rem; border-radius: 8px; border-inline-start: 3px solid #93a1bd; margin-block: 0.75rem; }
+    .explanation { background: #121a2b; padding: 0.75rem 1rem; border-radius: 8px; border-inline-start: 3px solid #34d399; margin-block: 0.75rem; }
+    .accessibility-block { background: #1a1a2e; padding: 0.75rem 1rem; border-radius: 8px; border-inline-start: 3px solid #fcd34d; margin-block: 0.75rem; }
+    .takeaway-block { background: #1e1a2e; padding: 0.75rem 1rem; border-radius: 8px; border-inline-start: 3px solid #f0abfc; margin-block: 0.75rem; }
+    .line-note { color: #93a1bd; font-size: 0.9em; margin-top: 0.25rem; }
+
+    /* ===== DIAGRAM BLOCK ===== */
+    .diagram-block {
+      background: #121a2b; border: 1px solid #212b40; border-radius: 12px;
+      padding: 1rem; margin-block: 1rem;
+    }
+    .diagram-block h3 { color: #a78bfa; }
+
+    /* ===== COMPLEXITY COLORS ===== */
+    .c-1 { color: #94a3b8; }
+    .c-logn { color: #a78bfa; }
+    .c-n { color: #38bdf8; }
+    .c-nlogn { color: #34d399; }
+    .c-n2 { color: #fbbf24; }
+    .c-n3 { color: #fb923c; }
+    .c-2n { color: #f87171; }
+
+    /* ===== TABS (THREE LEVELS) ===== */
+    .tabs { border: 1px solid #212b40; border-radius: 12px; overflow: hidden; margin-block: 1rem; }
+    .tab-list { display: flex; flex-wrap: wrap; background: #121a2b; border-bottom: 1px solid #212b40; }
+    .tab-list button {
+      flex: 1 1 auto; padding: 0.75rem 1rem; background: transparent; border: none;
+      color: #93a1bd; font-weight: 700; cursor: pointer; transition: background 0.2s;
+    }
+    .tab-list button[aria-selected="true"] { background: #0f1524; color: #38bdf8; border-bottom: 2px solid #38bdf8; }
+    .tab-list button:hover:not([aria-selected="true"]) { background: #1a2338; }
+    .tab-panel { padding: 1rem; background: #0f1524; }
+    .tab-panel[hidden] { display: none; }
+
+    /* ===== QUIZ ===== */
+    .quiz-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; margin-block: 1rem; }
+    .quiz-score { font-weight: 700; font-size: 1.2rem; }
+    .progress-bar-wrapper { width: 100%; height: 12px; background: #212b40; border-radius: 999px; overflow: hidden; margin-block: 0.5rem; }
+    .progress-bar {
+      height: 100%; width: 0%; border-radius: 999px;
+      background: linear-gradient(90deg, #38bdf8, #a78bfa, #34d399);
+      background-size: 200% 100%;
+      transition: width 0.4s ease;
+      animation: gradientShift 3s ease infinite;
+    }
+    @keyframes gradientShift { 0%,100%{background-position:0% 50%} 50%{background-position:100% 50%} }
+    .quiz-question {
+      background: #121a2b; border: 1px solid #212b40; border-radius: 12px;
+      padding: 1rem; margin-block: 1rem;
+    }
+    .quiz-question .q-prompt { font-weight: 700; margin-bottom: 0.75rem; }
+    .q-options { display: grid; gap: 0.5rem; }
+    .q-option {
+      display: flex; align-items: flex-start; gap: 0.5rem;
+      background: #0f1524; padding: 0.5rem 0.75rem; border-radius: 8px;
+      border: 1px solid #212b40; cursor: pointer; transition: border-color 0.2s;
+    }
+    .q-option:hover { border-color: #38bdf8; }
+    .q-option input { margin-top: 0.3rem; accent-color: #38bdf8; }
+    .q-option.selected { border-color: #38bdf8; background: #1a2338; }
+    .q-option.correct-answer { border-color: #34d399; background: #1e3b2e; }
+    .q-option.wrong-answer { border-color: #f87171; background: #3b1e1e; }
+    .q-feedback { margin-top: 0.75rem; padding: 0.75rem; border-radius: 8px; font-weight: 500; }
+    .q-feedback.correct { background: #1e3b2e; color: #6ee7b7; border: 1px solid #34d399; }
+    .q-feedback.incorrect { background: #3b1e1e; color: #fca5a5; border: 1px solid #f87171; }
+    .q-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.75rem; }
+    .btn {
+      padding: 0.5rem 1.2rem; border-radius: 8px; border: none; font-weight: 700;
+      cursor: pointer; transition: background 0.2s, opacity 0.2s;
+    }
+    .btn-primary { background: #38bdf8; color: #0a0e16; }
+    .btn-primary:hover:not(:disabled) { background: #7dd3fc; }
+    .btn-secondary { background: #212b40; color: #e7ecf5; }
+    .btn-secondary:hover:not(:disabled) { background: #2e3a52; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .match-container { display: grid; gap: 0.5rem; }
+    .match-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; align-items: center; }
+    .match-select { width: 100%; padding: 0.4rem; border-radius: 6px; background: #0f1524; color: #e7ecf5; border: 1px solid #212b40; }
+    .fill-input { width: 100%; padding: 0.5rem; border-radius: 6px; background: #0f1524; color: #e7ecf5; border: 1px solid #212b40; direction: ltr; text-align: left; font-family: 'Fira Code', monospace; }
+    .fill-input.correct { border-color: #34d399; }
+    .fill-input.incorrect { border-color: #f87171; }
+    .final-result {
+      background: linear-gradient(135deg, #121a2b, #0f1524);
+      border: 2px solid #38bdf8; border-radius: 12px; padding: 1.5rem;
+      text-align: center; margin-block: 1.5rem;
+    }
+    .final-result .score-big { font-size: 2.5rem; font-weight: 700; color: #38bdf8; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      text-align: center; padding: 2rem 1rem; color: #93a1bd;
+      border-top: 1px solid #212b40; margin-top: 3rem; font-size: 0.9rem;
+    }
+
+    /* ===== RESPONSIVE ADJUSTMENTS ===== */
+    @media (max-width: 639px) {
+      .card { padding: 1rem; }
+      .slide-section { padding: 1rem; }
+      .match-row { grid-template-columns: 1fr; }
+      .nav-scroll a { font-size: 0.8rem; padding: 0.4rem 0.6rem; }
+    }
+    @media (min-width: 640px) {
+      .hero { padding: 3rem 2rem; }
+    }
+    @media (min-width: 1024px) {
+      .grid-2 { grid-template-columns: repeat(2, 1fr); }
+      .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    /* ===== PRINT ===== */
+    @media print {
+      .main-nav, .lang-switch, .btn, .quiz-actions, .progress-bar-wrapper { display: none !important; }
+      body { background: #fff; color: #000; }
+      .card, .slide-section { background: #f5f5f5; border: 1px solid #ccc; }
+    }
+
+    /* ===== ARABIC / LTR ALIGNMENTS ===== */
+    [dir="rtl"] .source-content { border-inline-start: 3px solid #93a1bd; border-inline-end: none; }
+    [dir="rtl"] .explanation { border-inline-start: 3px solid #34d399; }
+    [dir="rtl"] .accessibility-block { border-inline-start: 3px solid #fcd34d; }
+    [dir="rtl"] .takeaway-block { border-inline-start: 3px solid #f0abfc; }
+    [dir="ltr"] .source-content { border-inline-start: 3px solid #93a1bd; }
+    [dir="ltr"] .explanation { border-inline-start: 3px solid #34d399; }
+    [dir="ltr"] .accessibility-block { border-inline-start: 3px solid #fcd34d; }
+    [dir="ltr"] .takeaway-block { border-inline-start: 3px solid #f0abfc; }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HERO ===== -->
+  <header class="hero">
+    <svg class="hero-svg" aria-hidden="true" viewBox="0 0 800 400" preserveAspectRatio="none">
+      <path d="M0 300 Q 200 100 400 250 T 800 200" fill="none" stroke="#38bdf8" stroke-width="2"/>
+      <path d="M0 350 Q 200 200 400 300 T 800 250" fill="none" stroke="#a78bfa" stroke-width="2"/>
+      <path d="M0 250 Q 200 50 400 200 T 800 150" fill="none" stroke="#34d399" stroke-width="2"/>
+    </svg>
+    <div class="hero-content container">
+      <span class="kicker i18n" data-en="LECTURE 7 · REVIEW SHEET">المحاضرة 7 · ورقة مراجعة</span>
+      <h1 class="i18n" data-en="Test Case Design Techniques">تقنيات تصميم حالات الاختبار</h1>
+      <p class="i18n" data-en="Master black-box state transition testing and experience-based techniques for real-world software quality.">
+        أتقن اختبار الانتقال بين الحالات كأسلوب صندوق أسود، والتقنيات القائمة على الخبرة لضمان جودة البرمجيات.
+      </p>
+      <div class="lang-switch" role="group" aria-label="Language switch">
+        <button id="btn-ar" aria-pressed="true" onclick="setLang('ar')">العربية</button>
+        <button id="btn-en" aria-pressed="false" onclick="setLang('en')">English</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== STICKY NAV ===== -->
+  <nav class="main-nav" aria-label="Main navigation">
+    <div class="nav-scroll container" id="nav-scroll">
+      <a href="#overview" class="nav-link" data-section="overview"><span class="i18n" data-en="01 Overview">01 نظرة عامة</span></a>
+      <a href="#lecture-content" class="nav-link" data-section="lecture-content"><span class="i18n" data-en="02 Lecture Content">02 محتوى المحاضرة</span></a>
+      <a href="#diagrams" class="nav-link" data-section="diagrams"><span class="i18n" data-en="03 Diagrams & Charts">03 المخططات والرسوم</span></a>
+      <a href="#summary" class="nav-link" data-section="summary"><span class="i18n" data-en="04 Summary">04 الملخص</span></a>
+      <a href="#three-levels" class="nav-link" data-section="three-levels"><span class="i18n" data-en="05 Three Levels">05 المستويات الثلاثة</span></a>
+      <a href="#quiz" class="nav-link" data-section="quiz"><span class="i18n" data-en="06 Interactive Quiz">06 الاختبار التفاعلي</span></a>
+      <a href="#pro-tips" class="nav-link" data-section="pro-tips"><span class="i18n" data-en="07 Pro Tips">07 نصائح احترافية</span></a>
+      <a href="#coverage" class="nav-link" data-section="coverage"><span class="i18n" data-en="08 Coverage & Source Map">08 التغطية والمصادر</span></a>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <!-- ===== SECTION 01: OVERVIEW ===== -->
+    <section id="overview" aria-labelledby="overview-title">
+      <h2 class="section-title" id="overview-title"><span class="num">01</span> <span class="i18n" data-en="Overview">نظرة عامة</span></h2>
+
+      <div class="card">
+        <h3 class="i18n" data-en="What This Lecture Is About">عن ماذا تتحدث هذه المحاضرة؟</h3>
+        <p class="i18n" data-en="This lecture covers two major families of test case design techniques: State Transition Testing (a black-box technique) and Experience-Based Techniques (Error Guessing, Exploratory Testing, and Checklist-based Testing). It explains when to use each, their processes, advantages, and disadvantages.">
+          تغطي هذه المحاضرة عائلتين رئيسيتين من تقنيات تصميم حالات الاختبار: اختبار الانتقال بين الحالات (أسلوب الصندوق الأسود)، والتقنيات القائمة على الخبرة (التخمين على الأخطاء، الاختبار الاستكشافي، والاختبار القائم على قوائم التحقق). وتشرح متى تُستخدم كل تقنية، وعملياتها، ومزاياها، وعيوبها.
+        </p>
+      </div>
+
+      <div class="card tinted">
+        <h3 class="i18n" data-en="Core Idea">الفكرة الأساسية</h3>
+        <p class="i18n" data-en="Not all testing can be scripted in advance. State Transition Testing systematically covers sequences of inputs and state changes, while Experience-Based Techniques leverage the tester's skill, intuition, and past knowledge to find defects that formal methods may miss.">
+          ليس كل الاختبار يمكن كتابته مسبقًا. اختبار الانتقال بين الحالات يغطي بشكل منهجي تسلسل المدخلات وتغيرات الحالة، بينما التقنيات القائمة على الخبرة تستفيد من مهارة المختبر وحدسه ومعرفته السابقة لاكتشاف العيوب التي قد تفوتها الأساليب الرسمية.
+        </p>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <h3 class="i18n" data-en="Key Concepts Checklist">قائمة المفاهيم الرئيسية</h3>
+          <ul>
+            <li><span class="term-en">State Transition Diagram</span> — <span class="i18n" data-en="Shows states, events, and transitions.">يُظهر الحالات والأحداث والانتقالات.</span></li>
+            <li><span class="term-en">State Transition Testing</span> — <span class="i18n" data-en="Black-box technique testing state changes.">تقنية صندوق أسود لاختبار تغيرات الحالة.</span></li>
+            <li><span class="term-en">Error Guessing</span> — <span class="i18n" data-en="Tester uses intuition to anticipate errors.">يستخدم المختبر حدسه لتوقع الأخطاء.</span></li>
+            <li><span class="term-en">Exploratory Testing</span> — <span class="i18n" data-en="Unscripted testing with simultaneous learning and execution.">اختبار غير مكتوب مسبقًا مع التعلم والتنفيذ المتزامن.</span></li>
+            <li><span class="term-en">Checklist-based Testing</span> — <span class="i18n" data-en="Tests derived from a checklist of conditions.">اختبارات مستمدة من قائمة تحقق بالشروط.</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 class="i18n" data-en="Skills Gained">المهارات المكتسبة</h3>
+          <ul>
+            <li><span class="i18n" data-en="Build and interpret state transition diagrams.">بناء وتفسير مخططات الانتقال بين الحالات.</span></li>
+            <li><span class="i18n" data-en="Design test cases for sequential input scenarios.">تصميم حالات اختبار لسيناريوهات المدخلات المتسلسلة.</span></li>
+            <li><span class="i18n" data-en="Apply error guessing, exploratory, and checklist-based techniques.">تطبيق التخمين على الأخطاء، والاختبار الاستكشافي، والتقنيات القائمة على قوائم التحقق.</span></li>
+            <li><span class="i18n" data-en="Compare and contrast systematic vs. experience-based approaches.">مقارنة ومقابلة الأساليب المنهجية مقابل القائمة على الخبرة.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 class="i18n" data-en="Why It Matters">لماذا هذا مهم؟</h3>
+        <p class="i18n" data-en="Real systems often have complex state machines (like ATMs or login flows), and rigid test scripts may miss edge cases. Combining systematic state transition testing with experience-based techniques gives broader coverage and catches subtle defects early.">
+          غالبًا ما تحتوي الأنظمة الحقيقية على آلات حالة معقدة (مثل أجهزة الصراف الآلي أو تدفقات تسجيل الدخول)، وقد تفوت النصوص الثابتة للاختبار الحالات الحدية. الجمع بين اختبار الانتقال بين الحالات المنهجي والتقنيات القائمة على الخبرة يوفر تغطية أوسع ويكتشف العيوب الدقيقة مبكرًا.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===== LECTURE INDEX ===== -->
+    <details class="lecture-index" aria-labelledby="index-title">
+      <summary id="index-title"><span class="i18n" data-en="Lecture Index — All Slides">فهرس المحاضرة — جميع الشرائح</span></summary>
+      <div class="index-list">
+        <a href="#slide-01"><span class="i18n" data-en="Slide 01 — Test Case Design Techniques">الشريحة 01 — تقنيات تصميم حالات الاختبار</span></a>
+        <a href="#slide-02"><span class="i18n" data-en="Slide 02 — Black Box Techniques: State Transition Testing">الشريحة 02 — تقنيات الصندوق الأسود: اختبار الانتقال بين الحالات</span></a>
+        <a href="#slide-03"><span class="i18n" data-en="Slide 03 — State Transition Diagram & Testing">الشريحة 03 — مخطط الانتقال بين الحالات والاختبار</span></a>
+        <a href="#slide-04"><span class="i18n" data-en="Slide 04 — When to Use / Not Use State Transition">الشريحة 04 — متى تستخدم / لا تستخدم الانتقال بين الحالات</span></a>
+        <a href="#slide-05"><span class="i18n" data-en="Slide 05 — State Transition Diagram (Visual)">الشريحة 05 — مخطط الانتقال بين الحالات (مرئي)</span></a>
+        <a href="#slide-06"><span class="i18n" data-en="Slide 06 — ATM State Transition Example">الشريحة 06 — مثال آلة الصراف الآلي</span></a>
+        <a href="#slide-07"><span class="i18n" data-en="Slide 07 — Experience-Based Techniques">الشريحة 07 — التقنيات القائمة على الخبرة</span></a>
+        <a href="#slide-08"><span class="i18n" data-en="Slide 08 — Experience-Based Techniques Overview">الشريحة 08 — نظرة عامة على التقنيات القائمة على الخبرة</span></a>
+        <a href="#slide-09"><span class="i18n" data-en="Slide 09 — Error Guessing">الشريحة 09 — التخمين على الأخطاء</span></a>
+        <a href="#slide-10"><span class="i18n" data-en="Slide 10 — Error Guessing (Details)">الشريحة 10 — التخمين على الأخطاء (تفاصيل)</span></a>
+        <a href="#slide-11"><span class="i18n" data-en="Slide 11 — Advantages & Disadvantages of Error Guessing">الشريحة 11 — مزايا وعيوب التخمين على الأخطاء</span></a>
+        <a href="#slide-12"><span class="i18n" data-en="Slide 12 — Factors Used in Error Guessing">الشريحة 12 — العوامل المستخدمة في التخمين على الأخطاء</span></a>
+        <a href="#slide-13"><span class="i18n" data-en="Slide 13 — Exploratory Testing">الشريحة 13 — الاختبار الاستكشافي</span></a>
+        <a href="#slide-14"><span class="i18n" data-en="Slide 14 — Exploratory Testing Process">الشريحة 14 — عملية الاختبار الاستكشافي</span></a>
+        <a href="#slide-15"><span class="i18n" data-en="Slide 15 — Exploratory Testing: Phases (Learn, Create, Execute)">الشريحة 15 — مراحل الاختبار الاستكشافي</span></a>
+        <a href="#slide-16"><span class="i18n" data-en="Slide 16 — Analysis & Advantages/Disadvantages of Exploratory Testing">الشريحة 16 — التحليل ومزايا/عيوب الاختبار الاستكشافي</span></a>
+        <a href="#slide-17"><span class="i18n" data-en="Slide 17 — Checklist-based Testing">الشريحة 17 — الاختبار القائم على قوائم التحقق</span></a>
+        <a href="#slide-18"><span class="i18n" data-en="Slide 18 — Checklist-based Testing Example">الشريحة 18 — مثال على الاختبار القائم على قوائم التحقق</span></a>
+        <a href="#slide-19"><span class="i18n" data-en="Slide 19 — Fundamentals of Testing">الشريحة 19 — أساسيات الاختبار</span></a>
+      </div>
+    </details>
+
+    <!-- ===== SECTION 02: LECTURE CONTENT ===== -->
+    <section id="lecture-content" aria-labelledby="lecture-title">
+      <h2 class="section-title" id="lecture-title"><span class="num">02</span> <span class="i18n" data-en="Full Lecture Content">محتوى المحاضرة الكامل</span></h2>
+
+      <!-- ===== SLIDE 01 ===== -->
+      <article class="slide-section" id="slide-01" aria-labelledby="slide-01-title">
+        <h2 id="slide-01-title"><span class="i18n" data-en="Slide 01 — Test Case Design Techniques">الشريحة 01 — تقنيات تصميم حالات الاختبار</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <p><span class="term-en">TEST CASE DESIGN TECHNIQUES</span></p>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION</span>
+          <p class="i18n" data-en="This slide introduces the main topic: techniques for designing test cases. It sets the stage for the detailed techniques covered in subsequent slides.">
+            تُقدّم هذه الشريحة الموضوع الرئيسي: تقنيات تصميم حالات الاختبار. وتمهّد للتقنيات التفصيلية التي ستُغطى في الشرائح التالية.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="The lecture focuses on structured methods for designing effective test cases.">
+            تركز المحاضرة على الطرق المنظمة لتصميم حالات اختبار فعّالة.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 02 ===== -->
+      <article class="slide-section" id="slide-02" aria-labelledby="slide-02-title">
+        <h2 id="slide-02-title"><span class="i18n" data-en="Slide 02 — Black Box Techniques: State Transition Testing">الشريحة 02 — تقنيات الصندوق الأسود: اختبار الانتقال بين الحالات</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <p><span class="term-en">BLACK BOX TECHNIQUES</span></p>
+          <p><span class="term-en">State Transition Testing Technique</span></p>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION</span>
+          <p class="i18n" data-en="This slide introduces State Transition Testing as a specific black-box technique. Black-box techniques focus on inputs and outputs without examining internal code structure.">
+            تُقدّم هذه الشريحة اختبار الانتقال بين الحالات كتقنية محددة من تقنيات الصندوق الأسود. تركز تقنيات الصندوق الأسود على المدخلات والمخرجات دون فحص البنية الداخلية للكود.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="State Transition Testing is a black-box approach that examines how a system behaves when inputs change its state.">
+            اختبار الانتقال بين الحالات هو نهج صندوق أسود يفحص كيفية تصرف النظام عندما تغيّر المدخلات حالته.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 03 ===== -->
+      <article class="slide-section" id="slide-03" aria-labelledby="slide-03-title">
+        <h2 id="slide-03-title"><span class="i18n" data-en="Slide 03 — State Transition Diagram & Testing">الشريحة 03 — مخطط الانتقال بين الحالات والاختبار</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <h3><span class="term-en">State Transition Diagram</span></h3>
+          <p class="i18n" data-en="A state transition diagram shows the possible software states, as well as how the software enters, exits, and transitions between states.">
+            يُظهر مخطط الانتقال بين الحالات الحالات المحتملة للبرنامج، وكيف يدخل البرنامج إلى الحالات ويخرج منها وينتقل بينها.
+          </p>
+          <h3><span class="term-en">State Transition Testing</span></h3>
+          <p class="i18n" data-en="State Transition Testing is a type of software testing which is performed to check the change in the state of the application under varying input.">
+            اختبار الانتقال بين الحالات هو نوع من اختبار البرمجيات يُجرى للتحقق من التغير في حالة التطبيق تحت مدخلات متفاوتة.
+          </p>
+          <p class="i18n" data-en="The condition of input passed is changed and the change in state is observed.">
+            يتم تغيير شرط المدخلات المارة ومراقبة التغير في الحالة.
+          </p>
+          <p class="i18n" data-en="State Transition Testing is basically a black box testing technique that is carried out to observe the behavior of the system or application for different input conditions passed in a sequence.">
+            اختبار الانتقال بين الحالات هو في الأساس تقنية اختبار صندوق أسود تُجرى لمراقبة سلوك النظام أو التطبيق لشروط مدخلات مختلفة تُمرر في تسلسل.
+          </p>
+          <p class="i18n" data-en="In this type of testing, both positive and negative input values are provided and the behavior of the system is observed.">
+            في هذا النوع من الاختبار، يتم توفير قيم إدخال إيجابية وسلبية على حد سواء ومراقبة سلوك النظام.
+          </p>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION — Sentence-by-Sentence</span>
+          <ul>
+            <li><strong class="term-en">State Transition Diagram:</strong> <span class="i18n" data-en="A visual model representing states as nodes and transitions as arrows, showing how the system moves between states.">نموذج مرئي يمثل الحالات كعقد والانتقالات كأسهم، مما يُظهر كيف ينتقل النظام بين الحالات.</span></li>
+            <li><strong class="term-en">State Transition Testing:</strong> <span class="i18n" data-en="A testing technique where you provide different inputs and check whether the system transitions to the expected state.">تقنية اختبار حيث تقدم مدخلات مختلفة وتتحقق مما إذا كان النظام ينتقل إلى الحالة المتوقعة.</span></li>
+            <li><strong class="i18n" data-en="Positive and negative inputs:">مدخلات إيجابية وسلبية:</strong> <span class="i18n" data-en="Test both valid inputs (positive) and invalid inputs (negative) to see how the system handles each.">اختبر كلاً من المدخلات الصالحة (الإيجابية) وغير الصالحة (السلبية) لترى كيف يتعامل النظام مع كل منها.</span></li>
+          </ul>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION — Expanded</span>
+          <p class="i18n" data-en="Think of a state transition diagram like a map of a subway system: stations are states, and train lines are transitions. State Transition Testing is like riding the train and checking that you arrive at the correct station for each route you take. It is especially useful for systems where the order of inputs matters, such as login screens, ATMs, or vending machines.">
+            فكّر في مخطط الانتقال بين الحالات كخريطة لمترو الأنفاق: المحطات هي الحالات، وخطوط القطار هي الانتقالات. اختبار الانتقال بين الحالات يشبه ركوب القطار والتحقق من وصولك إلى المحطة الصحيحة لكل مسار تسلكه. وهو مفيد بشكل خاص للأنظمة التي يهم فيها ترتيب المدخلات، مثل شاشات تسجيل الدخول، وأجهزة الصراف الآلي، وآلات البيع.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="State Transition Testing uses diagrams to model states and transitions, then designs tests to cover valid and invalid input sequences.">
+            يستخدم اختبار الانتقال بين الحالات المخططات لنمذجة الحالات والانتقالات، ثم يصمم الاختبارات لتغطية تسلسلات المدخلات الصالحة وغير الصالحة.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 04 ===== -->
+      <article class="slide-section" id="slide-04" aria-labelledby="slide-04-title">
+        <h2 id="slide-04-title"><span class="i18n" data-en="Slide 04 — When to Use / Not Use State Transition">الشريحة 04 — متى تستخدم / لا تستخدم الانتقال بين الحالات</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <h3><span class="term-en">When to Use State Transition?</span></h3>
+          <ul>
+            <li class="i18n" data-en="When a tester is testing the application for a finite set of input values.">عندما يختبر المختبر التطبيق لمجموعة محدودة من قيم الإدخال.</li>
+            <li class="i18n" data-en="When the tester is trying to test a sequence of events that occur in the application under test. I.e., this will allow the tester to test the application behavior for a sequence of input values.">عندما يحاول المختبر اختبار تسلسل الأحداث التي تحدث في التطبيق تحت الاختبار. أي أن هذا سيسمح للمختبر باختبار سلوك التطبيق لتسلسل من قيم الإدخال.</li>
+            <li class="i18n" data-en="When the system under test has a dependency on the events/values in the past.">عندما يكون النظام تحت الاختبار له اعتماد على الأحداث/القيم في الماضي.</li>
+          </ul>
+          <h3><span class="term-en">When to Not Rely On State Transition?</span></h3>
+          <ul>
+            <li class="i18n" data-en="When the testing is not done for sequential input combinations.">عندما لا يتم الاختبار لمجموعات الإدخال المتسلسلة.</li>
+            <li class="i18n" data-en="If the testing is to be done for different functionalities like exploratory testing.">إذا كان الاختبار سيجري لوظائف مختلفة مثل الاختبار الاستكشافي.</li>
+          </ul>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION — Sentence-by-Sentence</span>
+          <ul>
+            <li><strong class="i18n" data-en="Finite set of input values:">مجموعة محدودة من قيم الإدخال:</strong> <span class="i18n" data-en="When you can list all possible inputs (e.g., a PIN can only have 4 digits).">عندما يمكنك سرد جميع المدخلات الممكنة (مثلاً، يمكن أن يكون رمز PIN مكونًا من 4 أرقام فقط).</span></li>
+            <li><strong class="i18n" data-en="Sequence of events:">تسلسل الأحداث:</strong> <span class="i18n" data-en="The order of inputs matters. For example, entering a PIN before inserting a card vs. after.">ترتيب المدخلات مهم. على سبيل المثال، إدخال رمز PIN قبل إدخال البطاقة مقابل بعده.</span></li>
+            <li><strong class="i18n" data-en="Dependency on past events:">الاعتماد على الأحداث الماضية:</strong> <span class="i18n" data-en="The current state depends on what happened before. The system has memory.">تعتمد الحالة الحالية على ما حدث سابقًا. النظام لديه ذاكرة.</span></li>
+            <li><strong class="i18n" data-en="Not for sequential input:">ليس للمدخلات المتسلسلة:</strong> <span class="i18n" data-en="If testing individual features independently, state transition may be overkill.">إذا كنت تختبر ميزات فردية بشكل مستقل، فقد يكون اختبار الانتقال بين الحالات مبالغًا فيه.</span></li>
+          </ul>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION — Expanded</span>
+          <p class="i18n" data-en="Use state transition testing when the system behaves like a state machine: it has a finite number of states, and inputs cause it to move from one state to another. It is not ideal when you need to test isolated features that do not depend on previous inputs, such as exploratory testing where the tester freely explores the application.">
+            استخدم اختبار الانتقال بين الحالات عندما يتصرف النظام مثل آلة حالة: لديه عدد محدود من الحالات، وتتسبب المدخلات في انتقاله من حالة إلى أخرى. وهو ليس مثاليًا عندما تحتاج إلى اختبار ميزات معزولة لا تعتمد على مدخلات سابقة، مثل الاختبار الاستكشافي حيث يستكشف المختبر التطبيق بحرية.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="State Transition Testing is best suited for systems with finite states and sequential input dependencies. It is less suitable for isolated feature testing or exploratory approaches.">
+            اختبار الانتقال بين الحالات هو الأنسب للأنظمة ذات الحالات المحدودة والاعتماديات المتسلسلة للمدخلات. وهو أقل ملاءمةً لاختبار الميزات المعزولة أو الأساليب الاستكشافية.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 05 ===== -->
+      <article class="slide-section" id="slide-05" aria-labelledby="slide-05-title">
+        <h2 id="slide-05-title"><span class="i18n" data-en="Slide 05 — State Transition Diagram (Visual)">الشريحة 05 — مخطط الانتقال بين الحالات (مرئي)</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <p class="i18n" data-en="The slide contains an image of a state transition diagram with the following elements:">تحتوي الشريحة على صورة لمخطط انتقال بين الحالات بالعناصر التالية:</p>
+          <ul>
+            <li class="i18n" data-en="A rectangle labeled 'State 1' at the top.">مستطيل مكتوب عليه "State 1" في الأعلى.</li>
+            <li class="i18n" data-en="A large green arrow pointing downward from State 1 to State 2, labeled 'Input' and 'Event/Action'.">سهم أخضر كبير يشير لأسفل من State 1 إلى State 2، ومكتوب عليه "Input" و"Event/Action".</li>
+            <li class="i18n" data-en="A rectangle labeled 'State 2' at the bottom.">مستطيل مكتوب عليه "State 2" في الأسفل.</li>
+            <li class="i18n" data-en="An ellipse labeled 'Transition' on the left side.">شكل بيضاوي مكتوب عليه "Transition" على الجانب الأيسر.</li>
+            <li class="i18n" data-en="A green arrow pointing right labeled 'Output' on the right side.">سهم أخضر يشير لليمين ومكتوب عليه "Output" على الجانب الأيمن.</li>
+          </ul>
+        </div>
+        <!-- Original image (placeholder because source image is not available as a file, we describe it) -->
+        <div class="accessibility-block">
+          <span class="badge access">ACCESSIBILITY — Layout & Reading Order</span>
+          <p class="i18n" data-en="The diagram is laid out vertically. At the top is a rectangle 'State 1'. A thick downward arrow connects it to 'State 2' at the bottom. To the left of the arrow, the word 'Input' is written; to the right, 'Event / Action'. An ellipse on the left says 'Transition'. On the far right, a right-pointing arrow says 'Output'.">
+            المخطط مرتب عموديًا. في الأعلى مستطيل "State 1". سهم سميك لأسفل يربطه بـ "State 2" في الأسفل. على يسار السهم كلمة "Input"، وعلى اليمين "Event / Action". شكل بيضاوي على اليسار مكتوب عليه "Transition". على أقصى اليمين، سهم يشير لليمين مكتوب عليه "Output".
+          </p>
+          <p><strong class="i18n" data-en="Reading Order:">ترتيب القراءة:</strong></p>
+          <ol>
+            <li class="i18n" data-en="Start at State 1 (top).">ابدأ من State 1 (أعلى).</li>
+            <li class="i18n" data-en="Follow the arrow downward: this represents a transition triggered by an event/action.">اتبع السهم لأسفل: هذا يمثل انتقالًا ناتجًا عن حدث/إجراء.</li>
+            <li class="i18n" data-en="The label 'Input' on the left indicates the input that causes the transition.">تسمية "Input" على اليسار تشير إلى المدخل الذي يسبب الانتقال.</li>
+            <li class="i18n" data-en="You arrive at State 2 (bottom).">تصل إلى State 2 (أسفل).</li>
+            <li class="i18n" data-en="The 'Output' arrow on the right shows the result of the transition.">سهم "Output" على اليمين يُظهر نتيجة الانتقال.</li>
+          </ol>
+        </div>
+        <details class="accessibility-block">
+          <summary class="i18n" data-en="🖼 Show Reconstructed Diagram">🖼 عرض المخطط المُعاد بناؤه</summary>
+          <pre class="code-block" style="direction:ltr;text-align:left;background:#0a0e16;border:none;color:#93a1bd;">
+┌──────────────┐
+│   State 1    │
+└──────┬───────┘
+       │
+       │ Input
+       │ Event/Action
+       ▼
+┌──────────────┐
+│   State 2    │
+└──────────────┘
+
+[Transition] is the process of moving from State 1 to State 2.
+[Output] is the result after the transition.
+          </pre>
+        </details>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION — Expanded</span>
+          <p class="i18n" data-en="This simple diagram illustrates the core concepts of state transition testing: states (State 1 and State 2), a transition (the movement between them), an event/action that triggers the transition, and an input and output. In real systems, there are many states and transitions, forming a state transition diagram. The tester designs test cases to traverse these transitions and verify correct behavior.">
+            يوضح هذا المخطط البسيط المفاهيم الأساسية لاختبار الانتقال بين الحالات: الحالات (State 1 و State 2)، والانتقال (الحركة بينهما)، والحدث/الإجراء الذي يسبب الانتقال، والمدخل والمخرج. في الأنظمة الحقيقية، توجد العديد من الحالات والانتقالات، مما يشكل مخطط انتقال بين الحالات. يصمم المختبر حالات اختبار لعبور هذه الانتقالات والتحقق من السلوك الصحيح.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="A state transition diagram visually represents states, transitions, events, inputs, and outputs, serving as the foundation for designing state transition tests.">
+            يمثل مخطط الانتقال بين الحالات بصريًا الحالات والانتقالات والأحداث والمدخلات والمخرجات، ويعمل كأساس لتصميم اختبارات الانتقال بين الحالات.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 06 ===== -->
+      <article class="slide-section" id="slide-06" aria-labelledby="slide-06-title">
+        <h2 id="slide-06-title"><span class="i18n" data-en="Slide 06 — ATM State Transition Example">الشريحة 06 — مثال آلة الصراف الآلي</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <p class="i18n" data-en="The slide contains an example of an ATM state transition diagram with the following states and transitions:">تحتوي الشريحة على مثال لمخطط انتقال بين حالات آلة صراف آلي بالحالات والانتقالات التالية:</p>
+          <ul>
+            <li><strong>Start</strong> (ellipse) → <strong>Insert Card</strong> → <strong>Wait For Pin</strong> (ellipse).</li>
+            <li><strong>Wait For Pin</strong> → <strong>Enter PIN</strong> → if <strong>PIN Correct</strong> → <strong>Account access granted</strong> (ellipse).</li>
+            <li><strong>Wait For Pin</strong> → if <strong>PIN Incorrect</strong> → <strong>Invalid Pin Error</strong> (ellipse).</li>
+            <li><strong>Invalid Pin Error</strong> → <strong>PIN Correct</strong> → <strong>Account access granted</strong>.</li>
+          </ul>
+        </div>
+        <div class="accessibility-block">
+          <span class="badge access">ACCESSIBILITY — Layout & Reading Order</span>
+          <p class="i18n" data-en="The diagram is roughly triangular. 'Start' is at the top-left. An arrow labeled 'Insert Card' leads down-right to 'Wait For Pin'. From 'Wait For Pin', two arrows leave: one to the right labeled 'PIN Incorrect' to 'Invalid Pin Error', and one downward labeled 'PIN Correct' to 'Account access granted'. Additionally, from 'Invalid Pin Error', a downward arrow labeled 'PIN Correct' leads to 'Account access granted'.">
+            المخطط مثلثي الشكل تقريبًا. "Start" في أعلى اليسار. سهم مكتوب عليه "Insert Card" يؤدي لأسفل-يمينًا إلى "Wait For Pin". من "Wait For Pin"، يخرج سهمان: أحدهما إلى اليمين مكتوب عليه "PIN Incorrect" إلى "Invalid Pin Error"، والآخر لأسفل مكتوب عليه "PIN Correct" إلى "Account access granted". بالإضافة إلى ذلك، من "Invalid Pin Error"، سهم لأسفل مكتوب عليه "PIN Correct" يؤدي إلى "Account access granted".
+          </p>
+          <p><strong class="i18n" data-en="Reading Order:">ترتيب القراءة:</strong></p>
+          <ol>
+            <li class="i18n" data-en="Start at 'Start'.">ابدأ من "Start".</li>
+            <li class="i18n" data-en="Follow 'Insert Card' to 'Wait For Pin'.">اتبع "Insert Card" إلى "Wait For Pin".</li>
+            <li class="i18n" data-en="From 'Wait For Pin', check two possible outcomes: 'PIN Incorrect' (right) or 'PIN Correct' (down).">من "Wait For Pin"، تحقق من نتيجتين محتملتين: "PIN Incorrect" (يمينًا) أو "PIN Correct" (لأسفل).</li>
+            <li class="i18n" data-en="If 'PIN Incorrect', you go to 'Invalid Pin Error'. From there, a 'PIN Correct' can also lead to 'Account access granted'.">إذا كان "PIN Incorrect"، تذهب إلى "Invalid Pin Error". من هناك، يمكن أن يؤدي "PIN Correct" أيضًا إلى "Account access granted".</li>
+          </ol>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION — Expanded</span>
+          <p class="i18n" data-en="This example shows a real-world state machine for an ATM. The tester would design test cases to cover: inserting a card, entering a wrong PIN (expect error), entering the correct PIN (expect access), and possibly retrying after an error. State transition testing helps ensure all these paths are tested.">
+            يُظهر هذا المثال آلة حالة واقعية لجهاز صراف آلي. سيصمم المختبر حالات اختبار لتغطية: إدخال البطاقة، إدخال رمز PIN خاطئ (توقع خطأ)، إدخال رمز PIN صحيح (توقع الوصول)، وربما إعادة المحاولة بعد خطأ. يساعد اختبار الانتقال بين الحالات في ضمان اختبار جميع هذه المسارات.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="The ATM example demonstrates how state transition diagrams model real systems, and how testers can derive test cases from possible paths.">
+            يوضح مثال الصراف الآلي كيف تُنمذج مخططات الانتقال بين الحالات الأنظمة الحقيقية، وكيف يمكن للمختبرين استخلاص حالات الاختبار من المسارات المحتملة.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 07 ===== -->
+      <article class="slide-section" id="slide-07" aria-labelledby="slide-07-title">
+        <h2 id="slide-07-title"><span class="i18n" data-en="Slide 07 — Experience-Based Techniques">الشريحة 07 — التقنيات القائمة على الخبرة</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <p><span class="term-en">EXPERIENCE BASED TECHNIQUES</span></p>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION</span>
+          <p class="i18n" data-en="This slide introduces the second major family of techniques: experience-based testing, which relies on the tester's knowledge and intuition.">
+            تُقدّم هذه الشريحة العائلة الرئيسية الثانية من التقنيات: الاختبار القائم على الخبرة، والذي يعتمد على معرفة المختبر وحدسه.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="Experience-based techniques complement formal methods by leveraging human expertise.">
+            تكمل التقنيات القائمة على الخبرة الأساليب الرسمية من خلال الاستفادة من الخبرة البشرية.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 08 ===== -->
+      <article class="slide-section" id="slide-08" aria-labelledby="slide-08-title">
+        <h2 id="slide-08-title"><span class="i18n" data-en="Slide 08 — Experience-Based Techniques Overview">الشريحة 08 — نظرة عامة على التقنيات القائمة على الخبرة</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <h3><span class="term-en">Experience-based Test Techniques</span></h3>
+          <p class="i18n" data-en="When applying experience-based test techniques, the test cases are derived from the tester's skill and intuition, and their experience with similar applications and technologies.">
+            عند تطبيق التقنيات القائمة على الخبرة، تُستمد حالات الاختبار من مهارة المختبر وحدسه، وخبرته مع تطبيقات وتقنيات مماثلة.
+          </p>
+          <p class="i18n" data-en="These techniques can be helpful in identifying tests that were not easily identified by other more systematic techniques.">
+            يمكن أن تكون هذه التقنيات مفيدة في تحديد الاختبارات التي لم يسهل تحديدها بواسطة تقنيات أخرى أكثر منهجية.
+          </p>
+          <p class="i18n" data-en="Depending on the tester's approach and experience, these techniques may achieve widely varying degrees of coverage and effectiveness.">
+            اعتمادًا على نهج المختبر وخبرته، قد تحقق هذه التقنيات درجات متفاوتة على نطاق واسع من التغطية والفعالية.
+          </p>
+          <h3><span class="term-en">Types of Experience-based Test</span></h3>
+          <ol>
+            <li class="i18n" data-en="Error Guessing">التخمين على الأخطاء</li>
+            <li class="i18n" data-en="Exploratory Testing">الاختبار الاستكشافي</li>
+            <li class="i18n" data-en="Checklist-based Testing">الاختبار القائم على قوائم التحقق</li>
+          </ol>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION — Sentence-by-Sentence</span>
+          <ul>
+            <li><strong class="i18n" data-en="Derived from skill and intuition:">مستمد من المهارة والحدس:</strong> <span class="i18n" data-en="The tester's personal expertise guides what to test, rather than a fixed script.">خبرة المختبر الشخصية توجه ما يجب اختباره، بدلاً من نص ثابت.</span></li>
+            <li><strong class="i18n" data-en="Helpful for tests not easily identified by systematic techniques:">مفيد للاختبارات التي يصعب تحديدها بالتقنيات المنهجية:</strong> <span class="i18n" data-en="These techniques can find edge cases that formal methods might overlook.">يمكن لهذه التقنيات إيجاد حالات حدية قد تغفلها الأساليب الرسمية.</span></li>
+            <li><strong class="i18n" data-en="Varying degrees of coverage:">درجات متفاوتة من التغطية:</strong> <span class="i18n" data-en="The effectiveness depends heavily on the individual tester's experience.">تعتمد الفعالية بشكل كبير على خبرة المختبر الفردية.</span></li>
+          </ul>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION — Expanded</span>
+          <p class="i18n" data-en="Experience-based techniques are not a replacement for systematic methods like state transition testing; rather, they are complementary. A skilled tester might use error guessing to identify potential failure points, then use exploratory testing to investigate them, and finally record important conditions in a checklist for future regression testing.">
+            التقنيات القائمة على الخبرة ليست بديلاً عن الأساليب المنهجية مثل اختبار الانتقال بين الحالات؛ بل هي مكملة لها. قد يستخدم المختبر الماهر التخمين على الأخطاء لتحديد نقاط الفشل المحتملة، ثم يستخدم الاختبار الاستكشافي للتحقيق فيها، وأخيرًا يسجل الشروط المهمة في قائمة تحقق لاختبارات الانحدار المستقبلية.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="Experience-based techniques (Error Guessing, Exploratory Testing, Checklist-based Testing) rely on tester expertise and can uncover defects that systematic methods miss.">
+            تعتمد التقنيات القائمة على الخبرة (التخمين على الأخطاء، الاختبار الاستكشافي، الاختبار القائم على قوائم التحقق) على خبرة المختبر ويمكنها كشف العيوب التي تفوتها الأساليب المنهجية.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 09 ===== -->
+      <article class="slide-section" id="slide-09" aria-labelledby="slide-09-title">
+        <h2 id="slide-09-title"><span class="i18n" data-en="Slide 09 — Error Guessing">الشريحة 09 — التخمين على الأخطاء</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <p><span class="term-en">Error Guessing</span></p>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION</span>
+          <p class="i18n" data-en="This slide marks the beginning of the detailed discussion of Error Guessing, the first experience-based technique.">
+            تشير هذه الشريحة إلى بداية المناقشة التفصيلية للتخمين على الأخطاء، وهي أول تقنية قائمة على الخبرة.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="Error Guessing is an experience-based technique where testers use intuition to predict where errors might occur.">
+            التخمين على الأخطاء هو تقنية قائمة على الخبرة حيث يستخدم المختبرون الحدس للتنبؤ بأين قد تحدث الأخطاء.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 10 ===== -->
+      <article class="slide-section" id="slide-10" aria-labelledby="slide-10-title">
+        <h2 id="slide-10-title"><span class="i18n" data-en="Slide 10 — Error Guessing (Details)">الشريحة 10 — التخمين على الأخطاء (تفاصيل)</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <h3><span class="term-en">Error Guessing</span></h3>
+          <p class="i18n" data-en="Error guessing technique is a software technique where a test engineer guesses and tries to break the software code.">
+            تقنية التخمين على الأخطاء هي تقنية برمجية حيث يخمن مهندس الاختبار ويحاول كسر كود البرنامج.
+          </p>
+          <p class="i18n" data-en="It is used to anticipate the occurrence of errors, defects, and failures, based on the tester's knowledge, including:">تُستخدم لتوقع حدوث الأخطاء والعيوب والإخفاقات، بناءً على معرفة المختبر، بما في ذلك:</p>
+          <ul>
+            <li class="i18n" data-en="How the application has worked in the past">كيف عمل التطبيق في الماضي</li>
+            <li class="i18n" data-en="What kind of errors tend to be made">نوع الأخطاء التي يكثر ارتكابها</li>
+            <li class="i18n" data-en="Failures that have occurred in other applications">الإخفاقات التي حدثت في تطبيقات أخرى</li>
+          </ul>
+          <p class="i18n" data-en="Also error guessing is best used as a part of the conditions where other black box testing techniques are performed, for instance, boundary value analysis and equivalence split are not prepared to cover all of the condition which are slanted to error in the application.">
+            يُفضل أيضًا استخدام التخمين على الأخطاء كجزء من الشروط التي تُجرى فيها تقنيات اختبار الصندوق الأسود الأخرى، على سبيل المثال، تحليل القيمة الحدية وتقسيم التكافؤ غير مهيئين لتغطية جميع الشروط المعرضة للخطأ في التطبيق.
+          </p>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION — Sentence-by-Sentence</span>
+          <ul>
+            <li><strong class="i18n" data-en="Guess and try to break the software:">خمن وحاول كسر البرنامج:</strong> <span class="i18n" data-en="The tester actively looks for weaknesses, often using creative thinking.">يبحث المختبر بنشاط عن نقاط الضعف، غالبًا باستخدام التفكير الإبداعي.</span></li>
+            <li><strong class="i18n" data-en="Based on past knowledge:">بناءً على المعرفة السابقة:</strong> <span class="i18n" data-en="Experience with similar systems informs what to test.">الخبرة مع أنظمة مماثلة تُعلم ما يجب اختباره.</span></li>
+            <li><strong class="i18n" data-en="Best used alongside other techniques:">يُفضل استخدامه إلى جانب تقنيات أخرى:</strong> <span class="i18n" data-en="Other black-box techniques (like BVA, equivalence partitioning) may not cover all error-prone conditions, so error guessing fills the gaps.">قد لا تغطي تقنيات الصندوق الأسود الأخرى (مثل BVA، تقسيم التكافؤ) جميع الشروط المعرضة للخطأ، لذا يسد التخمين على الأخطاء الفجوات.</span></li>
+          </ul>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION — Expanded</span>
+          <p class="i18n" data-en="Error guessing is an art more than a science. An experienced tester might guess that a certain input field could accept SQL injection, or that a date field might crash on February 29th. It is most powerful when combined with systematic techniques: for example, equivalence partitioning ensures basic coverage, and error guessing targets the tricky edge cases that formal methods might miss.">
+            التخمين على الأخطاء هو فن أكثر من كونه علمًا. قد يخمن المختبر ذو الخبرة أن حقل إدخال معين قد يقبل حقن SQL، أو أن حقل التاريخ قد يتعطل في 29 فبراير. ويكون أقوى عند دمجه مع التقنيات المنهجية: على سبيل المثال، يضمن تقسيم التكافؤ التغطية الأساسية، ويستهدف التخمين على الأخطاء الحالات الحدية الصعبة التي قد تفوتها الأساليب الرسمية.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="Error Guessing uses tester intuition and past experience to predict and test error-prone areas. It complements systematic techniques like boundary value analysis and equivalence partitioning.">
+            يستخدم التخمين على الأخطاء حدس المختبر وخبرته السابقة للتنبؤ بالمناطق المعرضة للخطأ واختبارها. وهو يكمل التقنيات المنهجية مثل تحليل القيمة الحدية وتقسيم التكافؤ.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 11 ===== -->
+      <article class="slide-section" id="slide-11" aria-labelledby="slide-11-title">
+        <h2 id="slide-11-title"><span class="i18n" data-en="Slide 11 — Advantages & Disadvantages of Error Guessing">الشريحة 11 — مزايا وعيوب التخمين على الأخطاء</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <h3><span class="i18n" data-en="Advantages:">المزايا:</span></h3>
+          <ul>
+            <li class="i18n" data-en="It is effective when used with other testing approaches.">فعال عند استخدامه مع مناهج اختبار أخرى.</li>
+            <li class="i18n" data-en="It is helpful to solve some complex and problematic areas of application.">مفيد لحل بعض المناطق المعقدة والإشكالية في التطبيق.</li>
+            <li class="i18n" data-en="It figures out errors which may not be identified through other formal testing techniques.">يكتشف الأخطاء التي قد لا يتم تحديدها من خلال تقنيات الاختبار الرسمية الأخرى.</li>
+            <li class="i18n" data-en="It helps in reducing testing times.">يساعد في تقليل أوقات الاختبار.</li>
+          </ul>
+          <h3><span class="i18n" data-en="Disadvantages:">العيوب:</span></h3>
+          <ul>
+            <li class="i18n" data-en="Only capable and skilled testers can perform.">فقط المختبرون القادرون والمهرة يمكنهم تنفيذه.</li>
+            <li class="i18n" data-en="Dependent on tester's experience and skills.">يعتمد على خبرة ومهارات المختبر.</li>
+            <li class="i18n" data-en="Fails in providing guarantee the quality standard of the application.">يفشل في تقديم ضمان لمعيار جودة التطبيق.</li>
+            <li class="i18n" data-en="Not an efficient way of error detection as compared to effort.">ليس وسيلة فعالة لاكتشاف الأخطاء مقارنة بالجهد المبذول.</li>
+          </ul>
+          <h3><span class="i18n" data-en="Drawbacks of Error Guessing technique:">عيوب تقنية التخمين على الأخطاء:</span></h3>
+          <ul>
+            <li class="i18n" data-en="Not sure that the software has reached the expected quality.">غير متأكد من أن البرنامج قد وصل إلى الجودة المتوقعة.</li>
+            <li class="i18n" data-en="Never provide full coverage of an application.">لا يقدم أبدًا تغطية كاملة للتطبيق.</li>
+          </ul>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION — Expanded</span>
+          <p class="i18n" data-en="These advantages and disadvantages highlight that error guessing is a powerful but unreliable technique on its own. It works best as a supplement to formal methods. Because it depends on the tester's skill, results can vary widely between testers. It cannot guarantee full coverage, but it can find critical bugs quickly when used by an expert.">
+            تسلط هذه المزايا والعيوب الضوء على أن التخمين على الأخطاء هو تقنية قوية ولكنها غير موثوقة بمفردها. وهو يعمل بشكل أفضل كمكمل للأساليب الرسمية. ولأنه يعتمد على مهارة المختبر، يمكن أن تتفاوت النتائج بشكل كبير بين المختبرين. لا يمكنه ضمان التغطية الكاملة، لكنه يمكن أن يكتشف الأخطاء الحرجة بسرعة عند استخدامه من قبل خبير.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="Error Guessing is effective but skill-dependent and cannot guarantee full coverage. It is best used alongside other techniques.">
+            التخمين على الأخطاء فعال لكنه يعتمد على المهارة ولا يمكنه ضمان التغطية الكاملة. من الأفضل استخدامه إلى جانب تقنيات أخرى.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 12 ===== -->
+      <article class="slide-section" id="slide-12" aria-labelledby="slide-12-title">
+        <h2 id="slide-12-title"><span class="i18n" data-en="Slide 12 — Factors Used in Error Guessing">الشريحة 12 — العوامل المستخدمة في التخمين على الأخطاء</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <h3><span class="i18n" data-en="Factors used in error guessing:">العوامل المستخدمة في التخمين على الأخطاء:</span></h3>
+          <ul>
+            <li class="i18n" data-en="Lessons learned from past releases.">الدروس المستفادة من الإصدارات السابقة.</li>
+            <li class="i18n" data-en="Experience of testers.">خبرة المختبرين.</li>
+            <li class="i18n" data-en="Historical learning.">التعلم التاريخي.</li>
+            <li class="i18n" data-en="Test execution report.">تقرير تنفيذ الاختبار.</li>
+            <li class="i18n" data-en="Earlier defects.">العيوب السابقة.</li>
+            <li class="i18n" data-en="Production tickets.">تذاكر الإنتاج.</li>
+            <li class="i18n" data-en="Normal testing rules.">قواعد الاختبار العادية.</li>
+            <li class="i18n" data-en="Application UI.">واجهة مستخدم التطبيق.</li>
+            <li class="i18n" data-en="Previous test results.">نتائج الاختبار السابقة.</li>
+          </ul>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION — Expanded</span>
+          <p class="i18n" data-en="These factors are sources of information that a tester can draw upon when guessing where errors might be. For example, if a previous release had a defect in the payment module, the tester might focus error guessing on that area. Production tickets show real-world failures, and the application UI can reveal potential input validation issues.">
+            هذه العوامل هي مصادر معلومات يمكن للمختبر الاعتماد عليها عند تخمين أماكن الأخطاء المحتملة. على سبيل المثال، إذا كان الإصدار السابق به عيب في وحدة الدفع، فقد يركز المختبر التخمين على الأخطاء في تلك المنطقة. تُظهر تذاكر الإنتاج الإخفاقات الواقعية، ويمكن أن تكشف واجهة مستخدم التطبيق عن مشكلات التحقق من صحة الإدخال المحتملة.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="Error guessing draws on diverse historical and practical factors to guide the tester's intuition.">
+            يستند التخمين على الأخطاء إلى عوامل تاريخية وعملية متنوعة لتوجيه حدس المختبر.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 13 ===== -->
+      <article class="slide-section" id="slide-13" aria-labelledby="slide-13-title">
+        <h2 id="slide-13-title"><span class="i18n" data-en="Slide 13 — Exploratory Testing">الشريحة 13 — الاختبار الاستكشافي</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <p><span class="term-en">Exploratory Testing</span></p>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION</span>
+          <p class="i18n" data-en="This slide introduces Exploratory Testing, the second experience-based technique.">
+            تُقدّم هذه الشريحة الاختبار الاستكشافي، وهو التقنية الثانية القائمة على الخبرة.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="Exploratory Testing is an unscripted approach where the tester actively explores the software.">
+            الاختبار الاستكشافي هو نهج غير مكتوب مسبقًا حيث يستكشف المختبر البرنامج بنشاط.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 14 ===== -->
+      <article class="slide-section" id="slide-14" aria-labelledby="slide-14-title">
+        <h2 id="slide-14-title"><span class="i18n" data-en="Slide 14 — Exploratory Testing Process">الشريحة 14 — عملية الاختبار الاستكشافي</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <h3><span class="term-en">Exploratory Testing</span></h3>
+          <p class="i18n" data-en="Exploratory Testing is a type of software testing in which the tester is free to select any possible methodology to test the software. It is an unscripted approach for software testing.">
+            الاختبار الاستكشافي هو نوع من اختبار البرمجيات حيث يكون المختبر حرًا في اختيار أي منهجية ممكنة لاختبار البرنامج. وهو نهج غير مكتوب مسبقًا لاختبار البرمجيات.
+          </p>
+          <p class="i18n" data-en="Exploratory testing checks the functionality and operations of the software as well as it identifies the functional and technical faults in it. The aim of exploratory testing is to optimize and improve the software in every possible way.">
+            يفحص الاختبار الاستكشافي وظائف وتشغيل البرنامج بالإضافة إلى تحديد العيوب الوظيفية والتقنية فيه. الهدف من الاختبار الاستكشافي هو تحسين وتحسين البرنامج بكل طريقة ممكنة.
+          </p>
+          <h3><span class="i18n" data-en="Exploratory Testing Process:">عملية الاختبار الاستكشافي:</span></h3>
+          <p class="i18n" data-en="The slide contains an image of the exploratory testing process with four circles:">تحتوي الشريحة على صورة لعملية الاختبار الاستكشافي بأربع دوائر:</p>
+          <ul>
+            <li class="i18n" data-en="Center: 'Exploratory Testing'">المركز: "Exploratory Testing"</li>
+            <li class="i18n" data-en="Top: 'Learn'">الأعلى: "Learn"</li>
+            <li class="i18n" data-en="Right: 'Test Case Creation'">اليمين: "Test Case Creation"</li>
+            <li class="i18n" data-en="Bottom: 'Test Case Execution'">الأسفل: "Test Case Execution"</li>
+            <li class="i18n" data-en="Left: 'Analyze'">اليسار: "Analyze"</li>
+          </ul>
+          <p class="i18n" data-en="Arrows connect the center to each of the four surrounding circles, indicating a cyclical process.">
+            تربط الأسهم المركز بكل من الدوائر الأربع المحيطة، مما يشير إلى عملية دورية.
+          </p>
+        </div>
+        <div class="accessibility-block">
+          <span class="badge access">ACCESSIBILITY — Layout & Reading Order</span>
+          <p class="i18n" data-en="The diagram has a central circle labeled 'Exploratory Testing'. Four arrows point outward to four circles positioned around it: 'Learn' at the top, 'Test Case Creation' on the right, 'Test Case Execution' at the bottom, and 'Analyze' on the left. The arrows suggest a cycle that can start from any point but typically flows from Learn to Test Case Creation to Test Case Execution to Analyze, and back to Learn.">
+            يحتوي المخطط على دائرة مركزية مكتوب عليها "Exploratory Testing". تشير أربعة أسهم للخارج إلى أربع دوائر موضوعة حولها: "Learn" في الأعلى، "Test Case Creation" على اليمين، "Test Case Execution" في الأسفل، و"Analyze" على اليسار. تشير الأسهم إلى دورة يمكن أن تبدأ من أي نقطة ولكنها تتدفق عادة من Learn إلى Test Case Creation إلى Test Case Execution إلى Analyze، ثم تعود إلى Learn.
+          </p>
+          <p><strong class="i18n" data-en="Reading Order:">ترتيب القراءة:</strong></p>
+          <ol>
+            <li class="i18n" data-en="Start at the center: Exploratory Testing.">ابدأ من المركز: Exploratory Testing.</li>
+            <li class="i18n" data-en="Move to 'Learn' (top).">انتقل إلى "Learn" (أعلى).</li>
+            <li class="i18n" data-en="Move to 'Test Case Creation' (right).">انتقل إلى "Test Case Creation" (يمين).</li>
+            <li class="i18n" data-en="Move to 'Test Case Execution' (bottom).">انتقل إلى "Test Case Execution" (أسفل).</li>
+            <li class="i18n" data-en="Move to 'Analyze' (left), then back to the center.">انتقل إلى "Analyze" (يسار)، ثم عد إلى المركز.</li>
+          </ol>
+        </div>
+        <details class="accessibility-block">
+          <summary class="i18n" data-en="🖼 Show Reconstructed Diagram">🖼 عرض المخطط المُعاد بناؤه</summary>
+          <pre class="code-block" style="direction:ltr;text-align:left;background:#0a0e16;border:none;color:#93a1bd;">
+          [Learn]
+             ▲
+             │
+[Analyze] ◄── [Exploratory Testing] ──► [Test Case Creation]
+             │
+             ▼
+      [Test Case Execution]
+          </pre>
+        </details>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION — Expanded</span>
+          <p class="i18n" data-en="The exploratory testing process is cyclical. The tester learns about the software, creates test cases based on that learning, executes them, and analyzes the results. If defects are found, they are fixed, and the cycle repeats. This allows for continuous improvement and adaptation during testing.">
+            عملية الاختبار الاستكشافي دورية. يتعلم المختبر عن البرنامج، ويُنشئ حالات اختبار بناءً على ذلك التعلم، وينفذها، ويحلل النتائج. إذا تم العثور على عيوب، يتم إصلاحها، وتتكرر الدورة. وهذا يسمح بالتحسين المستمر والتكيف أثناء الاختبار.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="Exploratory Testing is an unscripted, cyclical process of learning, test case creation, execution, and analysis.">
+            الاختبار الاستكشافي هو عملية دورية غير مكتوبة مسبقًا من التعلم وإنشاء حالات الاختبار والتنفيذ والتحليل.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 15 ===== -->
+      <article class="slide-section" id="slide-15" aria-labelledby="slide-15-title">
+        <h2 id="slide-15-title"><span class="i18n" data-en="Slide 15 — Exploratory Testing: Phases (Learn, Create, Execute)">الشريحة 15 — مراحل الاختبار الاستكشافي</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <h3><span class="term-en">Learn:</span></h3>
+          <p class="i18n" data-en="Tester uses his/her knowledge, skill and experience to observe and find what kind of problem the software is suffering from. This is the initial phase of exploratory testing. It also involves different new learning for the tester.">
+            يستخدم المختبر معرفته ومهارته وخبرته لمراقبة ومعرفة نوع المشكلة التي يعاني منها البرنامج. هذه هي المرحلة الأولية للاختبار الاستكشافي. وتتضمن أيضًا تعلمًا جديدًا مختلفًا للمختبر.
+          </p>
+          <h3><span class="term-en">Test Case Creation:</span></h3>
+          <p class="i18n" data-en="When the fault is identified i.e. tester come to know what kind of problem software is suffering from then tester creates test cases according to defects to test the software. Test cases are designed by keeping in mind the problems end users can face.">
+            عندما يتم تحديد العيب، أي أن المختبر يعرف نوع المشكلة التي يعاني منها البرنامج، فإنه ينشئ حالات اختبار وفقًا للعيوب لاختبار البرنامج. تُصمم حالات الاختبار مع الأخذ في الاعتبار المشاكل التي يمكن أن يواجهها المستخدمون النهائيون.
+          </p>
+          <h3><span class="term-en">Test Case Execution:</span></h3>
+          <p class="i18n" data-en="After creation of test cases according to end user problems, tester executed the test cases. Execution of test cases are prominent phase of any testing process. This include the computational and operational tasks performed by the software in order to get the desired output.">
+            بعد إنشاء حالات الاختبار وفقًا لمشاكل المستخدم النهائي، ينفذ المختبر حالات الاختبار. تنفيذ حالات الاختبار هو مرحلة بارزة في أي عملية اختبار. ويشمل المهام الحسابية والتشغيلية التي يؤديها البرنامج للحصول على المخرجات المطلوبة.
+          </p>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION — Expanded</span>
+          <p class="i18n" data-en="The Learn phase is about understanding the system and its potential weak points. Test Case Creation focuses on designing tests that target those weak points from an end-user perspective. Test Case Execution is where the tests are actually run, and the system's behavior is observed. This phase often reveals defects that were not anticipated.">
+            مرحلة التعلم تتعلق بفهم النظام ونقاط ضعفه المحتملة. يركز إنشاء حالات الاختبار على تصميم اختبارات تستهدف تلك النقاط الضعيفة من منظور المستخدم النهائي. تنفيذ حالات الاختبار هو حيث يتم تشغيل الاختبارات فعليًا، ومراقبة سلوك النظام. غالبًا ما تكشف هذه المرحلة عن عيوب لم تكن متوقعة.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="The exploratory testing process begins with learning, followed by test case creation and execution, each phase building on the previous one.">
+            تبدأ عملية الاختبار الاستكشافي بالتعلم، يليه إنشاء حالات الاختبار وتنفيذها، وكل مرحلة تبني على سابقتها.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 16 ===== -->
+      <article class="slide-section" id="slide-16" aria-labelledby="slide-16-title">
+        <h2 id="slide-16-title"><span class="i18n" data-en="Slide 16 — Analysis & Advantages/Disadvantages of Exploratory Testing">الشريحة 16 — التحليل ومزايا/عيوب الاختبار الاستكشافي</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <h3><span class="term-en">Analysis:</span></h3>
+          <p class="i18n" data-en="After the execution of the test cases, the result is analyzed and observed whether the software is working properly or not. If the defects are found then they are fixed and above three steps are performed again. Hence this whole process goes on in a cycle and software testing is performed.">
+            بعد تنفيذ حالات الاختبار، يتم تحليل النتيجة ومراقبة ما إذا كان البرنامج يعمل بشكل صحيح أم لا. إذا تم العثور على عيوب، يتم إصلاحها وتُنفذ الخطوات الثلاث المذكورة أعلاه مرة أخرى. وبالتالي تستمر هذه العملية بأكملها في دورة ويتم إجراء اختبار البرمجيات.
+          </p>
+          <h3><span class="i18n" data-en="Advantages of Exploratory Testing:</span></h3>
+          <ul>
+            <li class="i18n" data-en="It takes no preparation as it is an unscripted testing technique.">لا يتطلب تحضيرًا لأنه تقنية اختبار غير مكتوبة مسبقًا.</li>
+            <li class="i18n" data-en="It finds critical defects very quickly.">يكتشف العيوب الحرجة بسرعة كبيرة.</li>
+            <li class="i18n" data-en="In exploratory testing, testers use their knowledge, skills and experience to test the software.">في الاختبار الاستكشافي، يستخدم المختبرون معرفتهم ومهاراتهم وخبرتهم لاختبار البرنامج.</li>
+          </ul>
+          <h3><span class="i18n" data-en="Disadvantages of Exploratory Testing:</span></h3>
+          <ul>
+            <li class="i18n" data-en="In exploratory testing, once testing is performed it is not reviewed.">في الاختبار الاستكشافي، بمجرد إجراء الاختبار لا تتم مراجعته.</li>
+            <li class="i18n" data-en="Keeping track of tests performed is difficult.">من الصعب تتبع الاختبارات التي تم إجراؤها.</li>
+            <li class="i18n" data-en="It is not possible to repeat same test methodology.">ليس من الممكن تكرار نفس منهجية الاختبار.</li>
+          </ul>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION — Expanded</span>
+          <p class="i18n" data-en="The Analysis phase closes the loop: results are checked, defects are logged, and the cycle restarts. The advantages highlight speed and reliance on expertise; the disadvantages highlight the lack of repeatability and documentation, which can be a problem for regulated environments or for regression testing.">
+            مرحلة التحليل تغلق الحلقة: يتم التحقق من النتائج، وتسجيل العيوب، وإعادة تشغيل الدورة. تسلط المزايا الضوء على السرعة والاعتماد على الخبرة؛ وتسلط العيوب الضوء على عدم التكرار ونقص التوثيق، مما قد يكون مشكلة في البيئات الخاضعة للتنظيم أو لاختبارات الانحدار.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="Exploratory Testing is fast and effective but lacks repeatability and formal documentation.">
+            الاختبار الاستكشافي سريع وفعال لكنه يفتقر إلى التكرار والتوثيق الرسمي.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 17 ===== -->
+      <article class="slide-section" id="slide-17" aria-labelledby="slide-17-title">
+        <h2 id="slide-17-title"><span class="i18n" data-en="Slide 17 — Checklist-based Testing">الشريحة 17 — الاختبار القائم على قوائم التحقق</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <p><span class="term-en">Checklist-based Testing</span></p>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION</span>
+          <p class="i18n" data-en="This slide introduces Checklist-based Testing, the third experience-based technique.">
+            تُقدّم هذه الشريحة الاختبار القائم على قوائم التحقق، وهي التقنية الثالثة القائمة على الخبرة.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="Checklist-based Testing uses a predefined list of conditions to ensure comprehensive coverage of important areas.">
+            يستخدم الاختبار القائم على قوائم التحقق قائمة محددة مسبقًا من الشروط لضمان تغطية شاملة للمجالات المهمة.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 18 ===== -->
+      <article class="slide-section" id="slide-18" aria-labelledby="slide-18-title">
+        <h2 id="slide-18-title"><span class="i18n" data-en="Slide 18 — Checklist-based Testing Example">الشريحة 18 — مثال على الاختبار القائم على قوائم التحقق</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <h3><span class="term-en">Checklist-based Testing</span></h3>
+          <p class="i18n" data-en="In checklist-based testing, testers design, implement, and execute tests to cover test conditions found in a checklist. As part of analysis, testers create a new checklist or expand an existing checklist, but testers may also use an existing checklist without modification. Such checklists can be built based on experience, knowledge about what is important for the user, or an understanding of why and how software fails.">
+            في الاختبار القائم على قوائم التحقق، يصمم المختبرون وينفذون ويجرون اختبارات لتغطية شروط الاختبار الموجودة في قائمة التحقق. كجزء من التحليل، ينشئ المختبرون قائمة تحقق جديدة أو يوسعون قائمة موجودة، ولكن يمكنهم أيضًا استخدام قائمة تحقق موجودة دون تعديل. يمكن بناء قوائم التحقق هذه بناءً على الخبرة، أو المعرفة بما هو مهم للمستخدم، أو فهم سبب وكيفية فشل البرنامج.
+          </p>
+          <h3><span class="i18n" data-en="Example Test Cases:</span></h3>
+          <p class="i18n" data-en="Let's say a web application for flight booking is built. So one can test if one can book a flight to London from New York on 22nd March at midnight and return on 1st April. During the testing, one needs to ensure the following:">
+            لنفترض أنه تم بناء تطبيق ويب لحجز الرحلات الجوية. لذا يمكن للمرء اختبار ما إذا كان بإمكانه حجز رحلة إلى لندن من نيويورك في 22 مارس عند منتصف الليل والعودة في 1 أبريل. أثناء الاختبار، يحتاج المرء إلى التأكد من ما يلي:
+          </p>
+          <ul>
+            <li class="i18n" data-en="Does the site provide accurate and precise information?">هل يقدم الموقع معلومات دقيقة ومحددة؟</li>
+            <li class="i18n" data-en="Does the site provide an attractive and clean interface?">هل يقدم الموقع واجهة جذابة ونظيفة؟</li>
+            <li class="i18n" data-en="Are there a minimum number of actions to complete the task?">هل هناك حد أدنى من الإجراءات لإكمال المهمة؟</li>
+            <li class="i18n" data-en="Does the site speak the user's language, not the product's?">هل يتحدث الموقع لغة المستخدم، وليس لغة المنتج؟</li>
+            <li class="i18n" data-en="Does the site provide reliable customer service?">هل يقدم الموقع خدمة عملاء موثوقة؟</li>
+          </ul>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION — Expanded</span>
+          <p class="i18n" data-en="Checklist-based testing is about using a list of important items to verify. The flight booking example shows a checklist that covers accuracy, usability, efficiency, user-centric language, and support. Testers can use such checklists to ensure that critical aspects of the application are not forgotten. The checklist can be reused across releases, making it a valuable asset for regression testing.">
+            الاختبار القائم على قوائم التحقق هو استخدام قائمة بالعناصر المهمة للتحقق منها. يُظهر مثال حجز الرحلات قائمة تحقق تغطي الدقة وقابلية الاستخدام والكفاءة واللغة التي تركز على المستخدم والدعم. يمكن للمختبرين استخدام قوائم التحقق هذه لضمان عدم نسيان الجوانب الحرجة للتطبيق. يمكن إعادة استخدام قائمة التحقق عبر الإصدارات، مما يجعلها أصلاً قيمًا لاختبارات الانحدار.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="Checklist-based Testing uses predefined lists of conditions (e.g., accuracy, usability, support) to guide test design and execution, ensuring important aspects are covered.">
+            يستخدم الاختبار القائم على قوائم التحقق قوائم محددة مسبقًا من الشروط (مثل الدقة، وقابلية الاستخدام، والدعم) لتوجيه تصميم الاختبار وتنفيذه، مما يضمن تغطية الجوانب المهمة.
+          </p>
+        </div>
+      </article>
+
+      <!-- ===== SLIDE 19 ===== -->
+      <article class="slide-section" id="slide-19" aria-labelledby="slide-19-title">
+        <h2 id="slide-19-title"><span class="i18n" data-en="Slide 19 — Fundamentals of Testing">الشريحة 19 — أساسيات الاختبار</span></h2>
+        <div class="source-content">
+          <span class="badge source">SOURCE</span>
+          <p><span class="term-en">FUNDAMENTAL OF TESTING</span></p>
+        </div>
+        <div class="explanation">
+          <span class="badge explain">EXPLANATION</span>
+          <p class="i18n" data-en="This final slide serves as a brief reminder of the fundamentals of testing, possibly as a transition to the next lecture or as a concluding note.">
+            تعمل هذه الشريحة الأخيرة كتذكير موجز بأساسيات الاختبار، ربما كمرحلة انتقالية إلى المحاضرة التالية أو كملاحظة ختامية.
+          </p>
+        </div>
+        <div class="takeaway-block">
+          <span class="badge takeaway">TAKEAWAY</span>
+          <p class="i18n" data-en="The lecture concludes by recalling the fundamental principles of software testing.">
+            تختتم المحاضرة باستدعاء المبادئ الأساسية لاختبار البرمجيات.
+          </p>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- ===== SECTION 03: DIAGRAMS & CHARTS ===== -->
+    <section id="diagrams" aria-labelledby="diagrams-title">
+      <h2 class="section-title" id="diagrams-title"><span class="num">03</span> <span class="i18n" data-en="Diagrams & Charts">المخططات والرسوم البيانية</span></h2>
+
+      <div class="diagram-block">
+        <h3><span class="i18n" data-en="State Transition Diagram — Basic Concepts">مخطط الانتقال بين الحالات — المفاهيم الأساسية</span></h3>
+        <span class="badge source"><a href="#slide-05" style="color:inherit;text-decoration:underline;"><span class="i18n" data-en="Source: Slide 05">المصدر: الشريحة 05</span></a></span>
+        <pre class="code-block" style="direction:ltr;text-align:left;background:#0a0e16;border:none;color:#93a1bd;">
+┌──────────────┐
+│   State 1    │
+└──────┬───────┘
+       │
+       │ Input
+       │ Event/Action
+       ▼
+┌──────────────┐
+│   State 2    │
+└──────────────┘
+
+[Transition] is the process of moving from State 1 to State 2.
+[Output] is the result after the transition.
+        </pre>
+        <p class="i18n" data-en="This diagram shows the basic building blocks: states (State 1, State 2), a transition triggered by an event/action, an input that causes the transition, and an output.">
+          يُظهر هذا المخطط اللبنات الأساسية: الحالات (State 1، State 2)، والانتقال الناتج عن حدث/إجراء، والمدخل الذي يسبب الانتقال، والمخرج.
+        </p>
+        <p><strong class="i18n" data-en="How to Read:">كيف تقرأ:</strong> <span class="i18n" data-en="Start at State 1, follow the downward arrow (the transition) caused by an input/event, and arrive at State 2. The output is the result of this transition.">ابدأ من State 1، اتبع السهم لأسفل (الانتقال) الناتج عن مدخل/حدث، وصولاً إلى State 2. المخرج هو نتيجة هذا الانتقال.</span></p>
+      </div>
+
+      <div class="diagram-block">
+        <h3><span class="i18n" data-en="ATM State Transition Diagram">مخطط انتقال حالات الصراف الآلي</span></h3>
+        <span class="badge source"><a href="#slide-06" style="color:inherit;text-decoration:underline;"><span class="i18n" data-en="Source: Slide 06">المصدر: الشريحة 06</span></a></span>
+        <pre class="code-block" style="direction:ltr;text-align:left;background:#0a0e16;border:none;color:#93a1bd;">
+  [Start]
+     │
+     │ Insert Card
+     ▼
+ [Wait For Pin] ──── PIN Incorrect ────► [Invalid Pin Error]
+     │                                          │
+     │ PIN Correct                              │ PIN Correct
+     ▼                                          ▼
+ [Account access granted] ◄──────────────────────┘
+        </pre>
+        <p class="i18n" data-en="This diagram models an ATM's state transitions based on card insertion and PIN entry.">
+          يمثل هذا المخطط انتقالات حالة الصراف الآلي بناءً على إدخال البطاقة وإدخال رمز PIN.
+        </p>
+        <p><strong class="i18n" data-en="How to Read:">كيف تقرأ:</strong> <span class="i18n" data-en="Follow the path from Start to Wait For Pin. From there, a wrong PIN leads to Invalid Pin Error, while a correct PIN leads to Account access granted. From Invalid Pin Error, a correct PIN can also lead to access.">اتبع المسار من Start إلى Wait For Pin. من هناك، رمز PIN الخاطئ يؤدي إلى Invalid Pin Error، بينما رمز PIN الصحيح يؤدي إلى Account access granted. من Invalid Pin Error، يمكن أن يؤدي رمز PIN الصحيح أيضًا إلى الوصول.</span></p>
+      </div>
+
+      <div class="diagram-block">
+        <h3><span class="i18n" data-en="Exploratory Testing Process Cycle">دورة عملية الاختبار الاستكشافي</span></h3>
+        <span class="badge source"><a href="#slide-14" style="color:inherit;text-decoration:underline;"><span class="i18n" data-en="Source: Slide 14">المصدر: الشريحة 14</span></a></span>
+        <pre class="code-block" style="direction:ltr;text-align:left;background:#0a0e16;border:none;color:#93a1bd;">
+          [Learn]
+             ▲
+             │
+[Analyze] ◄── [Exploratory Testing] ──► [Test Case Creation]
+             │
+             ▼
+      [Test Case Execution]
+        </pre>
+        <p class="i18n" data-en="This cycle shows the four phases of exploratory testing: Learn, Test Case Creation, Test Case Execution, and Analyze.">
+          تُظهر هذه الدورة المراحل الأربع للاختبار الاستكشافي: التعلم، وإنشاء حالات الاختبار، وتنفيذ حالات الاختبار، والتحليل.
+        </p>
+        <p><strong class="i18n" data-en="How to Read:">كيف تقرأ:</strong> <span class="i18n" data-en="Start anywhere but typically follow the sequence: Learn → Test Case Creation → Test Case Execution → Analyze → back to Learn. The arrows indicate the cyclical nature of the process.">ابدأ من أي مكان ولكن عادةً اتبع التسلسل: التعلم → إنشاء حالات الاختبار → تنفيذ حالات الاختبار → التحليل → العودة إلى التعلم. تشير الأسهم إلى الطبيعة الدورية للعملية.</span></p>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 04: SUMMARY ===== -->
+    <section id="summary" aria-labelledby="summary-title">
+      <h2 class="section-title" id="summary-title"><span class="num">04</span> <span class="i18n" data-en="Summary">الملخص</span></h2>
+      <div class="table-wrapper">
+        <table>
+          <caption class="i18n" data-en="Key Terms and Definitions from the Lecture">المصطلحات والتعريفات الرئيسية من المحاضرة</caption>
+          <thead>
+            <tr>
+              <th><span class="i18n" data-en="Term / Notation">المصطلح / الترميز</span></th>
+              <th><span class="i18n" data-en="Definition / Meaning">التعريف / المعنى</span></th>
+              <th><span class="i18n" data-en="Source">المصدر</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="term-en">State Transition Diagram</span></td>
+              <td><span class="i18n" data-en="A visual model of states and transitions.">نموذج مرئي للحالات والانتقالات.</span></td>
+              <td><a href="#slide-03"><span class="i18n" data-en="Slide 03">الشريحة 03</span></a></td>
+            </tr>
+            <tr>
+              <td><span class="term-en">State Transition Testing</span></td>
+              <td><span class="i18n" data-en="Black-box testing that checks state changes under varying inputs.">اختبار صندوق أسود يتحقق من تغيرات الحالة تحت مدخلات متفاوتة.</span></td>
+              <td><a href="#slide-03"><span class="i18n" data-en="Slide 03">الشريحة 03</span></a></td>
+            </tr>
+            <tr>
+              <td><span class="term-en">Error Guessing</span></td>
+              <td><span class="i18n" data-en="Experience-based technique using intuition to find errors.">تقنية قائمة على الخبرة تستخدم الحدس لاكتشاف الأخطاء.</span></td>
+              <td><a href="#slide-10"><span class="i18n" data-en="Slide 10">الشريحة 10</span></a></td>
+            </tr>
+            <tr>
+              <td><span class="term-en">Exploratory Testing</span></td>
+              <td><span class="i18n" data-en="Unscripted testing where the tester explores and learns simultaneously.">اختبار غير مكتوب مسبقًا حيث يستكشف المختبر ويتعلم في وقت واحد.</span></td>
+              <td><a href="#slide-14"><span class="i18n" data-en="Slide 14">الشريحة 14</span></a></td>
+            </tr>
+            <tr>
+              <td><span class="term-en">Checklist-based Testing</span></td>
+              <td><span class="i18n" data-en="Testing guided by a predefined checklist of conditions.">اختبار موجه بقائمة تحقق محددة مسبقًا من الشروط.</span></td>
+              <td><a href="#slide-18"><span class="i18n" data-en="Slide 18">الشريحة 18</span></a></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 05: THREE LEVELS ===== -->
+    <section id="three-levels" aria-labelledby="three-levels-title">
+      <h2 class="section-title" id="three-levels-title"><span class="num">05</span> <span class="i18n" data-en="Three Levels">المستويات الثلاثة</span></h2>
+      <div class="tabs">
+        <div class="tab-list" role="tablist" aria-label="Three levels of understanding">
+          <button id="tab-beginner" role="tab" aria-selected="true" aria-controls="panel-beginner" tabindex="0"><span class="i18n" data-en="Beginner">مبتدئ</span></button>
+          <button id="tab-university" role="tab" aria-selected="false" aria-controls="panel-university" tabindex="-1"><span class="i18n" data-en="University Level">مستوى جامعي</span></button>
+          <button id="tab-review" role="tab" aria-selected="false" aria-controls="panel-review" tabindex="-1"><span class="i18n" data-en="Quick Review">مراجعة سريعة</span></button>
+        </div>
+        <div id="panel-beginner" class="tab-panel" role="tabpanel" aria-labelledby="tab-beginner">
+          <p class="i18n" data-en="Think of a vending machine. It has states: idle, has-coin, dispensing. When you insert a coin, it moves from idle to has-coin. If you press a button, it moves to dispensing. State transition testing is like checking that every button and coin leads to the correct next state. Experience-based testing is like a repair person using their experience to guess which parts are most likely to break.">
+            فكّر في آلة بيع. لديها حالات: خاملة، بها عملة، توزيع. عندما تدخل عملة، تنتقل من خاملة إلى بها عملة. إذا ضغطت زرًا، تنتقل إلى التوزيع. اختبار الانتقال بين الحالات يشبه التحقق من أن كل زر وعملة يؤدي إلى الحالة التالية الصحيحة. الاختبار القائم على الخبرة يشبه شخص إصلاح يستخدم خبرته لتخمين الأجزاء الأكثر عرضة للكسر.
+          </p>
+        </div>
+        <div id="panel-university" class="tab-panel" role="tabpanel" aria-labelledby="tab-university" hidden>
+          <p class="i18n" data-en="Formally, a state transition system is a tuple (S, E, T, s0) where S is a finite set of states, E is a set of events, T ⊆ S × E × S is a transition relation, and s0 is the initial state. State transition testing aims to cover all reachable transitions. Experience-based techniques are heuristics that complement formal coverage criteria. Error guessing uses domain knowledge to identify likely fault classes; exploratory testing is an unscripted, iterative process; checklist-based testing uses predefined conditions derived from risk analysis or past defects.">
+            رسميًا، نظام الانتقال بين الحالات هو مجموعة (S, E, T, s0) حيث S مجموعة محدودة من الحالات، E مجموعة من الأحداث، T ⊆ S × E × S علاقة انتقال، وs0 الحالة الأولية. يهدف اختبار الانتقال بين الحالات إلى تغطية جميع الانتقالات القابلة للوصول. التقنيات القائمة على الخبرة هي استدلالات تكمل معايير التغطية الرسمية. يستخدم التخمين على الأخطاء معرفة المجال لتحديد فئات العيوب المحتملة؛ الاختبار الاستكشافي هو عملية تكرارية غير مكتوبة؛ الاختبار القائم على قوائم التحقق يستخدم شروطًا محددة مسبقًا مستمدة من تحليل المخاطر أو العيوب السابقة.
+          </p>
+        </div>
+        <div id="panel-review" class="tab-panel" role="tabpanel" aria-labelledby="tab-review" hidden>
+          <ul>
+            <li><span class="i18n" data-en="State Transition Testing: black-box; use for finite states and sequential inputs.">اختبار الانتقال بين الحالات: صندوق أسود؛ يُستخدم للحالات المحدودة والمدخلات المتسلسلة.</span></li>
+            <li><span class="i18n" data-en="Error Guessing: experience-based; guess errors based on past knowledge.">التخمين على الأخطاء: قائم على الخبرة؛ تخمين الأخطاء بناءً على المعرفة السابقة.</span></li>
+            <li><span class="i18n" data-en="Exploratory Testing: unscripted; learn, create, execute, analyze.">الاختبار الاستكشافي: غير مكتوب؛ تعلم، أنشئ، نفذ، حلل.</span></li>
+            <li><span class="i18n" data-en="Checklist-based Testing: use checklist of conditions.">الاختبار القائم على قوائم التحقق: استخدم قائمة تحقق بالشروط.</span></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 06: INTERACTIVE QUIZ ===== -->
+    <section id="quiz" aria-labelledby="quiz-title">
+      <h2 class="section-title" id="quiz-title"><span class="num">06</span> <span class="i18n" data-en="Interactive Quiz">الاختبار التفاعلي</span></h2>
+      <div class="quiz-header">
+        <div class="quiz-score" aria-live="polite">
+          <span class="i18n" data-en="Score:">النتيجة:</span> <span id="score-display">0</span>/30
+        </div>
+        <div class="progress-bar-wrapper" role="progressbar" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0" aria-label="Quiz progress">
+          <div class="progress-bar" id="quiz-progress" style="width:0%"></div>
+        </div>
+        <button class="btn btn-secondary" id="reset-quiz" onclick="resetQuiz()"><span class="i18n" data-en="Try Again">حاول مرة أخرى</span></button>
+      </div>
+      <div id="quiz-container" aria-live="polite">
+        <!-- Questions rendered by JS -->
+      </div>
+      <div id="final-result-container" style="display:none;">
+        <div class="final-result" role="region" aria-live="polite">
+          <h3 class="i18n" data-en="Final Result">النتيجة النهائية</h3>
+          <div class="score-big" id="final-score">0/30</div>
+          <div class="score-big" id="final-percent">0%</div>
+          <p id="final-category"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 07: PRO TIPS ===== -->
+    <section id="pro-tips" aria-labelledby="pro-tips-title">
+      <h2 class="section-title" id="pro-tips-title"><span class="num">07</span> <span class="i18n" data-en="Pro Tips">نصائح احترافية</span></h2>
+      <div class="grid grid-2">
+        <div class="card">
+          <h3 class="i18n" data-en="How to Understand Instead of Memorize">كيف تفهم بدلاً من الحفظ</h3>
+          <ul>
+            <li><span class="i18n" data-en="Draw state transition diagrams for everyday systems (e.g., elevator, ATM) and identify states, events, and transitions.">ارسم مخططات انتقال بين الحالات للأنظمة اليومية (مثل المصعد، الصراف الآلي) وحدد الحالات والأحداث والانتقالات.</span></li>
+            <li><span class="i18n" data-en="For each experience-based technique, think of a real-world analogy and explain it to a friend.">لكل تقنية قائمة على الخبرة، فكّر في تشبيه من العالم الحقيقي واشرحه لصديق.</span></li>
+            <li><span class="i18n" data-en="Compare state transition testing with error guessing: when would you use each?">قارن بين اختبار الانتقال بين الحالات والتخمين على الأخطاء: متى تستخدم كلًا منهما؟</span></li>
+            <li><span class="i18n" data-en="Trace the exploratory testing cycle with a simple app you use daily.">تتبع دورة الاختبار الاستكشافي باستخدام تطبيق بسيط تستخدمه يوميًا.</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3 class="i18n" data-en="Suggested Hands-On Practice">تمارين عملية مقترحة</h3>
+          <ul>
+            <li><span class="i18n" data-en="Create a checklist for testing a login form (fields, error messages, security).">أنشئ قائمة تحقق لاختبار نموذج تسجيل الدخول (الحقول، رسائل الخطأ، الأمان).</span></li>
+            <li><span class="i18n" data-en="Model a simple game (e.g., rock-paper-scissors) as a state machine and list all transitions.">نمذج لعبة بسيطة (مثل حجر ورقة مقص) كآلة حالة وقم بإدراج جميع الانتقالات.</span></li>
+            <li><span class="i18n" data-en="Try exploratory testing on a website and note the defects found in 10 minutes.">جرّب الاختبار الاستكشافي على موقع ويب ودوّن العيوب التي وجدتها في 10 دقائق.</span></li>
+            <li><span class="i18n" data-en="Use error guessing to list five potential defects in a to-do list app.">استخدم التخمين على الأخطاء لإدراج خمسة عيوب محتملة في تطبيق قائمة مهام.</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="card" style="border-color:#f87171;">
+        <h3 class="i18n" data-en="Common Mistakes">أخطاء شائعة</h3>
+        <ul>
+          <li><span class="i18n" data-en="❌ Using state transition testing for non-sequential inputs.">❌ استخدام اختبار الانتقال بين الحالات لمدخلات غير متسلسلة.</span></li>
+          <li><span class="i18n" data-en="❌ Relying solely on error guessing without systematic coverage.">❌ الاعتماد فقط على التخمين على الأخطاء دون تغطية منهجية.</span></li>
+          <li><span class="i18n" data-en="❌ Forgetting to document exploratory testing sessions, making them unrepeatable.">❌ نسيان توثيق جلسات الاختبار الاستكشافي، مما يجعلها غير قابلة للتكرار.</span></li>
+          <li><span class="i18n" data-en="❌ Treating a checklist as a one-time artifact rather than a living document.">❌ التعامل مع قائمة التحقق كأداة لمرة واحدة بدلاً من وثيقة حية.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== SECTION 08: COVERAGE & SOURCE MAP ===== -->
+    <section id="coverage" aria-labelledby="coverage-title">
+      <h2 class="section-title" id="coverage-title"><span class="num">08</span> <span class="i18n" data-en="Coverage & Source Map">التغطية والمصادر</span></h2>
+      <div class="card">
+        <h3 class="i18n" data-en="Coverage Report">تقرير التغطية</h3>
+        <ul>
+          <li><span class="i18n" data-en="Slides processed: 19/19">الشرائح المعالجة: 19/19</span></li>
+          <li><span class="i18n" data-en="Informative images processed: 3/3">الصور المعلوماتية المعالجة: 3/3</span></li>
+          <li><span class="i18n" data-en="Code examples: 0">أمثلة الكود: 0</span></li>
+          <li><span class="i18n" data-en="Tables: 0 (not in source)">الجداول: 0 (غير موجودة في المصدر)</span></li>
+          <li><span class="i18n" data-en="Diagrams: 3">المخططات: 3</span></li>
+          <li><span class="i18n" data-en="Formulas: 0 (not in source)">الصيغ: 0 (غير موجودة في المصدر)</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3 class="i18n" data-en="Source Map">خريطة المصادر</h3>
+        <ul>
+          <li><a href="#slide-03"><span class="i18n" data-en="State Transition Testing Definition → Slide 03">تعريف اختبار الانتقال بين الحالات → الشريحة 03</span></a></li>
+          <li><a href="#slide-04"><span class="i18n" data-en="When to Use State Transition → Slide 04">متى تستخدم الانتقال بين الحالات → الشريحة 04</span></a></li>
+          <li><a href="#slide-06"><span class="i18n" data-en="ATM Example → Slide 06">مثال الصراف الآلي → الشريحة 06</span></a></li>
+          <li><a href="#slide-10"><span class="i18n" data-en="Error Guessing Details → Slide 10">تفاصيل التخمين على الأخطاء → الشريحة 10</span></a></li>
+          <li><a href="#slide-14"><span class="i18n" data-en="Exploratory Testing Process → Slide 14">عملية الاختبار الاستكشافي → الشريحة 14</span></a></li>
+          <li><a href="#slide-18"><span class="i18n" data-en="Checklist-based Testing Example → Slide 18">مثال الاختبار القائم على قوائم التحقق → الشريحة 18</span></a></li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <p class="i18n" data-en="Lecture 7 — Interactive Bilingual Review Sheet">المحاضرة 7 — ورقة مراجعة تفاعلية ثنائية اللغة</p>
+    <p style="font-size:0.8rem;opacity:0.7;">&copy; 2025 — <span class="i18n" data-en="Test Case Design Techniques">تقنيات تصميم حالات الاختبار</span></p>
+  </footer>
+
+  <script>
+    // ===== LANGUAGE SWITCHING =====
+    let currentLang = 'ar';
+
+    function setLang(lang) {
+      currentLang = lang;
+      const html = document.documentElement;
+      html.lang = lang;
+      html.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+      document.getElementById('btn-ar').setAttribute('aria-pressed', lang === 'ar');
+      document.getElementById('btn-en').setAttribute('aria-pressed', lang === 'en');
+
+      document.querySelectorAll('.i18n').forEach(el => {
+        const arText = el.getAttribute('data-ar') || el.textContent;
+        const enText = el.getAttribute('data-en') || el.textContent;
+        if (!el.hasAttribute('data-ar')) {
+          el.setAttribute('data-ar', el.textContent);
+        }
+        el.textContent = lang === 'ar' ? (el.getAttribute('data-ar') || arText) : (el.getAttribute('data-en') || enText);
+      });
+
+      // Update dynamic placeholders and other texts if any
+      document.querySelectorAll('[data-en-placeholder]').forEach(el => {
+        el.placeholder = lang === 'ar' ? (el.getAttribute('data-ar-placeholder') || el.placeholder) : el.getAttribute('data-en-placeholder');
+      });
+
+      // Re-render quiz if needed (to update dynamic texts)
+      if (typeof renderQuiz === 'function' && document.getElementById('quiz-container').children.length > 0) {
+        // Just update language-dependent parts, not re-render whole quiz
+        // For simplicity, we update the quiz labels manually via data attributes if used
+        // Since we already use i18n spans, they will be updated by the loop above
+      }
+
+      // Update aria labels if needed
+      updateAriaLabels();
+    }
+
+    function updateAriaLabels() {
+      // Update lang switch aria-label
+      document.querySelector('.lang-switch').setAttribute('aria-label', currentLang === 'ar' ? 'تبديل اللغة' : 'Switch language');
+    }
+
+    // Initialize Arabic labels
+    document.querySelectorAll('.i18n').forEach(el => {
+      if (!el.hasAttribute('data-ar')) {
+        el.setAttribute('data-ar', el.textContent);
+      }
+    });
+
+    // ===== SCROLL SPY =====
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    function updateActiveNav() {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop - 100;
+        if (window.scrollY >= sectionTop) {
+          current = section.getAttribute('id');
+        }
+      });
+      navLinks.forEach(link => {
+        link.removeAttribute('aria-current');
+        if (link.getAttribute('href') === '#' + current) {
+          link.setAttribute('aria-current', 'true');
+          // Center the active nav item
+          const navScroll = document.getElementById('nav-scroll');
+          const linkRect = link.getBoundingClientRect();
+          const navRect = navScroll.getBoundingClientRect();
+          if (linkRect.left < navRect.left || linkRect.right > navRect.right) {
+            link.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+          }
+        }
+      });
+    }
+
+    window.addEventListener('scroll', updateActiveNav, { passive: true });
+    window.addEventListener('load', updateActiveNav);
+
+    // ===== QUIZ DATA =====
+    const QUIZ = [
+      { type: 'mcq', prompt: 'ما هو اختبار الانتقال بين الحالات؟', promptEn: 'What is State Transition Testing?', options: ['تقنية اختبار صندوق أسود تفحص تغير الحالة', 'تقنية اختبار صندوق أبيض', 'طريقة لقياس الأداء', 'نوع من أنواع التصميم'], optionsEn: ['A black-box technique checking state changes', 'A white-box technique', 'A performance measurement method', 'A type of design'], correct: 0, explain: 'اختبار الانتقال بين الحالات هو تقنية صندوق أسود تراقب تغير حالة التطبيق تحت مدخلات مختلفة.', explainEn: 'State Transition Testing is a black-box technique that observes the change in application state under different inputs.' },
+      { type: 'tf', prompt: 'يمكن استخدام اختبار الانتقال بين الحالات عندما يكون النظام يعتمد على الأحداث الماضية.', promptEn: 'State Transition Testing can be used when the system depends on past events.', correct: true, explain: 'نعم، هذا أحد الشروط المذكورة في المحاضرة.', explainEn: 'Yes, this is one of the conditions mentioned in the lecture.' },
+      { type: 'mcq', prompt: 'أي مما يلي ليس من التقنيات القائمة على الخبرة؟', promptEn: 'Which of the following is NOT an experience-based technique?', options: ['التخمين على الأخطاء', 'الاختبار الاستكشافي', 'الاختبار القائم على قوائم التحقق', 'تحليل القيمة الحدية'], optionsEn: ['Error Guessing', 'Exploratory Testing', 'Checklist-based Testing', 'Boundary Value Analysis'], correct: 3, explain: 'تحليل القيمة الحدية هو تقنية صندوق أسود منهجية وليس تقنية قائمة على الخبرة.', explainEn: 'Boundary Value Analysis is a systematic black-box technique, not experience-based.' },
+      { type: 'mcq', prompt: 'ما هي المرحلة الأولى في عملية الاختبار الاستكشافي؟', promptEn: 'What is the first phase of exploratory testing?', options: ['التعلم', 'إنشاء حالات الاختبار', 'التنفيذ', 'التحليل'], optionsEn: ['Learn', 'Test Case Creation', 'Execution', 'Analyze'], correct: 0, explain: 'تبدأ العملية بمرحلة التعلم كما هو موضح في المخطط.', explainEn: 'The process begins with the Learn phase as shown in the diagram.' },
+      { type: 'mcq', prompt: 'متى لا يُنصح باستخدام اختبار الانتقال بين الحالات؟', promptEn: 'When is State Transition Testing NOT recommended?', options: ['عندما تكون المدخلات متسلسلة', 'عندما يكون هناك مجموعة محدودة من المدخلات', 'عندما لا يكون الاختبار لمجموعات مدخلات متسلسلة', 'عندما يعتمد النظام على الأحداث الماضية'], optionsEn: ['When inputs are sequential', 'When there is a finite set of inputs', 'When testing is not for sequential input combinations', 'When the system depends on past events'], correct: 2, explain: 'ذكرت المحاضرة أنه لا يعتمد عليه عندما لا يكون الاختبار لمجموعات مدخلات متسلسلة.', explainEn: 'The lecture states not to rely on it when testing is not for sequential input combinations.' },
+      { type: 'tf', prompt: 'التخمين على الأخطاء يضمن تغطية كاملة للتطبيق.', promptEn: 'Error Guessing guarantees full coverage of an application.', correct: false, explain: 'من عيوب التخمين على الأخطاء أنه لا يقدم أبدًا تغطية كاملة.', explainEn: 'One disadvantage of error guessing is that it never provides full coverage.' },
+      { type: 'mcq', prompt: 'أي مما يلي يمثل مخطط انتقال بين الحالات؟', promptEn: 'Which of the following represents a state transition diagram?', options: ['مخطط يوضح الحالات والانتقالات بينها', 'مخطط يوضح تدفق البيانات', 'مخطط يوضح العلاقات بين الكيانات', 'مخطط يوضح التسلسل الزمني'], optionsEn: ['A diagram showing states and transitions between them', 'A data flow diagram', 'An entity-relationship diagram', 'A timeline diagram'], correct: 0, explain: 'مخطط الانتقال بين الحالات يوضح الحالات والانتقالات بينها.', explainEn: 'A state transition diagram shows states and transitions between them.' },
+      { type: 'mcq', prompt: 'ما هي الميزة الرئيسية للاختبار الاستكشافي؟', promptEn: 'What is the main advantage of exploratory testing?', options: ['سرعة اكتشاف العيوب الحرجة', 'تكرار نفس الاختبارات', 'توثيق شامل', 'تغطية كاملة'], optionsEn: ['Quickly finds critical defects', 'Repeatability of tests', 'Comprehensive documentation', 'Full coverage'], correct: 0, explain: 'من مزايا الاختبار الاستكشافي أنه يجد العيوب الحرجة بسرعة.', explainEn: 'An advantage of exploratory testing is that it finds critical defects quickly.' },
+      { type: 'mcq', prompt: 'ما هو العامل الذي لا يُستخدم في التخمين على الأخطاء؟', promptEn: 'Which factor is NOT used in error guessing?', options: ['الدروس المستفادة من الإصدارات السابقة', 'خبرة المختبرين', 'تحليل القيمة الحدية', 'تذاكر الإنتاج'], optionsEn: ['Lessons learned from past releases', 'Tester experience', 'Boundary value analysis', 'Production tickets'], correct: 2, explain: 'تحليل القيمة الحدية هو تقنية منهجية وليس عاملًا في التخمين على الأخطاء.', explainEn: 'Boundary value analysis is a systematic technique, not a factor in error guessing.' },
+      { type: 'mcq', prompt: 'في مخطط آلة الصراف الآلي، ماذا يحدث عند إدخال رمز PIN خاطئ؟', promptEn: 'In the ATM diagram, what happens when a wrong PIN is entered?', options: ['الانتقال إلى حالة خطأ PIN غير صالح', 'الانتقال إلى منح حق الوصول', 'العودة إلى البداية', 'إعادة إدخال البطاقة'], optionsEn: ['Transition to Invalid Pin Error state', 'Transition to Account access granted', 'Return to Start', 'Re-insert card'], correct: 0, explain: 'وفقًا للمخطط، إدخال رمز PIN خاطئ يؤدي إلى حالة Invalid Pin Error.', explainEn: 'According to the diagram, entering a wrong PIN leads to the Invalid Pin Error state.' },
+      { type: 'tf', prompt: 'الاختبار القائم على قوائم التحقق يعتمد على قائمة شروط محددة مسبقًا.', promptEn: 'Checklist-based testing relies on a predefined list of conditions.', correct: true, explain: 'نعم، هذا هو تعريفه في المحاضرة.', explainEn: 'Yes, this is its definition in the lecture.' },
+      { type: 'mcq', prompt: 'أي مما يلي يصف الاختبار الاستكشافي؟', promptEn: 'Which describes exploratory testing?', options: ['نهج غير مكتوب مسبقًا', 'نهج مكتوب بالكامل', 'نهج آلي', 'نهج إحصائي'], optionsEn: ['Unscripted approach', 'Fully scripted approach', 'Automated approach', 'Statistical approach'], correct: 0, explain: 'الاختبار الاستكشافي هو نهج غير مكتوب مسبقًا.', explainEn: 'Exploratory testing is an unscripted approach.' },
+      { type: 'mcq', prompt: 'ما هي المرحلة التي تلي إنشاء حالات الاختبار في الاختبار الاستكشافي؟', promptEn: 'Which phase follows test case creation in exploratory testing?', options: ['التنفيذ', 'التحليل', 'التعلم', 'إعادة الإنشاء'], optionsEn: ['Execution', 'Analysis', 'Learn', 'Re-creation'], correct: 0, explain: 'بعد إنشاء حالات الاختبار تأتي مرحلة التنفيذ.', explainEn: 'After creating test cases comes the execution phase.' },
+      { type: 'mcq', prompt: 'أي مما يلي ليس من عيوب التخمين على الأخطاء؟', promptEn: 'Which is NOT a disadvantage of error guessing?', options: ['يعتمد على خبرة المختبر', 'لا يضمن جودة التطبيق', 'لا يوفر تغطية كاملة', 'سريع في اكتشاف العيوب'], optionsEn: ['Depends on tester experience', 'Does not guarantee application quality', 'Does not provide full coverage', 'Fast in finding defects'], correct: 3, explain: 'سرعة اكتشاف العيوب هي ميزة وليست عيبًا.', explainEn: 'Fast defect detection is an advantage, not a disadvantage.' },
+      { type: 'mcq', prompt: 'أي تقنية تستخدم قائمة تحقق للتحقق من الشروط؟', promptEn: 'Which technique uses a checklist to verify conditions?', options: ['الاختبار القائم على قوائم التحقق', 'الاختبار الاستكشافي', 'التخمين على الأخطاء', 'اختبار الانتقال بين الحالات'], optionsEn: ['Checklist-based Testing', 'Exploratory Testing', 'Error Guessing', 'State Transition Testing'], correct: 0, explain: 'الاختبار القائم على قوائم التحقق يستخدم قائمة تحقق.', explainEn: 'Checklist-based testing uses a checklist.' },
+      { type: 'mcq', prompt: 'ماذا يوضح مخطط الانتقال بين الحالات؟', promptEn: 'What does a state transition diagram show?', options: ['الحالات والانتقالات بينها', 'البيانات فقط', 'العمليات الحسابية', 'العلاقات بين الجداول'], optionsEn: ['States and transitions between them', 'Data only', 'Mathematical operations', 'Relationships between tables'], correct: 0, explain: 'يوضح المخطط الحالات والانتقالات.', explainEn: 'The diagram shows states and transitions.' },
+      { type: 'tf', prompt: 'اختبار الانتقال بين الحالات يمكن أن يستخدم مدخلات إيجابية وسلبية.', promptEn: 'State Transition Testing can use both positive and negative inputs.', correct: true, explain: 'نعم، ذكرت المحاضرة أنه يتم توفير قيم إدخال إيجابية وسلبية.', explainEn: 'Yes, the lecture states both positive and negative input values are provided.' },
+      { type: 'mcq', prompt: 'ما هو الهدف من الاختبار الاستكشافي؟', promptEn: 'What is the goal of exploratory testing?', options: ['تحسين البرنامج بكل طريقة ممكنة', 'توثيق جميع الحالات', 'تكرار الاختبارات', 'قياس الأداء فقط'], optionsEn: ['To optimize and improve the software in every possible way', 'To document all cases', 'To repeat tests', 'To measure performance only'], correct: 0, explain: 'الهدف هو تحسين البرنامج بكل طريقة ممكنة.', explainEn: 'The goal is to optimize and improve the software in every possible way.' },
+      { type: 'mcq', prompt: 'ما هي إحدى مزايا الاختبار القائم على قوائم التحقق؟', promptEn: 'What is an advantage of checklist-based testing?', options: ['يضمن تغطية الجوانب المهمة', 'لا يحتاج إلى تحضير', 'سريع جدًا', 'يعتمد على الحدس'], optionsEn: ['Ensures coverage of important aspects', 'Needs no preparation', 'Very fast', 'Relies on intuition'], correct: 0, explain: 'قائمة التحقق تضمن تغطية الجوانب المهمة المدرجة.', explainEn: 'The checklist ensures coverage of the important listed aspects.' },
+      { type: 'mcq', prompt: 'أي مما يلي يعد مثالاً على تقنية قائمة على الخبرة؟', promptEn: 'Which of the following is an example of an experience-based technique?', options: ['التخمين على الأخطاء', 'تحليل القيمة الحدية', 'تقسيم التكافؤ', 'اختبار الانتقال بين الحالات'], optionsEn: ['Error Guessing', 'Boundary Value Analysis', 'Equivalence Partitioning', 'State Transition Testing'], correct: 0, explain: 'التخمين على الأخطاء هو تقنية قائمة على الخبرة.', explainEn: 'Error Guessing is an experience-based technique.' },
+      { type: 'multi', prompt: 'ما هي مراحل عملية الاختبار الاستكشافي؟ (اختر كل ما ينطبق)', promptEn: 'What are the phases of exploratory testing? (Select all that apply)', options: ['التعلم', 'إنشاء حالات الاختبار', 'التنفيذ', 'التحليل'], optionsEn: ['Learn', 'Test Case Creation', 'Execution', 'Analyze'], correctSet: [0,1,2,3], explain: 'جميع هذه المراحل الأربع هي جزء من عملية الاختبار الاستكشافي.', explainEn: 'All four phases are part of the exploratory testing process.' },
+      { type: 'multi', prompt: 'ما هي عيوب التخمين على الأخطاء؟ (اختر كل ما ينطبق)', promptEn: 'What are disadvantages of error guessing? (Select all that apply)', options: ['يعتمد على خبرة المختبر', 'لا يضمن جودة التطبيق', 'لا يوفر تغطية كاملة', 'سريع في اكتشاف العيوب'], optionsEn: ['Depends on tester experience', 'Does not guarantee application quality', 'Does not provide full coverage', 'Fast in finding defects'], correctSet: [0,1,2], explain: 'سرعة الاكتشاف هي ميزة، وليست عيبًا.', explainEn: 'Fast detection is an advantage, not a disadvantage.' },
+      { type: 'multi', prompt: 'ما هي العوامل التي يمكن استخدامها في التخمين على الأخطاء؟ (اختر كل ما ينطبق)', promptEn: 'What factors can be used in error guessing? (Select all that apply)', options: ['الدروس المستفادة', 'تذاكر الإنتاج', 'واجهة المستخدم', 'الاختبار الاستكشافي'], optionsEn: ['Lessons learned', 'Production tickets', 'Application UI', 'Exploratory testing'], correctSet: [0,1,2], explain: 'الاختبار الاستكشافي هو تقنية وليس عاملًا.', explainEn: 'Exploratory testing is a technique, not a factor.' },
+      { type: 'fill', prompt: 'أكمل: اختبار الانتقال بين الحالات هو تقنية _________ (صندوق أسود / صندوق أبيض).', promptEn: 'Complete: State Transition Testing is a _________ technique (black-box / white-box).', acceptedAnswers: ['صندوق أسود', 'black-box', 'black box'], explain: 'اختبار الانتقال بين الحالات هو تقنية صندوق أسود.', explainEn: 'State Transition Testing is a black-box technique.' },
+      { type: 'fill', prompt: 'أكمل: في الاختبار الاستكشافي، المرحلة التي تلي التعلم هي مرحلة _________.', promptEn: 'Complete: In exploratory testing, the phase after Learn is _________.', acceptedAnswers: ['إنشاء حالات الاختبار', 'test case creation', 'creation'], explain: 'بعد التعلم تأتي مرحلة إنشاء حالات الاختبار.', explainEn: 'After Learn comes Test Case Creation.' },
+      { type: 'match', prompt: 'طابق بين المصطلح وتعريفه:', promptEn: 'Match each term with its definition:', pairsA: ['اختبار الانتقال بين الحالات', 'التخمين على الأخطاء', 'الاختبار الاستكشافي', 'الاختبار القائم على قوائم التحقق'], pairsAEn: ['State Transition Testing', 'Error Guessing', 'Exploratory Testing', 'Checklist-based Testing'], pairsB: ['تقنية صندوق أسود تفحص تغير الحالة', 'تقنية قائمة على الخبرة تستخدم الحدس', 'نهج غير مكتوب مسبقًا', 'اختبار موجه بقائمة شروط'], pairsBEn: ['Black-box technique checking state changes', 'Experience-based technique using intuition', 'Unscripted approach', 'Testing guided by a checklist'], correctMap: [0,1,2,3], explain: 'كل مصطلح يتطابق مع تعريفه الصحيح.', explainEn: 'Each term matches its correct definition.' },
+      { type: 'match', prompt: 'طابق بين الحالة والانتقال في مثال الصراف الآلي:', promptEn: 'Match each state with its transition in the ATM example:', pairsA: ['Start', 'Wait For Pin', 'Invalid Pin Error', 'Account access granted'], pairsAEn: ['Start', 'Wait For Pin', 'Invalid Pin Error', 'Account access granted'], pairsB: ['Insert Card', 'Enter PIN', 'PIN Correct', 'PIN Incorrect'], pairsBEn: ['Insert Card', 'Enter PIN', 'PIN Correct', 'PIN Incorrect'], correctMap: [0,1,2,3], explain: 'البداية تنتقل بإدخال البطاقة، وهكذا.', explainEn: 'Start transitions with Insert Card, and so on.' },
+      { type: 'match', prompt: 'طابق بين التقنية وخصيصتها:', promptEn: 'Match each technique with its characteristic:', pairsA: ['التخمين على الأخطاء', 'الاختبار الاستكشافي', 'الاختبار القائم على قوائم التحقق', 'اختبار الانتقال بين الحالات'], pairsAEn: ['Error Guessing', 'Exploratory Testing', 'Checklist-based Testing', 'State Transition Testing'], pairsB: ['يعتمد على الحدس والخبرة', 'غير مكتوب مسبقًا', 'يستخدم قائمة شروط', 'يختبر تسلسل المدخلات'], pairsBEn: ['Relies on intuition and experience', 'Unscripted', 'Uses a list of conditions', 'Tests input sequences'], correctMap: [0,1,2,3], explain: 'كل تقنية لها خصيصتها المميزة.', explainEn: 'Each technique has its characteristic.' }
+    ];
+
+    // ===== QUIZ STATE =====
+    let userAnswers = new Array(QUIZ.length).fill(null);
+    let checked = new Array(QUIZ.length).fill(false);
+    let score = 0;
+    let quizCompleted = false;
+
+    // ===== RENDER QUIZ =====
+    function renderQuiz() {
+      const container = document.getElementById('quiz-container');
+      container.innerHTML = '';
+      quizCompleted = false;
+      document.getElementById('final-result-container').style.display = 'none';
+
+      QUIZ.forEach((q, index) => {
+        const qDiv = document.createElement('div');
+        qDiv.className = 'quiz-question';
+        qDiv.id = `q-${index}`;
+
+        const prompt = document.createElement('p');
+        prompt.className = 'q-prompt';
+        prompt.textContent = `${index + 1}. ${currentLang === 'ar' ? q.prompt : q.promptEn}`;
+        qDiv.appendChild(prompt);
+
+        // Options based on type
+        if (q.type === 'mcq') {
+          const optsDiv = document.createElement('div');
+          optsDiv.className = 'q-options';
+          (currentLang === 'ar' ? q.options : q.optionsEn).forEach((opt, optIndex) => {
+            const label = document.createElement('label');
+            label.className = 'q-option';
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = `q-${index}`;
+            radio.value = optIndex;
+            radio.addEventListener('change', () => {
+              userAnswers[index] = optIndex;
+              updateCheckButton(index);
+              // Highlight selected
+              optsDiv.querySelectorAll('.q-option').forEach(l => l.classList.remove('selected'));
+              label.classList.add('selected');
+            });
+            radio.disabled = checked[index];
+            label.appendChild(radio);
+            const span = document.createElement('span');
+            span.textContent = opt;
+            label.appendChild(span);
+            optsDiv.appendChild(label);
+          });
+          qDiv.appendChild(optsDiv);
+        } else if (q.type === 'tf') {
+          const optsDiv = document.createElement('div');
+          optsDiv.className = 'q-options';
+          ['صح', 'خطأ'].forEach((opt, optIndex) => {
+            if (currentLang === 'en') {
+              opt = optIndex === 0 ? 'True' : 'False';
+            }
+            const label = document.createElement('label');
+            label.className = 'q-option';
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = `q-${index}`;
+            radio.value = optIndex;
+            radio.addEventListener('change', () => {
+              userAnswers[index] = optIndex;
+              updateCheckButton(index);
+              optsDiv.querySelectorAll('.q-option').forEach(l => l.classList.remove('selected'));
+              label.classList.add('selected');
+            });
+            radio.disabled = checked[index];
+            label.appendChild(radio);
+            const span = document.createElement('span');
+            span.textContent = opt;
+            label.appendChild(span);
+            optsDiv.appendChild(label);
+          });
+          qDiv.appendChild(optsDiv);
+        } else if (q.type === 'multi') {
+          const optsDiv = document.createElement('div');
+          optsDiv.className = 'q-options';
+          (currentLang === 'ar' ? q.options : q.optionsEn).forEach((opt, optIndex) => {
+            const label = document.createElement('label');
+            label.className = 'q-option';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.name = `q-${index}`;
+            cb.value = optIndex;
+            cb.addEventListener('change', () => {
+              if (!userAnswers[index]) userAnswers[index] = [];
+              const arr = userAnswers[index];
+              if (cb.checked) {
+                if (!arr.includes(optIndex)) arr.push(optIndex);
+              } else {
+                const i = arr.indexOf(optIndex);
+                if (i > -1) arr.splice(i, 1);
+              }
+              updateCheckButton(index);
+              if (cb.checked) label.classList.add('selected');
+              else label.classList.remove('selected');
+            });
+            cb.disabled = checked[index];
+            label.appendChild(cb);
+            const span = document.createElement('span');
+            span.textContent = opt;
+            label.appendChild(span);
+            optsDiv.appendChild(label);
+          });
+          qDiv.appendChild(optsDiv);
+        } else if (q.type === 'fill') {
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.className = 'fill-input';
+          input.placeholder = currentLang === 'ar' ? 'اكتب إجابتك هنا' : 'Type your answer here';
+          input.disabled = checked[index];
+          input.addEventListener('input', () => {
+            userAnswers[index] = input.value.trim();
+            updateCheckButton(index);
+          });
+          qDiv.appendChild(input);
+        } else if (q.type === 'match') {
+          const matchContainer = document.createElement('div');
+          matchContainer.className = 'match-container';
+          const pairsA = currentLang === 'ar' ? q.pairsA : q.pairsAEn;
+          const pairsB = currentLang === 'ar' ? q.pairsB : q.pairsBEn;
+          const selectOptions = pairsB.map((opt, i) => `<option value="${i}">${opt}</option>`).join('');
+          pairsA.forEach((itemA, i) => {
+            const row = document.createElement('div');
+            row.className = 'match-row';
+            const span = document.createElement('span');
+            span.textContent = itemA;
+            const select = document.createElement('select');
+            select.className = 'match-select';
+            select.innerHTML = `<option value="">${currentLang === 'ar' ? '-- اختر --' : '-- select --'}</option>` + selectOptions;
+            select.disabled = checked[index];
+            select.addEventListener('change', () => {
+              if (!userAnswers[index]) userAnswers[index] = [];
+              userAnswers[index][i] = parseInt(select.value);
+              updateCheckButton(index);
+            });
+            row.appendChild(span);
+            row.appendChild(select);
+            matchContainer.appendChild(row);
+          });
+          qDiv.appendChild(matchContainer);
+        }
+
+        // Check button and feedback area
+        const actions = document.createElement('div');
+        actions.className = 'q-actions';
+        const checkBtn = document.createElement('button');
+        checkBtn.className = 'btn btn-primary check-btn';
+        checkBtn.textContent = currentLang === 'ar' ? 'تحقق من الإجابة' : 'Check Answer';
+        checkBtn.disabled = true;
+        checkBtn.addEventListener('click', () => checkAnswer(index));
+        actions.appendChild(checkBtn);
+        qDiv.appendChild(actions);
+
+        const feedback = document.createElement('div');
+        feedback.className = 'q-feedback';
+        feedback.id = `feedback-${index}`;
+        qDiv.appendChild(feedback);
+
+        container.appendChild(qDiv);
+      });
+    }
+
+    function updateCheckButton(index) {
+      const qDiv = document.getElementById(`q-${index}`);
+      const checkBtn = qDiv.querySelector('.check-btn');
+      const ans = userAnswers[index];
+      let hasAnswer = false;
+      if (ans === null || ans === undefined) hasAnswer = false;
+      else if (Array.isArray(ans)) hasAnswer = ans.length > 0;
+      else if (typeof ans === 'string') hasAnswer = ans.length > 0;
+      else hasAnswer = true;
+      checkBtn.disabled = !hasAnswer || checked[index];
+    }
+
+    function checkAnswer(index) {
+      if (checked[index]) return;
+      checked[index] = true;
+      const q = QUIZ[index];
+      const qDiv = document.getElementById(`q-${index}`);
+      const feedback = document.getElementById(`feedback-${index}`);
+      const checkBtn = qDiv.querySelector('.check-btn');
+      checkBtn.disabled = true;
+
+      let isCorrect = false;
+      const ans = userAnswers[index];
+
+      if (q.type === 'mcq' || q.type === 'tf') {
+        isCorrect = ans === q.correct;
+        // Highlight correct and wrong
+        const options = qDiv.querySelectorAll('.q-option');
+        options.forEach((opt, i) => {
+          const input = opt.querySelector('input');
+          if (i === q.correct) opt.classList.add('correct-answer');
+          else if (input.checked && i !== q.correct) opt.classList.add('wrong-answer');
+          input.disabled = true;
+        });
+      } else if (q.type === 'multi') {
+        const selectedSet = new Set(ans || []);
+        const correctSet = new Set(q.correctSet);
+        isCorrect = selectedSet.size === correctSet.size && [...selectedSet].every(v => correctSet.has(v));
+        const options = qDiv.querySelectorAll('.q-option');
+        options.forEach((opt, i) => {
+          const input = opt.querySelector('input');
+          if (correctSet.has(i)) opt.classList.add('correct-answer');
+          else if (input.checked) opt.classList.add('wrong-answer');
+          input.disabled = true;
+        });
+      } else if (q.type === 'fill') {
+        const accepted = q.acceptedAnswers.map(a => a.toLowerCase());
+        const userAns = (ans || '').toLowerCase().trim();
+        isCorrect = accepted.some(a => userAns.includes(a) || a.includes(userAns));
+        const input = qDiv.querySelector('.fill-input');
+        input.disabled = true;
+        if (isCorrect) input.classList.add('correct');
+        else input.classList.add('incorrect');
+      } else if (q.type === 'match') {
+        const correctMap = q.correctMap;
+        isCorrect = ans && ans.length === correctMap.length && ans.every((v, i) => v === correctMap[i]);
+        const selects = qDiv.querySelectorAll('.match-select');
+        selects.forEach((sel, i) => {
+          sel.disabled = true;
+          if (ans && ans[i] === correctMap[i]) sel.style.borderColor = '#34d399';
+          else if (ans && ans[i] !== undefined && ans[i] !== correctMap[i]) sel.style.borderColor = '#f87171';
+        });
+      }
+
+      if (isCorrect) {
+        score++;
+        feedback.textContent = currentLang === 'ar' ? '✔ صحيح! ' + q.explain : '✔ Correct! ' + q.explainEn;
+        feedback.className = 'q-feedback correct';
+      } else {
+        feedback.textContent = currentLang === 'ar' ? '✘ خطأ. ' + q.explain : '✘ Incorrect. ' + q.explainEn;
+        feedback.className = 'q-feedback incorrect';
+      }
+
+      updateScore();
+      checkCompletion();
+    }
+
+    function updateScore() {
+      document.getElementById('score-display').textContent = score;
+      const progress = document.getElementById('quiz-progress');
+      const checkedCount = checked.filter(Boolean).length;
+      progress.style.width = (checkedCount / QUIZ.length * 100) + '%';
+      progress.parentElement.setAttribute('aria-valuenow', checkedCount);
+    }
+
+    function checkCompletion() {
+      if (checked.every(Boolean) && !quizCompleted) {
+        quizCompleted = true;
+        const finalContainer = document.getElementById('final-result-container');
+        finalContainer.style.display = 'block';
+        const percent = Math.round(score / QUIZ.length * 100);
+        document.getElementById('final-score').textContent = `${score}/${QUIZ.length}`;
+        document.getElementById('final-percent').textContent = `${percent}%`;
+        let category = '';
+        if (percent >= 85) category = currentLang === 'ar' ? 'ممتاز' : 'Excellent';
+        else if (percent >= 60) category = currentLang === 'ar' ? 'جيد' : 'Good';
+        else category = currentLang === 'ar' ? 'يُنصح بالمراجعة' : 'Review Recommended';
+        document.getElementById('final-category').textContent = category;
+      }
+    }
+
+    function resetQuiz() {
+      userAnswers = new Array(QUIZ.length).fill(null);
+      checked = new Array(QUIZ.length).fill(false);
+      score = 0;
+      quizCompleted = false;
+      document.getElementById('final-result-container').style.display = 'none';
+      updateScore();
+      renderQuiz();
+    }
+
+    // ===== INITIALIZATION =====
+    window.addEventListener('load', () => {
+      renderQuiz();
+      setLang('ar');
+      // Set up tab switching
+      const tabs = document.querySelectorAll('[role="tab"]');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const tabList = tab.closest('[role="tablist"]');
+          tabList.querySelectorAll('[role="tab"]').forEach(t => t.setAttribute('aria-selected', 'false'));
+          tab.setAttribute('aria-selected', 'true');
+          const panels = tabList.parentElement.querySelectorAll('[role="tabpanel"]');
+          panels.forEach(p => p.hidden = true);
+          const panelId = tab.getAttribute('aria-controls');
+          document.getElementById(panelId).hidden = false;
+        });
+        tab.addEventListener('keydown', (e) => {
+          const tabList = [...tab.closest('[role="tablist"]').querySelectorAll('[role="tab"]')];
+          const idx = tabList.indexOf(tab);
+          if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            e.preventDefault();
+            const next = e.key === 'ArrowRight' ? (idx + 1) % tabList.length : (idx - 1 + tabList.length) % tabList.length;
+            tabList[next].focus();
+            tabList[next].click();
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>

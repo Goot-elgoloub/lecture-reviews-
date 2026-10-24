@@ -1,0 +1,3090 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مراجعة تفاعلية: تقنيات تصميم حالات الاختبار | Interactive Review: Test Case Design Techniques</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* ===== RESET & BASE ===== */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0a0e16;
+            --card-bg-start: #121a2b;
+            --card-bg-end: #0f1524;
+            --border: #212b40;
+            --text-main: #e7ecf5;
+            --text-dim: #93a1bd;
+            --accent: #38bdf8;
+            --accent-dim: #1e6a8a;
+            --o1: #94a3b8;
+            --ologn: #a78bfa;
+            --on: #38bdf8;
+            --onlogn: #34d399;
+            --on2: #fbbf24;
+            --on3: #fb923c;
+            --o2n: #f87171;
+            --good: #34d399;
+            --bad: #f87171;
+            --warn: #fbbf24;
+            --font-ar: 'Tajawal', sans-serif;
+            --font-code: 'Fira Code', monospace;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: var(--font-ar);
+            line-height: 1.7;
+            font-size: 1rem;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== TYPOGRAPHY ===== */
+        h1 {
+            font-size: clamp(1.6rem, 5vw, 2.8rem);
+            font-weight: 700;
+            line-height: 1.3;
+            color: #fff;
+            margin-bottom: 0.5rem;
+        }
+
+        h2 {
+            font-size: clamp(1.3rem, 3.5vw, 1.9rem);
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 0.5rem;
+        }
+
+        h3 {
+            font-size: clamp(1.1rem, 2.8vw, 1.35rem);
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.75rem;
+        }
+
+        h4 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            margin-bottom: 0.85rem;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        a:hover,
+        a:focus-visible {
+            color: #7dd3fc;
+        }
+
+        /* ===== FOCUS ===== */
+        :focus-visible {
+            outline: 3px solid var(--accent);
+            outline-offset: 3px;
+            border-radius: 2px;
+        }
+
+        /* ===== TERM-EN ===== */
+        .term-en {
+            font-family: var(--font-code);
+            font-size: 0.9em;
+            color: var(--accent);
+            direction: ltr;
+            unicode-bidi: isolate;
+            display: inline-block;
+        }
+
+        /* ===== LAYOUT ===== */
+        .container {
+            width: min(100% - 2rem, 1200px);
+            margin-inline: auto;
+            padding-block: 1.5rem;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            position: relative;
+            padding: clamp(2rem, 6vw, 4rem) 1rem clamp(1.5rem, 4vw, 3rem);
+            background: radial-gradient(ellipse at 50% 0%, #1a2a45 0%, var(--bg) 70%);
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .hero-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.15;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+            margin-inline: auto;
+            text-align: center;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.12);
+            color: var(--accent);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 0.3rem 0.9rem;
+            border-radius: 100px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            margin-bottom: 1rem;
+            font-family: var(--font-code);
+            direction: ltr;
+            unicode-bidi: isolate;
+        }
+
+        .hero h1 {
+            font-size: clamp(1.5rem, 5vw, 2.8rem);
+            margin-bottom: 0.75rem;
+        }
+
+        .hero p {
+            font-size: clamp(0.95rem, 2vw, 1.15rem);
+            color: var(--text-dim);
+            max-width: 700px;
+            margin-inline: auto;
+        }
+
+        /* ===== NAV ===== */
+        .main-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 14, 22, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            padding: 0;
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+        }
+
+        .nav-scroll {
+            display: flex;
+            gap: 0.25rem;
+            overflow-x: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+            -webkit-overflow-scrolling: touch;
+            padding: 0.25rem;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .nav-scroll::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .nav-scroll::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .nav-link {
+            display: inline-block;
+            padding: 0.5rem 0.85rem;
+            border-radius: var(--radius-sm);
+            color: var(--text-dim);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: background 0.2s, color 0.2s;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-family: var(--font-ar);
+            flex-shrink: 0;
+        }
+
+        .nav-link:hover,
+        .nav-link:focus-visible {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--text-main);
+        }
+
+        .nav-link[aria-current="true"] {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .lang-switch {
+            display: flex;
+            gap: 0.25rem;
+            flex-shrink: 0;
+            padding: 0.25rem;
+            background: var(--card-bg-start);
+            border: 1px solid var(--border);
+            border-radius: 100px;
+        }
+
+        .lang-btn {
+            padding: 0.35rem 0.75rem;
+            border-radius: 100px;
+            border: none;
+            background: transparent;
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: var(--font-ar);
+            transition: background 0.2s, color 0.2s;
+            white-space: nowrap;
+        }
+
+        .lang-btn[aria-pressed="true"] {
+            background: var(--accent);
+            color: #0a0e16;
+            font-weight: 700;
+        }
+
+        .lang-btn:hover:not([aria-pressed="true"]) {
+            color: var(--text-main);
+        }
+
+        /* ===== SECTIONS ===== */
+        .section {
+            padding-block: 2rem;
+            scroll-margin-top: 70px;
+        }
+
+        .section-title {
+            font-size: clamp(1.2rem, 3vw, 1.6rem);
+            color: var(--accent);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2.2rem;
+            height: 2.2rem;
+            border-radius: 50%;
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--accent);
+            font-family: var(--font-code);
+            font-size: 0.8rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background: linear-gradient(135deg, var(--card-bg-start), var(--card-bg-end));
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: clamp(1rem, 2.5vw, 1.5rem);
+            margin-bottom: 1.25rem;
+            box-shadow: var(--shadow);
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .card.tinted {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.06), rgba(56, 189, 248, 0.02));
+            border-color: rgba(56, 189, 248, 0.25);
+        }
+
+        .card.good {
+            border-inline-start: 4px solid var(--good);
+        }
+
+        .card.warn {
+            border-inline-start: 4px solid var(--warn);
+        }
+
+        /* ===== GRID ===== */
+        .grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+        }
+
+        /* ===== BADGES ===== */
+        .badge {
+            display: inline-block;
+            padding: 0.2rem 0.65rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            font-family: var(--font-code);
+            direction: ltr;
+            unicode-bidi: isolate;
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            background: rgba(255, 255, 255, 0.03);
+            white-space: nowrap;
+        }
+
+        .badge.accent {
+            color: var(--accent);
+            border-color: rgba(56, 189, 248, 0.3);
+            background: rgba(56, 189, 248, 0.08);
+        }
+
+        .badge.good {
+            color: var(--good);
+            border-color: rgba(52, 211, 153, 0.3);
+            background: rgba(52, 211, 153, 0.08);
+        }
+
+        .badge.bad {
+            color: var(--bad);
+            border-color: rgba(248, 113, 113, 0.3);
+            background: rgba(248, 113, 113, 0.08);
+        }
+
+        /* ===== SOURCE LABEL ===== */
+        .source-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+            font-family: var(--font-code);
+            direction: ltr;
+            unicode-bidi: isolate;
+        }
+
+        .source-label::before {
+            content: "▣";
+            font-size: 0.7rem;
+        }
+
+        .explain-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--warn);
+            margin-bottom: 0.5rem;
+            font-family: var(--font-code);
+            direction: ltr;
+            unicode-bidi: isolate;
+        }
+
+        .explain-label::before {
+            content: "◆";
+            font-size: 0.7rem;
+        }
+
+        .access-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--ologn);
+            margin-bottom: 0.5rem;
+            font-family: var(--font-code);
+            direction: ltr;
+            unicode-bidi: isolate;
+        }
+
+        .access-label::before {
+            content: "◉";
+            font-size: 0.7rem;
+        }
+
+        /* ===== NOTE ===== */
+        .note {
+            padding: 0.85rem 1rem;
+            border-radius: var(--radius-sm);
+            margin-block: 0.85rem;
+            border-inline-start: 3px solid var(--accent);
+            background: rgba(56, 189, 248, 0.06);
+            font-size: 0.95rem;
+        }
+
+        .note.good {
+            border-inline-start-color: var(--good);
+            background: rgba(52, 211, 153, 0.06);
+        }
+
+        .note.info {
+            border-inline-start-color: var(--accent);
+            background: rgba(56, 189, 248, 0.06);
+        }
+
+        .note.warn {
+            border-inline-start-color: var(--warn);
+            background: rgba(251, 191, 36, 0.06);
+        }
+
+        /* ===== TABLE ===== */
+        .table-wrapper {
+            max-width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-block: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+            min-width: 400px;
+        }
+
+        caption {
+            caption-side: top;
+            text-align: start;
+            padding: 0.75rem 1rem;
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th,
+        td {
+            padding: 0.6rem 0.85rem;
+            text-align: start;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        th {
+            background: rgba(56, 189, 248, 0.07);
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* ===== CODE BLOCK ===== */
+        .code-block {
+            direction: ltr;
+            text-align: left;
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+            line-height: 1.6;
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            overflow-x: auto;
+            max-width: 100%;
+            margin-block: 0.85rem;
+            white-space: pre;
+            color: #e6edf3;
+            tab-size: 4;
+        }
+
+        .code-block code {
+            font-family: var(--font-code);
+            direction: ltr;
+            text-align: left;
+            unicode-bidi: isolate;
+        }
+
+        .line-note {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            font-family: var(--font-ar);
+            direction: rtl;
+            text-align: right;
+            margin-top: 0.25rem;
+            padding-inline-start: 0.5rem;
+            border-inline-start: 2px solid var(--border);
+        }
+
+        [dir="ltr"] .line-note {
+            direction: ltr;
+            text-align: left;
+            border-inline-start: none;
+            border-inline-end: 2px solid var(--border);
+        }
+
+        /* ===== DIAGRAM ===== */
+        .diagram-block {
+            background: linear-gradient(135deg, var(--card-bg-start), var(--card-bg-end));
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: clamp(1rem, 2.5vw, 1.5rem);
+            margin-bottom: 1.5rem;
+        }
+
+        .diagram-block .diagram-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .reconstruction {
+            direction: ltr;
+            text-align: left;
+            font-family: var(--font-code);
+            font-size: 0.8rem;
+            line-height: 1.4;
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 1rem;
+            overflow-x: auto;
+            max-width: 100%;
+            white-space: pre;
+            color: var(--text-dim);
+            margin-block: 0.75rem;
+        }
+
+        /* ===== DETAILS / SUMMARY ===== */
+        details {
+            margin-block: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+        }
+
+        details summary {
+            padding: 0.6rem 1rem;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.03);
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            user-select: none;
+        }
+
+        details summary::-webkit-details-marker {
+            display: none;
+        }
+
+        details summary::before {
+            content: "▸";
+            display: inline-block;
+            transition: transform 0.2s;
+            font-size: 0.8rem;
+        }
+
+        details[open] summary::before {
+            transform: rotate(90deg);
+        }
+
+        details summary:hover {
+            color: var(--text-main);
+            background: rgba(56, 189, 248, 0.06);
+        }
+
+        details .details-content {
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        /* ===== ACCESSIBILITY CONTROLS ===== */
+        .a11y-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-block: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 1.1rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--card-bg-start);
+            color: var(--text-main);
+            font-family: var(--font-ar);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s, color 0.2s;
+            touch-action: manipulation;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: rgba(56, 189, 248, 0.1);
+            border-color: var(--accent-dim);
+        }
+
+        .btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0a0e16;
+            border-color: var(--accent);
+            font-weight: 700;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: #7dd3fc;
+            border-color: #7dd3fc;
+        }
+
+        .btn-sm {
+            padding: 0.35rem 0.75rem;
+            font-size: 0.8rem;
+        }
+
+        /* ===== LECTURE INDEX ===== */
+        .index-list {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            gap: 0.35rem;
+        }
+
+        .index-list li {
+            padding: 0.45rem 0.75rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid transparent;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .index-list li:hover {
+            background: rgba(56, 189, 248, 0.05);
+            border-color: var(--border);
+        }
+
+        .index-list a {
+            color: var(--text-main);
+            text-decoration: none;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 0.4rem;
+            font-size: 0.9rem;
+        }
+
+        .index-list a:hover {
+            color: var(--accent);
+        }
+
+        .index-num {
+            font-family: var(--font-code);
+            font-size: 0.75rem;
+            color: var(--accent);
+            font-weight: 700;
+            flex-shrink: 0;
+            min-width: 3.5rem;
+        }
+
+        /* ===== CHECKLIST ===== */
+        .checklist {
+            list-style: none;
+            padding: 0;
+            display: grid;
+            gap: 0.5rem;
+        }
+
+        .checklist li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            font-size: 0.95rem;
+        }
+
+        .checklist li::before {
+            content: "✓";
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.3rem;
+            height: 1.3rem;
+            border-radius: 50%;
+            background: rgba(52, 211, 153, 0.12);
+            color: var(--good);
+            font-size: 0.7rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            margin-top: 0.2rem;
+        }
+
+        /* ===== QUIZ ===== */
+        .quiz-header {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-score {
+            font-family: var(--font-code);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--accent);
+            direction: ltr;
+            unicode-bidi: isolate;
+        }
+
+        .progress-bar-outer {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 100px;
+            overflow: hidden;
+            margin-block: 0.5rem 1.25rem;
+        }
+
+        .progress-bar-inner {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--ologn), var(--onlogn));
+            border-radius: 100px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        .quiz-question {
+            background: linear-gradient(135deg, var(--card-bg-start), var(--card-bg-end));
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: clamp(1rem, 2.5vw, 1.5rem);
+            margin-bottom: 1rem;
+        }
+
+        .quiz-question.locked {
+            opacity: 0.85;
+        }
+
+        .q-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 1.8rem;
+            height: 1.8rem;
+            border-radius: 50%;
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+            font-family: var(--font-code);
+            font-size: 0.8rem;
+            font-weight: 700;
+            margin-inline-end: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .q-prompt {
+            font-weight: 500;
+            margin-bottom: 0.85rem;
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .q-prompt .q-text {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .q-options {
+            display: grid;
+            gap: 0.5rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .q-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+            padding: 0.6rem 0.85rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.02);
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+            font-size: 0.9rem;
+            touch-action: manipulation;
+        }
+
+        .q-option:hover:not(.locked-opt) {
+            background: rgba(56, 189, 248, 0.06);
+            border-color: var(--accent-dim);
+        }
+
+        .q-option input {
+            margin-top: 0.25rem;
+            accent-color: var(--accent);
+            flex-shrink: 0;
+            width: 1.1rem;
+            height: 1.1rem;
+        }
+
+        .q-option.selected {
+            border-color: var(--accent);
+            background: rgba(56, 189, 248, 0.1);
+        }
+
+        .q-option.correct-opt {
+            border-color: var(--good);
+            background: rgba(52, 211, 153, 0.1);
+        }
+
+        .q-option.incorrect-opt {
+            border-color: var(--bad);
+            background: rgba(248, 113, 113, 0.1);
+        }
+
+        .q-option.locked-opt {
+            cursor: default;
+        }
+
+        .q-feedback {
+            padding: 0.6rem 0.85rem;
+            border-radius: var(--radius-sm);
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+
+        .q-feedback.show {
+            display: block;
+        }
+
+        .q-feedback.correct {
+            background: rgba(52, 211, 153, 0.1);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+            color: var(--good);
+        }
+
+        .q-feedback.incorrect {
+            background: rgba(248, 113, 113, 0.1);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            color: var(--bad);
+        }
+
+        .q-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .fill-input,
+        .match-select {
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: var(--font-ar);
+            font-size: 0.9rem;
+            width: 100%;
+            max-width: 300px;
+            direction: ltr;
+            unicode-bidi: isolate;
+        }
+
+        .fill-input:focus,
+        .match-select:focus {
+            border-color: var(--accent);
+            outline: none;
+        }
+
+        .match-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .match-row:last-child {
+            border-bottom: none;
+        }
+
+        .match-label {
+            flex: 1;
+            min-width: 120px;
+            font-size: 0.9rem;
+        }
+
+        .match-select {
+            flex: 1;
+            min-width: 140px;
+            max-width: 220px;
+            direction: ltr;
+            unicode-bidi: isolate;
+        }
+
+        /* ===== FINAL RESULT ===== */
+        .final-result {
+            text-align: center;
+            padding: 2rem 1rem;
+            background: linear-gradient(135deg, var(--card-bg-start), var(--card-bg-end));
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-block: 1.5rem;
+            display: none;
+        }
+
+        .final-result.show {
+            display: block;
+        }
+
+        .final-score {
+            font-family: var(--font-code);
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            font-weight: 700;
+            color: var(--accent);
+            direction: ltr;
+            unicode-bidi: isolate;
+            line-height: 1.2;
+        }
+
+        .final-category {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-block: 0.5rem;
+        }
+
+        .final-category.excellent {
+            color: var(--good);
+        }
+
+        .final-category.good {
+            color: var(--warn);
+        }
+
+        .final-category.review {
+            color: var(--bad);
+        }
+
+        /* ===== THREE LEVELS TABS ===== */
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.35rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .tab-btn {
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+            border: 1px solid transparent;
+            border-bottom: none;
+            background: transparent;
+            color: var(--text-dim);
+            font-family: var(--font-ar);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            touch-action: manipulation;
+        }
+
+        .tab-btn[aria-selected="true"] {
+            background: var(--card-bg-start);
+            color: var(--accent);
+            border-color: var(--border);
+            font-weight: 700;
+        }
+
+        .tab-btn:hover:not([aria-selected="true"]) {
+            color: var(--text-main);
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+        }
+
+        /* ===== COMPLEXITY COLORS ===== */
+        .c-o1 {
+            color: var(--o1);
+        }
+
+        .c-ologn {
+            color: var(--ologn);
+        }
+
+        .c-on {
+            color: var(--on);
+        }
+
+        .c-onlogn {
+            color: var(--onlogn);
+        }
+
+        .c-on2 {
+            color: var(--on2);
+        }
+
+        .c-on3 {
+            color: var(--on3);
+        }
+
+        .c-o2n {
+            color: var(--o2n);
+        }
+
+        /* ===== MISC ===== */
+        .text-dim {
+            color: var(--text-dim);
+        }
+
+        .text-sm {
+            font-size: 0.85rem;
+        }
+
+        .mt-1 {
+            margin-top: 0.5rem;
+        }
+
+        .mt-2 {
+            margin-top: 1rem;
+        }
+
+        .mb-1 {
+            margin-bottom: 0.5rem;
+        }
+
+        .mb-2 {
+            margin-bottom: 1rem;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .flex-wrap {
+            flex-wrap: wrap;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .gap-1 {
+            gap: 0.5rem;
+        }
+
+        .gap-2 {
+            gap: 1rem;
+        }
+
+        ul,
+        ol {
+            padding-inline-start: 1.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        li {
+            margin-bottom: 0.3rem;
+        }
+
+        strong {
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        em {
+            color: var(--text-dim);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 480px) {
+            .container {
+                width: min(100% - 1rem, 1200px);
+                padding-block: 1rem;
+            }
+
+            .hero {
+                padding: 1.5rem 0.75rem 1rem;
+            }
+
+            .card {
+                padding: 0.85rem;
+            }
+
+            .nav-link {
+                padding: 0.4rem 0.6rem;
+                font-size: 0.75rem;
+            }
+
+            .lang-btn {
+                padding: 0.3rem 0.55rem;
+                font-size: 0.7rem;
+            }
+
+            .q-option {
+                padding: 0.5rem 0.6rem;
+                font-size: 0.85rem;
+            }
+
+            .btn {
+                padding: 0.45rem 0.8rem;
+                font-size: 0.8rem;
+            }
+
+            table {
+                min-width: 320px;
+                font-size: 0.8rem;
+            }
+
+            th,
+            td {
+                padding: 0.4rem 0.55rem;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .section {
+                padding-block: 2.5rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .section {
+                padding-block: 3rem;
+            }
+        }
+
+        /* ===== REDUCED MOTION ===== */
+        @media (prefers-reduced-motion: reduce) {
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ===== PRINT ===== */
+        @media print {
+            .main-nav,
+            .lang-switch,
+            .a11y-controls,
+            .quiz-header,
+            .btn {
+                display: none !important;
+            }
+
+            .hero {
+                background: none;
+                padding: 1rem;
+            }
+
+            .card,
+            .diagram-block {
+                break-inside: avoid;
+                box-shadow: none;
+                border: 1px solid #ccc;
+            }
+
+            body {
+                background: #fff;
+                color: #000;
+            }
+        }
+
+        /* ===== SCREEN READER ONLY ===== */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== HERO ===== -->
+    <header class="hero" role="banner">
+        <svg class="hero-svg" aria-hidden="true" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 200 Q300 100 600 200 T1200 200" stroke="#38bdf8" stroke-width="1.5" fill="none" opacity="0.4"/>
+            <path d="M0 250 Q300 150 600 250 T1200 250" stroke="#a78bfa" stroke-width="1.5" fill="none" opacity="0.3"/>
+            <path d="M0 300 Q300 200 600 300 T1200 300" stroke="#34d399" stroke-width="1.5" fill="none" opacity="0.2"/>
+            <circle cx="600" cy="200" r="3" fill="#38bdf8" opacity="0.6"/>
+            <circle cx="300" cy="150" r="2" fill="#a78bfa" opacity="0.5"/>
+            <circle cx="900" cy="250" r="2" fill="#34d399" opacity="0.5"/>
+        </svg>
+        <div class="hero-content">
+            <span class="hero-badge">LECTURE 05 · REVIEW SHEET</span>
+            <h1>
+                <span class="i18n" data-en="Test Case Design Techniques">تقنيات تصميم حالات الاختبار</span>
+            </h1>
+            <p>
+                <span class="i18n" data-en="Master Black Box testing: Boundary Value Analysis & Equivalence Partitioning — the keys to finding defects at the edges.">أتقن اختبار الصندوق الأسود: تحليل القيم الحدية وتقسيم التكافؤ — مفاتيح اكتشاف العيوب عند الحدود.</span>
+            </p>
+        </div>
+    </header>
+
+    <!-- ===== MAIN NAV ===== -->
+    <nav class="main-nav" aria-label="التنقل الرئيسي | Main navigation">
+        <div class="container nav-inner">
+            <div class="nav-scroll" role="tablist" aria-label="أقسام المراجعة | Review sections">
+                <a href="#overview" class="nav-link" aria-current="true">01 <span class="i18n" data-en="Overview">نظرة عامة</span></a>
+                <a href="#lecture-content" class="nav-link">02 <span class="i18n" data-en="Content">المحتوى</span></a>
+                <a href="#diagrams" class="nav-link">03 <span class="i18n" data-en="Diagrams">الرسوم</span></a>
+                <a href="#summary" class="nav-link">04 <span class="i18n" data-en="Summary">الملخص</span></a>
+                <a href="#three-levels" class="nav-link">05 <span class="i18n" data-en="Levels">المستويات</span></a>
+                <a href="#quiz" class="nav-link">06 <span class="i18n" data-en="Quiz">الاختبار</span></a>
+                <a href="#pro-tips" class="nav-link">07 <span class="i18n" data-en="Pro Tips">نصائح</span></a>
+                <a href="#coverage" class="nav-link">08 <span class="i18n" data-en="Coverage">التغطية</span></a>
+            </div>
+            <div class="lang-switch" role="group" aria-label="تغيير اللغة | Change language">
+                <button class="lang-btn" data-lang="ar" aria-pressed="true" onclick="setLang('ar')" aria-label="التبديل إلى العربية">العربية</button>
+                <button class="lang-btn" data-lang="en" aria-pressed="false" onclick="setLang('en')" aria-label="Switch to English">English</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="container" role="main">
+
+        <!-- ===== 01 OVERVIEW ===== -->
+        <section id="overview" class="section" aria-labelledby="overview-title">
+            <h2 id="overview-title" class="section-title"><span class="section-num">01</span> <span class="i18n" data-en="Overview">نظرة عامة</span></h2>
+
+            <div class="card tinted">
+                <h3><span class="i18n" data-en="What the Lecture Is About">عن ماذا تتحدث المحاضرة</span></h3>
+                <p>
+                    <span class="i18n" data-en="This lecture covers Black Box test case design techniques, specifically Boundary Value Analysis (BVA) and its relationship to Equivalence Partitioning. It explains how to identify boundaries of ordered equivalence partitions and create test cases that target the edges where defects are most likely to hide.">تغطي هذه المحاضرة تقنيات تصميم حالات اختبار الصندوق الأسود، وتحديداً تحليل القيم الحدية (BVA) وعلاقته بتقسيم التكافؤ. تشرح كيفية تحديد حدود أقسام التكافؤ المرتبة وإنشاء حالات اختبار تستهدف الحواف حيث تكون العيوب أكثر احتمالاً للاختباء.</span>
+                </p>
+                <p>
+                    <span class="i18n" data-en="The main problem addressed is that defects tend to cluster at the boundaries of input partitions, not in the middle. The lecture provides a systematic method to find these boundary defects using two-point and three-point boundary analysis.">المشكلة الرئيسية التي تعالجها هي أن العيوب تميل إلى التجمع عند حدود أقسام المدخلات، وليس في المنتصف. توفر المحاضرة طريقة منهجية لاكتشاف عيوب الحدود هذه باستخدام تحليل الحدود ذي النقطتين وثلاث نقاط.</span>
+                </p>
+            </div>
+
+            <div class="card tinted">
+                <h3><span class="i18n" data-en="Core Idea">الفكرة الأساسية</span></h3>
+                <p>
+                    <span class="i18n" data-en="Behavior at the boundaries of equivalence partitions is more likely to be incorrect than behavior within the partitions. Boundary Value Analysis forces the software to show behaviors from a partition other than the one to which the boundary value should belong, revealing defects at the edges.">السلوك عند حدود أقسام التكافؤ أكثر عرضة للخطأ من السلوك داخل الأقسام. يُجبر تحليل القيم الحدية البرنامج على إظهار سلوكيات من قسم مختلف عن القسم الذي يجب أن تنتمي إليه القيمة الحدية، مما يكشف العيوب عند الحواف.</span>
+                </p>
+            </div>
+
+            <div class="card">
+                <h3><span class="i18n" data-en="Key Concepts Checklist">قائمة المفاهيم الرئيسية</span></h3>
+                <ul class="checklist">
+                    <li><span class="i18n" data-en="Boundary Value Analysis (BVA) definition and purpose">تعريف وتحليل القيم الحدية (BVA) والغرض منه</span></li>
+                    <li><span class="i18n" data-en="Equivalence Partitioning review (ordered partitions)">مراجعة تقسيم التكافؤ (الأقسام المرتبة)</span></li>
+                    <li><span class="i18n" data-en="Two-point vs. three-point boundary analysis">تحليل الحدود ذو النقطتين مقابل ثلاث نقاط</span></li>
+                    <li><span class="i18n" data-en="Boundary value identification for valid and invalid partitions">تحديد القيم الحدية للأقسام الصحيحة وغير الصحيحة</span></li>
+                    <li><span class="i18n" data-en="Common boundary overlap problems (e.g., age rules)">مشاكل تداخل الحدود الشائعة (مثل قواعد العمر)</span></li>
+                    <li><span class="i18n" data-en="Steps for applying boundary value testing">خطوات تطبيق اختبار القيم الحدية</span></li>
+                    <li><span class="i18n" data-en="Choosing below/above points relative to data units">اختيار النقاط الأدنى/الأعلى نسبةً لوحدات البيانات</span></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3><span class="i18n" data-en="Skills Gained">المهارات المكتسبة</span></h3>
+                <ul>
+                    <li><span class="i18n" data-en="Identify equivalence classes and their boundaries">تحديد أقسام التكافؤ وحدودها</span></li>
+                    <li><span class="i18n" data-en="Apply Boundary Value Analysis to numeric and sequential inputs">تطبيق تحليل القيم الحدية على المدخلات الرقمية والتسلسلية</span></li>
+                    <li><span class="i18n" data-en="Create test cases for boundary values using two-point and three-point methods">إنشاء حالات اختبار للقيم الحدية باستخدام طريقتي النقطتين وثلاث نقاط</span></li>
+                    <li><span class="i18n" data-en="Recognize and fix boundary overlap defects in rule-based systems">التعرف على عيوب تداخل الحدود وإصلاحها في الأنظمة القائمة على القواعد</span></li>
+                    <li><span class="i18n" data-en="Explain why boundaries are high-risk areas for defects">شرح لماذا تعتبر الحدود مناطق عالية المخاطر للعيوب</span></li>
+                </ul>
+            </div>
+
+            <div class="card tinted">
+                <h3><span class="i18n" data-en="Why It Matters">لماذا هذا مهم</span></h3>
+                <p>
+                    <span class="i18n" data-en="Experienced testers know that defects cluster at boundaries. By focusing testing efforts on the edges of input ranges, you can find more defects with fewer test cases. This technique is essential for any system with numeric or sequential input ranges — from age validation to salary thresholds to date ranges.">يعرف المختبِرون ذوو الخبرة أن العيوب تتجمع عند الحدود. من خلال تركيز جهود الاختبار على حواف نطاقات الإدخال، يمكنك العثور على المزيد من العيوب باستخدام حالات اختبار أقل. هذه التقنية ضرورية لأي نظام يحتوي على نطاقات إدخال رقمية أو تسلسلية — من التحقق من العمر إلى عتبات الرواتب إلى نطاقات التواريخ.</span>
+                </p>
+            </div>
+        </section>
+
+        <!-- ===== 02 LECTURE CONTENT ===== -->
+        <section id="lecture-content" class="section" aria-labelledby="lecture-title">
+            <h2 id="lecture-title" class="section-title"><span class="section-num">02</span> <span class="i18n" data-en="Full Lecture Content">محتوى المحاضرة الكامل</span></h2>
+
+            <!-- ===== LECTURE INDEX ===== -->
+            <div class="card">
+                <h3><span class="i18n" data-en="Lecture Index">فهرس المحاضرة</span></h3>
+                <details>
+                    <summary aria-label="عرض فهرس المحاضرة | Show lecture index"><span class="i18n" data-en="Show slide index (11 slides)">عرض فهرس الشرائح (11 شريحة)</span></summary>
+                    <div class="details-content">
+                        <ul class="index-list">
+                            <li><a href="#slide-01"><span class="index-num">Slide 01</span> <span class="i18n" data-en="Test Case Design Techniques">تقنيات تصميم حالات الاختبار</span></a></li>
+                            <li><a href="#slide-02"><span class="index-num">Slide 02</span> <span class="i18n" data-en="Black Box Techniques — Boundary Value Analysis">تقنيات الصندوق الأسود — تحليل القيم الحدية</span></a></li>
+                            <li><a href="#slide-03"><span class="index-num">Slide 03</span> <span class="i18n" data-en="Boundary Value Analysis — Introduction">تحليل القيم الحدية — مقدمة</span></a></li>
+                            <li><a href="#slide-04"><span class="index-num">Slide 04</span> <span class="i18n" data-en="Two-Point and Three-Point Boundaries">الحدود ذات النقطتين وثلاث نقاط</span></a></li>
+                            <li><a href="#slide-05"><span class="index-num">Slide 05</span> <span class="i18n" data-en="Boundary Overlap Problem (Age Rules)">مشكلة تداخل الحدود (قواعد العمر)</span></a></li>
+                            <li><a href="#slide-06"><span class="index-num">Slide 06</span> <span class="i18n" data-en="Corrected Rules and Code">القواعد المصححة والكود</span></a></li>
+                            <li><a href="#slide-07"><span class="index-num">Slide 07</span> <span class="i18n" data-en="Interesting Values on or Near Boundaries">القيم المثيرة للاهتمام عند أو قرب الحدود</span></a></li>
+                            <li><a href="#slide-08"><span class="index-num">Slide 08</span> <span class="i18n" data-en="Steps for Boundary Value Testing">خطوات اختبار القيم الحدية</span></a></li>
+                            <li><a href="#slide-09"><span class="index-num">Slide 09</span> <span class="i18n" data-en="Goofy Mortgage Company Example">مثال شركة الرهن العقاري</span></a></li>
+                            <li><a href="#slide-10"><span class="index-num">Slide 10</span> <span class="i18n" data-en="Assignment No. 4">الواجب رقم 4</span></a></li>
+                            <li><a href="#slide-11"><span class="index-num">Slide 11</span> <span class="i18n" data-en="Fundamentals of Testing">أساسيات الاختبار</span></a></li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+
+            <!-- ===== SLIDE 01 ===== -->
+            <article id="slide-01" class="card" aria-labelledby="slide-01-title">
+                <h2 id="slide-01-title">Slide 01 — <span class="i18n" data-en="Test Case Design Techniques">تقنيات تصميم حالات الاختبار</span></h2>
+
+                <div class="source-label">SOURCE — Original Content</div>
+                <p><strong>TEST CASE DESIGN TECHNIQUES</strong></p>
+
+                <div class="explain-label">EXPLANATION — Sentence-by-Sentence</div>
+                <p><span class="i18n" data-en="The lecture title introduces the topic: techniques for designing test cases. This is the overarching theme — how to systematically create effective test cases.">يقدم عنوان المحاضرة الموضوع: تقنيات تصميم حالات الاختبار. هذا هو الموضوع العام — كيفية إنشاء حالات اختبار فعالة بشكل منهجي.</span></p>
+
+                <div class="explain-label">EXPLANATION — Expanded</div>
+                <p><span class="i18n" data-en="Test case design techniques are methods used by software testers to select a set of test cases that are likely to find defects. Rather than testing every possible input (which is often impossible), these techniques help identify the most promising values to test.">تقنيات تصميم حالات الاختبار هي طرق يستخدمها مختبِرو البرمجيات لاختيار مجموعة من حالات الاختبار التي من المحتمل أن تكشف العيوب. بدلاً من اختبار كل إدخال ممكن (وهو أمر مستحيل غالباً)، تساعد هذه التقنيات في تحديد القيم الواعدة ביותר للاختبار.</span></p>
+
+                <div class="note info">
+                    <strong><span class="i18n" data-en="Takeaway">الخلاصة</span>:</strong>
+                    <span class="i18n" data-en="This lecture focuses on Black Box test case design techniques, specifically Boundary Value Analysis.">تركز هذه المحاضرة على تقنيات تصميم حالات اختبار الصندوق الأسود، وتحديداً تحليل القيم الحدية.</span>
+                </div>
+            </article>
+
+            <!-- ===== SLIDE 02 ===== -->
+            <article id="slide-02" class="card" aria-labelledby="slide-02-title">
+                <h2 id="slide-02-title">Slide 02 — <span class="i18n" data-en="Black Box Techniques — Boundary Value Analysis">تقنيات الصندوق الأسود — تحليل القيم الحدية</span></h2>
+
+                <div class="source-label">SOURCE — Original Content</div>
+                <p><strong>BLACK BOX TECHNIQUES</strong></p>
+                <p><strong>Boundary Value Analysis</strong></p>
+
+                <div class="explain-label">EXPLANATION — Sentence-by-Sentence</div>
+                <p><span class="i18n" data-en="This slide introduces the specific technique: Boundary Value Analysis, which belongs to the Black Box testing family. Black Box testing means testing without knowledge of the internal code structure — only inputs and outputs matter.">تقدم هذه الشريحة التقنية المحددة: تحليل القيم الحدية، الذي ينتمي إلى عائلة اختبار الصندوق الأسود. اختبار الصندوق الأسود يعني الاختبار دون معرفة البنية الداخلية للكود — فقط المدخلات والمخرجات هي المهمة.</span></p>
+
+                <div class="explain-label">EXPLANATION — Expanded</div>
+                <p><span class="i18n" data-en="Boundary Value Analysis (BVA) is a black-box test design technique that focuses on testing the boundaries (edges) of input partitions. It is based on the observation that defects are more likely to occur at the boundaries of input ranges than in the middle.">تحليل القيم الحدية (BVA) هو تقنية تصميم اختبار الصندوق الأسود تركز على اختبار حدود (حواف) أقسام الإدخال. وهو يقوم على ملاحظة أن العيوب أكثر احتمالاً للحدوث عند حدود نطاقات الإدخال منها في المنتصف.</span></p>
+
+                <div class="note info">
+                    <strong><span class="i18n" data-en="Takeaway">الخلاصة</span>:</strong>
+                    <span class="i18n" data-en="BVA is a black-box technique. It focuses on boundaries of input partitions, where defects are most likely to hide.">تحليل القيم الحدية هو تقنية صندوق أسود. يركز على حدود أقسام الإدخال، حيث تكون العيوب أكثر احتمالاً للاختباء.</span>
+                </div>
+            </article>
+
+            <!-- ===== SLIDE 03 ===== -->
+            <article id="slide-03" class="card" aria-labelledby="slide-03-title">
+                <h2 id="slide-03-title">Slide 03 — <span class="i18n" data-en="Boundary Value Analysis — Introduction">تحليل القيم الحدية — مقدمة</span></h2>
+
+                <div class="source-label">SOURCE — Original Content</div>
+                <p><strong>Boundary Value Analysis</strong></p>
+                <p>Boundary value analysis (BVA) is an extension of equivalence partitioning, but can only be used when the partition is ordered, consisting of numeric or sequential data.</p>
+                <p>For example, suppose an input field accepts a single integer value as an input, using a keypad to limit inputs so that non-integer inputs are impossible. The valid range is from 1 to 5, inclusive. So, there are three equivalence partitions:</p>
+
+                <div class="source-label">SOURCE — Text Inside Image</div>
+                <div class="table-wrapper">
+                    <table>
+                        <caption>Equivalence partitions for input range 1–5</caption>
+                        <thead>
+                            <tr><th>Partition Type</th><th>Range</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>invalid (too low)</td><td>Less than 1</td></tr>
+                            <tr><td>valid</td><td>1 to 5</td></tr>
+                            <tr><td>invalid (too high)</td><td>More than 5</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="access-label">ACCESSIBILITY — Layout & Reading Order</div>
+                <details>
+                    <summary>🖼 Show Accessibility Description</summary>
+                    <div class="details-content">
+                        <p><strong>Image type:</strong> Text with arrows and labels.</p>
+                        <p><strong>Layout:</strong> Three rows. Each row has a label on the left, an orange arrow pointing right, and a value range on the right.</p>
+                        <p><strong>Reading order:</strong></p>
+                        <ol>
+                            <li>Row 1: "invalid (too low)" → arrow → "Less than 1"</li>
+                            <li>Row 2: "valid" → arrow → "1 to 5"</li>
+                            <li>Row 3: "invalid (too high)" → arrow → "More than 5"</li>
+                        </ol>
+                        <p><strong>Meaning:</strong> The input range 1–5 is divided into three equivalence partitions. The valid partition is 1 to 5. The invalid partitions are below 1 and above 5.</p>
+                    </div>
+                </details>
+
+                <p>For the valid equivalence partition, the boundary values are 1 and 5. For the invalid (too high) partition, the boundary value is 6. For the invalid (too low) partition, there is only one boundary value, 0, because this is a partition with only one member.</p>
+
+                <div class="explain-label">EXPLANATION — Sentence-by-Sentence</div>
+                <p><strong>Sentence 1:</strong> "Boundary value analysis (BVA) is an extension of equivalence partitioning, but can only be used when the partition is ordered, consisting of numeric or sequential data."</p>
+                <p><span class="i18n" data-en="BVA builds on equivalence partitioning. It requires ordered data (numbers, sequences) so that boundaries between partitions can be identified.">يبني تحليل القيم الحدية على تقسيم التكافؤ. يتطلب بيانات مرتبة (أرقام، تسلسلات) حتى يمكن تحديد الحدود بين الأقسام.</span></p>
+
+                <p><strong>Sentence 2:</strong> "For example, suppose an input field accepts a single integer value... The valid range is from 1 to 5, inclusive."</p>
+                <p><span class="i18n" data-en="The example defines an input field that only accepts integers 1 through 5. This creates three partitions: below 1 (invalid), 1–5 (valid), and above 5 (invalid).">يحدد المثال حقل إدخال يقبل فقط الأعداد الصحيحة من 1 إلى 5. هذا يخلق ثلاثة أقسام: أقل من 1 (غير صحيح)، 1–5 (صحيح)، وأكثر من 5 (غير صحيح).</span></p>
+
+                <p><strong>Sentence 3:</strong> "For the valid equivalence partition, the boundary values are 1 and 5. For the invalid (too high) partition, the boundary value is 6. For the invalid (too low) partition, there is only one boundary value, 0, because this is a partition with only one member."</p>
+                <p><span class="i18n" data-en="The boundaries of the valid partition [1, 5] are 1 and 5. The first invalid value above the valid partition is 6. The first invalid value below is 0. These are the values we test.">حدود القسم الصحيح [1، 5] هي 1 و5. أول قيمة غير صحيحة فوق القسم الصحيح هي 6. أول قيمة غير صحيحة تحت هي 0. هذه هي القيم التي نختبرها.</span></p>
+
+                <div class="explain-label">EXPLANATION — Expanded</div>
+                <p><span class="i18n" data-en="The key insight is that we don't test all values in the range 1–5. Instead, we test the boundary values (1 and 5) and the values just outside the boundaries (0 and 6). These four test cases cover the most defect-prone areas.">الرؤية الأساسية هي أننا لا نختبر جميع القيم في النطاق 1–5. بدلاً من ذلك، نختبر القيم الحدية (1 و5) والقيم خارج الحدود مباشرة (0 و6). تغطي حالات الاختبار الأربع هذه المناطق الأكثر عرضة للعيوب.</span></p>
+
+                <div class="note info">
+                    <strong><span class="i18n" data-en="Takeaway">الخلاصة</span>:</strong>
+                    <span class="i18n" data-en="For the valid range 1–5, boundary values are 1 and 5. For invalid partitions, boundary values are 0 (below) and 6 (above).">بالنسبة للنطاق الصحيح 1–5، القيم الحدية هي 1 و5. بالنسبة للأقسام غير الصحيحة، القيم الحدية هي 0 (أدنى) و6 (أعلى).</span>
+                </div>
+            </article>
+
+            <!-- ===== SLIDE 04 ===== -->
+            <article id="slide-04" class="card" aria-labelledby="slide-04-title">
+                <h2 id="slide-04-title">Slide 04 — <span class="i18n" data-en="Two-Point and Three-Point Boundaries">الحدود ذات النقطتين وثلاث نقاط</span></h2>
+
+                <div class="source-label">SOURCE — Original Content</div>
+                <p>In the example above, we identify two boundary values per boundary. The boundary between invalid (too low) and valid gives the test values 0 and 1. The boundary between valid and invalid (too high) gives the test values 5 and 6. Some variations of this technique identify three boundary values per boundary: the values before, at, and just over the boundary. In the previous example, using three-point boundary values, the lower boundary test values are 0, 1, and 2, and the upper boundary test values are 4, 5, and 6.</p>
+                <p>Behavior at the boundaries of equivalence partitions is more likely to be incorrect than behavior within the partitions. Boundary value analysis and testing will reveal almost all such defects by forcing the software to show behaviors from a partition other than the one to which the boundary value should belong.</p>
+
+                <div class="explain-label">EXPLANATION — Sentence-by-Sentence</div>
+                <p><strong>Sentence 1:</strong> "In the example above, we identify two boundary values per boundary."</p>
+                <p><span class="i18n" data-en="The two-point method tests two values at each boundary: the boundary value itself and the value just outside the partition.">تختبر طريقة النقطتين قيمتين عند كل حد: القيمة الحدية نفسها والقيمة خارج القسم مباشرة.</span></p>
+
+                <p><strong>Sentence 2:</strong> "The boundary between invalid (too low) and valid gives the test values 0 and 1. The boundary between valid and invalid (too high) gives the test values 5 and 6."</p>
+                <p><span class="i18n" data-en="At the lower boundary: 0 (invalid) and 1 (valid). At the upper boundary: 5 (valid) and 6 (invalid).">عند الحد الأدنى: 0 (غير صحيح) و1 (صحيح). عند الحد الأعلى: 5 (صحيح) و6 (غير صحيح).</span></p>
+
+                <p><strong>Sentence 3:</strong> "Some variations of this technique identify three boundary values per boundary: the values before, at, and just over the boundary."</p>
+                <p><span class="i18n" data-en="The three-point method adds one more value on the other side of the boundary — testing the value inside the partition near the boundary.">تضيف طريقة الثلاث نقاط قيمة إضافية على الجانب الآخر من الحد — اختبار القيمة داخل القسم بالقرب من الحد.</span></p>
+
+                <p><strong>Sentence 4:</strong> "In the previous example, using three-point boundary values, the lower boundary test values are 0, 1, and 2, and the upper boundary test values are 4, 5, and 6."</p>
+                <p><span class="i18n" data-en="Three-point lower: 0 (below), 1 (at), 2 (above). Three-point upper: 4 (below), 5 (at), 6 (above).">ثلاث نقاط السفلى: 0 (أدنى)، 1 (عند الحد)، 2 (أعلى). ثلاث نقاط العليا: 4 (أدنى)، 5 (عند الحد)، 6 (أعلى).</span></p>
+
+                <p><strong>Sentence 5:</strong> "Behavior at the boundaries of equivalence partitions is more likely to be incorrect than behavior within the partitions."</p>
+                <p><span class="i18n" data-en="Defects cluster at boundaries. The middle of a partition is usually well-tested by normal usage; the edges are where code logic (like &lt; vs &lt;=) can go wrong.">تتجمع العيوب عند الحدود. عادةً ما يتم اختبار منتصف القسم جيداً بالاستخدام العادي؛ الحواف هي حيث يمكن أن يخطئ منطق الكود (مثل &lt; مقابل &lt;=).</span></p>
+
+                <p><strong>Sentence 6:</strong> "Boundary value analysis and testing will reveal almost all such defects by forcing the software to show behaviors from a partition other than the one to which the boundary value should belong."</p>
+                <p><span class="i18n" data-en="By testing 0 (which should be invalid) and 1 (which should be valid), we force the software to demonstrate which partition it thinks each value belongs to. If it treats 1 as invalid, we find the defect.">من خلال اختبار 0 (الذي يجب أن يكون غير صحيح) و1 (الذي يجب أن يكون صحيحاً)، نجبر البرنامج على إظهار القسم الذي يعتقد أن كل قيمة تنتمي إليه. إذا تعامل مع 1 على أنه غير صحيح، نجد العيب.</span></p>
+
+                <div class="explain-label">EXPLANATION — Expanded</div>
+                <p><span class="i18n" data-en="The two-point and three-point methods are both valid. The two-point method is more common and sufficient for most cases. The three-point method provides extra coverage by testing one value inside the valid partition near the boundary, which can catch defects where the boundary is misplaced by one unit.">طريقتا النقطتين والثلاث نقاط كلاهما صالحتان. طريقة النقطتين أكثر شيوعاً وكافية لمعظم الحالات. توفر طريقة الثلاث نقاط تغطية إضافية من خلال اختبار قيمة واحدة داخل القسم الصحيح بالقرب من الحد، والتي يمكن أن تكشف العيوب حيث يتم إزاحة الحد بوحدة واحدة.</span></p>
+
+                <div class="note info">
+                    <strong><span class="i18n" data-en="Takeaway">الخلاصة</span>:</strong>
+                    <span class="i18n" data-en="Two-point testing uses {0, 1} and {5, 6}. Three-point testing adds one value inside the valid partition: {0, 1, 2} and {4, 5, 6}. Boundaries are high-risk areas for defects.">يستخدم اختبار النقطتين {0، 1} و{5، 6}. يضيف اختبار الثلاث نقاط قيمة واحدة داخل القسم الصحيح: {0، 1، 2} و{4، 5، 6}. الحدود هي مناطق عالية المخاطر للعيوب.</span>
+                </div>
+            </article>
+
+            <!-- ===== SLIDE 05 ===== -->
+            <article id="slide-05" class="card" aria-labelledby="slide-05-title">
+                <h2 id="slide-05-title">Slide 05 — <span class="i18n" data-en="Boundary Overlap Problem (Age Rules)">مشكلة تداخل الحدود (قواعد العمر)</span></h2>
+
+                <div class="source-label">SOURCE — Original Content</div>
+                <p>In the previous example of Equivalence Partition the following rules were given that indicate how we should process employment applications based on a person's age. The rules were:</p>
+                <ul>
+                    <li>0 - 16 Don't hire</li>
+                    <li>16 - 18 Can hire on a part-time basis only</li>
+                    <li>18 - 55 Can hire as a full-time employee</li>
+                    <li>55 - 99 Don't hire</li>
+                </ul>
+                <p>Notice the problem at the boundaries—the "edges" of each class. The age "16" is included in two different equivalence classes (as are 18 and 55). The first rule says don't hire a 16-year old. The second rule says a 16-year-old can be hired on a part-time basis.</p>
+
+                <div class="explain-label">EXPLANATION — Sentence-by-Sentence</div>
+                <p><strong>Sentence 1:</strong> "In the previous example of Equivalence Partition the following rules were given..."</p>
+                <p><span class="i18n" data-en="These age-based rules are from a prior lecture example about employment applications.">قواعد العمر هذه من مثال محاضرة سابق حول طلبات التوظيف.</span></p>
+
+                <p><strong>Sentence 2:</strong> "Notice the problem at the boundaries—the 'edges' of each class. The age '16' is included in two different equivalence classes (as are 18 and 55)."</p>
+                <p><span class="i18n" data-en="The rules overlap at 16, 18, and 55. For example, 16 is in both '0-16' and '16-18'. This creates ambiguity: which rule applies to a 16-year-old?">تتداخل القواعد عند 16 و18 و55. على سبيل المثال، 16 موجود في كل من '0-16' و'16-18'. هذا يخلق غموضاً: أي قاعدة تنطبق على شخص عمره 16؟</span></p>
+
+                <p><strong>Sentence 3:</strong> "The first rule says don't hire a 16-year old. The second rule says a 16-year-old can be hired on a part-time basis."</p>
+                <p><span class="i18n" data-en="This is a contradiction. The same age (16) has two different outcomes depending on which rule is applied. This is a defect in the rules themselves.">هذا تناقض. نفس العمر (16) له نتيجتان مختلفتان اعتماداً على القاعدة المطبقة. هذا عيب في القواعد نفسها.</span></p>
+
+                <div class="explain-label">EXPLANATION — Expanded</div>
+                <p><span class="i18n" data-en="Boundary overlap is a common defect in rule-based systems. When two rules both include the same boundary value (e.g., 16 is in both '0-16' and '16-18'), the system's behavior becomes ambiguous. The fix is to make the rules non-overlapping by using strict inequalities on one side.">تداخل الحدود هو عيب شائع في الأنظمة القائمة على القواعد. عندما تتضمن قاعدتان نفس القيمة الحدية (على سبيل المثال، 16 موجود في كل من '0-16' و'16-18')، يصبح سلوك النظام غامضاً. الإصلاح هو جعل القواعد غير متداخلة باستخدام متباينات صارمة على جانب واحد.</span></p>
+
+                <div class="note warn">
+                    <strong><span class="i18n" data-en="Takeaway">الخلاصة</span>:</strong>
+                    <span class="i18n" data-en="Boundary overlap causes ambiguity. The age 16 appears in two rules with contradictory outcomes. This is a rule defect, not a coding defect.">يسبب تداخل الحدود الغموض. يظهر العمر 16 في قاعدتين بنتائج متناقضة. هذا عيب في القاعدة، وليس عيباً في البرمجة.</span>
+                </div>
+            </article>
+
+            <!-- ===== SLIDE 06 ===== -->
+            <article id="slide-06" class="card" aria-labelledby="slide-06-title">
+                <h2 id="slide-06-title">Slide 06 — <span class="i18n" data-en="Corrected Rules and Code">القواعد المصححة والكود</span></h2>
+
+                <div class="source-label">SOURCE — Original Content</div>
+                <p>If rearrange the edges of the boundaries then it will be like this:</p>
+                <ul>
+                    <li>0 - 15 Don't hire</li>
+                    <li>16 - 17 Can hire on a part-time basis only</li>
+                    <li>18 - 54 Can hire as a full-time employee</li>
+                    <li>55 - 99 Don't hire</li>
+                </ul>
+                <p>The code that implements the corrected rules is:</p>
+
+                <div class="source-label">SOURCE CODE</div>
+                <div class="code-block"><code>If (applicantAge &gt;= 0 &amp;&amp; applicantAge &lt;= 15) hireStatus = "NO";
+If (applicantAge &gt;= 16 &amp;&amp; applicantAge &lt;= 17) hireStatus = "PART";
+If (applicantAge &gt;= 18 &amp;&amp; applicantAge &lt;= 54) hireStatus = "FULL";
+If (applicantAge &gt;= 55 &amp;&amp; applicantAge &lt;= 99) hireStatus = "NO";</code></div>
+
+                <div class="explain-label">EXPLANATION — Sentence-by-Sentence</div>
+                <p><strong>Sentence 1:</strong> "If rearrange the edges of the boundaries then it will be like this:"</p>
+                <p><span class="i18n" data-en="The boundaries are adjusted to eliminate overlap: 0-15, 16-17, 18-54, 55-99. Each age belongs to exactly one rule.">يتم تعديل الحدود لإزالة التداخل: 0-15، 16-17، 18-54، 55-99. كل عمر ينتمي إلى قاعدة واحدة فقط.</span></p>
+
+                <p><strong>Sentence 2:</strong> "The code that implements the corrected rules is:"</p>
+                <p><span class="i18n" data-en="The corrected code uses explicit ranges with >= and <= to ensure each age is handled by exactly one condition.">يستخدم الكود المصحح نطاقات صريحة مع >= و<= لضمان أن كل عمر يتم التعامل معه بواسطة شرط واحد فقط.</span></p>
+
+                <div class="explain-label">EXPLANATION — Line-by-Line Code</div>
+                <div class="code-block"><code>If (applicantAge &gt;= 0 &amp;&amp; applicantAge &lt;= 15) hireStatus = "NO";</code></div>
+                <p><span class="i18n" data-en="Ages 0 through 15 (inclusive): do not hire.">الأعمار من 0 إلى 15 (ضمناً): لا يتم التوظيف.</span></p>
+
+                <div class="code-block"><code>If (applicantAge &gt;= 16 &amp;&amp; applicantAge &lt;= 17) hireStatus = "PART";</code></div>
+                <p><span class="i18n" data-en="Ages 16 and 17: part-time hire only.">العمران 16 و17: توظيف بدوام جزئي فقط.</span></p>
+
+                <div class="code-block"><code>If (applicantAge &gt;= 18 &amp;&amp; applicantAge &lt;= 54) hireStatus = "FULL";</code></div>
+                <p><span class="i18n" data-en="Ages 18 through 54: full-time hire.">الأعمار من 18 إلى 54: توظيف بدوام كامل.</span></p>
+
+                <div class="code-block"><code>If (applicantAge &gt;= 55 &amp;&amp; applicantAge &lt;= 99) hireStatus = "NO";</code></div>
+                <p><span class="i18n" data-en="Ages 55 through 99: do not hire.">الأعمار من 55 إلى 99: لا يتم التوظيف.</span></p>
+
+                <div class="explain-label">EXPLANATION — Expanded</div>
+                <p><span class="i18n" data-en="The fix is to make the ranges contiguous but non-overlapping. 0-15, 16-17, 18-54, 55-99. Each boundary value now belongs to exactly one partition. The code uses >= and <= consistently to enforce these ranges. Note that the code uses && (logical AND) to combine the lower and upper bounds.">الإصلاح هو جعل النطاقات متجاورة ولكن غير متداخلة. 0-15، 16-17، 18-54، 55-99. كل قيمة حدية تنتمي الآن إلى قسم واحد فقط. يستخدم الكود >= و<= باستمرار لفرض هذه النطاقات. لاحظ أن الكود يستخدم && (المنطقي AND) لدمج الحدين الأدنى والأعلى.</span></p>
+
+                <div class="note info">
+                    <strong><span class="i18n" data-en="Takeaway">الخلاصة</span>:</strong>
+                    <span class="i18n" data-en="Corrected rules: 0-15 NO, 16-17 PART, 18-54 FULL, 55-99 NO. The code uses >= and <= to enforce non-overlapping ranges.">القواعد المصححة: 0-15 لا، 16-17 جزئي، 18-54 كامل، 55-99 لا. يستخدم الكود >= و<= لفرض نطاقات غير متداخلة.</span>
+                </div>
+            </article>
+
+            <!-- ===== SLIDE 07 ===== -->
+            <article id="slide-07" class="card" aria-labelledby="slide-07-title">
+                <h2 id="slide-07-title">Slide 07 — <span class="i18n" data-en="Interesting Values on or Near Boundaries">القيم المثيرة للاهتمام عند أو قرب الحدود</span></h2>
+
+                <div class="source-label">SOURCE — Original Content</div>
+                <p>The interesting values on or near the boundaries in this example are:</p>
+
+                <div class="source-label">SOURCE — Text Inside Image</div>
+                <div class="table-wrapper">
+                    <table>
+                        <caption>Boundary values and their surrounding test sets</caption>
+                        <thead>
+                            <tr><th>Boundary</th><th>Test Set</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>0</td><td>{-1, 0, 1}</td></tr>
+                            <tr><td>16</td><td>{15, 16, 17}</td></tr>
+                            <tr><td>18</td><td>{17, 18, 19}</td></tr>
+                            <tr><td>55</td><td>{54, 55, 56}</td></tr>
+                            <tr><td>99</td><td>{98, 99, 100}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="access-label">ACCESSIBILITY — Layout & Reading Order</div>
+                <details>
+                    <summary>🖼 Show Accessibility Description</summary>
+                    <div class="details-content">
+                        <p><strong>Image type:</strong> Two columns of boundary values with arrows to test sets.</p>
+                        <p><strong>Layout:</strong> Left column shows boundary values (0, 18, 99) and right column shows (16, 55). Each value has an arrow pointing to a set in curly braces.</p>
+                        <p><strong>Reading order:</strong> Start top-left: 0 → {-1, 0, 1}. Then top-right: 16 → {15, 16, 17}. Then next-left: 18 → {17, 18, 19}. Then next-right: 55 → {54, 55, 56}. Then bottom-left: 99 → {98, 99, 100}.</p>
+                        <p><strong>Meaning:</strong> For each boundary value, the test set includes the value before, at, and after the boundary. This is the three-point boundary approach.</p>
+                    </div>
+                </details>
+
+                <p><strong>Key Point:</strong> Boundary value testing focuses on the boundaries because that is where so many defects hide. Boundary value testing focuses on the boundaries simply because that is where so many defects hide. Experienced testers have encountered this situation many times. Inexperienced testers may have an intuitive feel that mistakes will occur most often at the boundaries.</p>
+
+                <div class="explain-label">EXPLANATION — Sentence-by-Sentence</div>
+                <p><strong>Sentence 1:</strong> "The interesting values on or near the boundaries in this example are:"</p>
+                <p><span class="i18n" data-en="The table lists the key boundary values (0, 16, 18, 55, 99) and the test sets for each: one value below, the boundary value, and one value above.">يسرد الجدول القيم الحدية الرئيسية (0، 16، 18، 55، 99) ومجموعات الاختبار لكل منها: قيمة أدنى، القيمة الحدية، وقيمة أعلى.</span></p>
+
+                <p><strong>Sentence 2:</strong> "Boundary value testing focuses on the boundaries because that is where so many defects hide."</p>
+                <p><span class="i18n" data-en="The core rationale for BVA: defects cluster at boundaries. This is an empirical observation from decades of software testing experience.">المبرر الأساسي لتحليل القيم الحدية: تتجمع العيوب عند الحدود. هذه ملاحظة تجريبية من عقود من خبرة اختبار البرمجيات.</span></p>
+
+                <p><strong>Sentence 3:</strong> "Experienced testers have encountered this situation many times. Inexperienced testers may have an intuitive feel that mistakes will occur most often at the boundaries."</p>
+                <p><span class="i18n" data-en="Both experienced and inexperienced testers recognize that boundaries are high-risk. Experience confirms what intuition suggests.">يدرك كل من المختبِرين ذوي الخبرة وغير ذوي الخبرة أن الحدود عالية المخاطر. تؤكد الخبرة ما يوحي به الحدس.</span></p>
+
+                <div class="explain-label">EXPLANATION — Expanded</div>
+                <p><span class="i18n" data-en="For each boundary, we test three values: the boundary itself, one value below, and one value above. For boundary 16: 15 (below), 16 (at), 17 (above). For boundary 18: 17 (below), 18 (at), 19 (above). This three-point approach ensures we catch off-by-one errors in the boundary logic.">لكل حد، نختبر ثلاث قيم: الحد نفسه، قيمة أدنى، وقيمة أعلى. للحد 16: 15 (أدنى)، 16 (عند الحد)، 17 (أعلى). للحد 18: 17 (أدنى)، 18 (عند الحد)، 19 (أعلى). تضمن طريقة الثلاث نقاط هذه اكتشاف أخطاء الخطأ بواحد في منطق الحدود.</span></p>
+
+                <div class="note info">
+                    <strong><span class="i18n" data-en="Takeaway">الخلاصة</span>:</strong>
+                    <span class="i18n" data-en="For each boundary, test the values below, at, and above: e.g., for 16 → {15, 16, 17}. This three-point method catches off-by-one errors.">لكل حد، اختبر القيم الأدنى، وعند الحد، والأعلى: على سبيل المثال، للحد 16 → {15، 16، 17}. تكتشف طريقة الثلاث نقاط هذه أخطاء الخطأ بواحد.</span>
+                </div>
+            </article>
+
+            <!-- ===== SLIDE 08 ===== -->
+            <article id="slide-08" class="card" aria-labelledby="slide-08-title">
+                <h2 id="slide-08-title">Slide 08 — <span class="i18n" data-en="Steps for Boundary Value Testing">خطوات اختبار القيم الحدية</span></h2>
+
+                <div class="source-label">SOURCE — Original Content</div>
+                <p>The steps for using boundary value testing are simple:</p>
+                <ol>
+                    <li>First, identify the equivalence classes.</li>
+                    <li>Second, identify the boundaries of each equivalence class.</li>
+                    <li>Third, create test cases for each boundary value by choosing one point on the boundary, one point just below the boundary, and one point just above the boundary.</li>
+                </ol>
+                <p>"Below" and "above" are relative terms and depend on the data values units.</p>
+                <p>If the boundary is 16 and the unit is "integer" then the "below" point is 15 and the "above" point is 17.</p>
+                <p>If the boundary is $5.00 and the unit is "US dollars and cents":</p>
+                <ul>
+                    <li>The below point is $4.99</li>
+                    <li>The above point is $5.01</li>
+                </ul>
+
+                <div class="explain-label">EXPLANATION — Sentence-by-Sentence</div>
+                <p><strong>Step 1:</strong> "Identify the equivalence classes."</p>
+                <p><span class="i18n" data-en="Divide the input domain into partitions where all values in a partition should be treated the same way by the software.">قسّم مجال الإدخال إلى أقسام حيث يجب أن تعامل جميع القيم في القسم بنفس الطريقة بواسطة البرنامج.</span></p>
+
+                <p><strong>Step 2:</strong> "Identify the boundaries of each equivalence class."</p>
+                <p><span class="i18n" data-en="For each partition, find the minimum and maximum values. These are the boundaries.">لكل قسم، ابحث عن القيم الدنيا والعليا. هذه هي الحدود.</span></p>
+
+                <p><strong>Step 3:</strong> "Create test cases for each boundary value by choosing one point on the boundary, one point just below the boundary, and one point just above the boundary."</p>
+                <p><span class="i18n" data-en="For each boundary, test three values: the boundary itself, one unit below, and one unit above.">لكل حد، اختبر ثلاث قيم: الحد نفسه، وحدة أدنى، ووحدة أعلى.</span></p>
+
+                <p><strong>Sentence 4:</strong> "'Below' and 'above' are relative terms and depend on the data values units."</p>
+                <p><span class="i18n" data-en="The meaning of 'below' and 'above' changes with the data type. For integers, it's ±1. For currency, it's ±0.01.">يتغير معنى 'أدنى' و'أعلى' مع نوع البيانات. بالنسبة للأعداد الصحيحة، هو ±1. بالنسبة للعملة، هو ±0.01.</span></p>
+
+                <p><strong>Sentence 5:</strong> "If the boundary is 16 and the unit is 'integer' then the 'below' point is 15 and the 'above' point is 17."</p>
+                <p><span class="i18n" data-en="Integer example: boundary = 16, below = 15, above = 17.">مثال صحيح: الحد = 16، الأدنى = 15، الأعلى = 17.</span></p>
+
+                <p><strong>Sentence 6:</strong> "If the boundary is $5.00 and the unit is 'US dollars and cents': The below point is $4.99. The above point is $5.01."</p>
+                <p><span class="i18n" data-en="Currency example: boundary = $5.00, below = $4.99, above = $5.01. The unit is cents, so we move by 0.01.">مثال العملة: الحد = 5.00$، الأدنى = 4.99$، الأعلى = 5.01$. الوحدة هي السنت، لذا نتحرك بمقدار 0.01.</span></p>
+
+                <div class="explain-label">EXPLANATION — Expanded</div>
+                <p><span class="i18n" data-en="The three steps form a systematic procedure: partition the input space, find the edges of each partition, and test values at, below, and above each edge. The key subtlety is that 'below' and 'above' depend on the unit of measurement. For integers, it's ±1; for decimals, it's ±0.01; for dates, it's ±1 day; etc.">تشكل الخطوات الثلاث إجراءً منهجياً: قسّم فضاء الإدخال، ابحث عن حواف كل قسم، واختبر القيم عند، وأدنى، وأعلى كل حافة. الدقة الأساسية هي أن 'أدنى' و'أعلى' يعتمدان على وحدة القياس. للأعداد الصحيحة، هو ±1؛ للأرقام العشرية، هو ±0.01؛ للتواريخ، هو ±1 يوم؛ إلخ.</span></p>
+
+                <div class="note info">
+                    <strong><span class="i18n" data-en="Takeaway">الخلاصة</span>:</strong>
+                    <span class="i18n" data-en="Steps: 1) Identify equivalence classes. 2) Identify boundaries. 3) Test at, below, and above each boundary. 'Below' and 'above' depend on the data unit (integer ±1, currency ±0.01).">الخطوات: 1) حدد أقسام التكافؤ. 2) حدد الحدود. 3) اختبر عند، وأدنى، وأعلى كل حد. يعتمد 'أدنى' و'أعلى' على وحدة البيانات (صحيح ±1، عملة ±0.01).</span>
+                </div>
+            </article>
+
+            <!-- ===== SLIDE 09 ===== -->
+            <article id="slide-09" class="card" aria-labelledby="slide-09-title">
+                <h2 id="slide-09-title">Slide 09 — <span class="i18n" data-en="Goofy Mortgage Company Example">مثال شركة الرهن العقاري</span></h2>
+
+                <div class="source-label">SOURCE — Original Content</div>
+                <p><strong>Key Point:</strong> Create test cases for each boundary value by choosing one point on the boundary, one point just below the boundary, and one point just above the boundary.</p>
+                <p>Note that a point just above one boundary may be in another equivalence class. There is no reason to duplicate the test. The same may be true of the point just below the boundary.</p>
+                <p>Boundary value testing is most appropriate where the input is a continuous range of values.</p>
+                <p>Returning again to the Goofy Mortgage Company, what are the interesting boundary values? For monthly income the boundaries are $1,000/month and $83,333/month (assuming the units to be US dollars).</p>
+
+                <div class="source-label">SOURCE — Text Inside Image</div>
+                <p><strong>Boundary Values</strong></p>
+                <p>Visual shows a number line with two marked boundaries: $1,000/month (left) and $83,333/month (right). The area between them is shaded.</p>
+                <p>Test data input: {$999, $1,000, $1,001} on the low end and {$83,332, $83,333, $83,334} on the high end.</p>
+
+                <div class="access-label">ACCESSIBILITY — Layout & Reading Order</div>
+                <details>
+                    <summary>🖼 Show Accessibility Description</summary>
+                    <div class="details-content">
+                        <p><strong>Image type:</strong> Number line diagram with two vertical arrows marking boundaries.</p>
+                        <p><strong>Layout:</strong> A horizontal line representing the income range. Two vertical arrows point down to the line at $1,000/month (left) and $83,333/month (right). The region between the arrows is shaded gray.</p>
+                        <p><strong>Reading order:</strong> Start at the left boundary: $1,000/month. Note the shaded region extends to the right boundary: $83,333/month.</p>
+                        <p><strong>Meaning:</strong> The valid income range for the mortgage is between $1,000 and $83,333 per month. Values outside this range are invalid. The test data includes values at and just outside each boundary.</p>
+                        <p><strong>Test data:</strong> Low end: $999 (below), $1,000 (at), $1,001 (above). High end: $83,332 (below), $83,333 (at), $83,334 (above).</p>
+                    </div>
+                </details>
+
+                <div class="explain-label">EXPLANATION — Sentence-by-Sentence</div>
+                <p><strong>Sentence 1:</strong> "Note that a point just above one boundary may be in another equivalence class."</p>
+                <p><span class="i18n" data-en="If boundaries are close together, the 'above' point for one boundary might fall into the next partition. In that case, we don't need to test it twice.">إذا كانت الحدود قريبة من بعضها، فقد تقع نقطة 'الأعلى' لأحد الحدود في القسم التالي. في هذه الحالة، لا نحتاج إلى اختبارها مرتين.</span></p>
+
+                <p><strong>Sentence 2:</strong> "There is no reason to duplicate the test. The same may be true of the point just below the boundary."</p>
+                <p><span class="i18n" data-en="Avoid redundant tests. If a test value serves two purposes, use it once.">تجنب الاختبارات الزائدة. إذا كانت قيمة الاختبار تخدم غرضين، استخدمها مرة واحدة.</span></p>
+
+                <p><strong>Sentence 3:</strong> "Boundary value testing is most appropriate where the input is a continuous range of values."</p>
+                <p><span class="i18n" data-en="BVA works best when the input can take any value in a range (like income, age, temperature). It's less useful for discrete, unrelated values.">يعمل تحليل القيم الحدية بشكل أفضل عندما يمكن للمدخل أن يأخذ أي قيمة في نطاق (مثل الدخل، العمر، درجة الحرارة). يكون أقل فائدة للقيم المنفصلة غير المرتبطة.</span></p>
+
+                <p><strong>Sentence 4:</strong> "For monthly income the boundaries are $1,000/month and $83,333/month."</p>
+                <p><span class="i18n" data-en="The Goofy Mortgage Company accepts monthly incomes between $1,000 and $83,333. These are the two boundaries.">تقبل شركة الرهن العقاري دخلاً شهرياً بين 1,000$ و83,333$. هذان هما الحدان.</span></p>
+
+                <p><strong>Sentence 5:</strong> "Test data input of {$999, $1,000, $1,001} on the low end and {$83,332, $83,333, $83,334} on the high end."</p>
+                <p><span class="i18n" data-en="Low boundary tests: $999 (below), $1,000 (at), $1,001 (above). High boundary tests: $83,332 (below), $83,333 (at), $83,334 (above).">اختبارات الحد الأدنى: 999$ (أدنى)، 1,000$ (عند الحد)، 1,001$ (أعلى). اختبارات الحد الأعلى: 83,332$ (أدنى)، 83,333$ (عند الحد)، 83,334$ (أعلى).</span></p>
+
+                <div class="explain-label">EXPLANATION — Expanded</div>
+                <p><span class="i18n" data-en="The Goofy Mortgage Company example illustrates BVA with a continuous numeric range. The valid monthly income range is $1,000 to $83,333. For the lower boundary ($1,000), we test $999, $1,000, and $1,001. For the upper boundary ($83,333), we test $83,332, $83,333, and $83,334. The unit is US dollars and cents, so 'below' means -$0.01 and 'above' means +$0.01. However, the slide uses whole dollars for simplicity.">يوضح مثال شركة الرهن العقاري تحليل القيم الحدية بنطاق رقمي مستمر. نطاق الدخل الشهري الصحيح هو من 1,000$ إلى 83,333$. للحد الأدنى (1,000$)، نختبر 999$، 1,000$، و1,001$. للحد الأعلى (83,333$)، نختبر 83,332$، 83,333$، و83,334$. الوحدة هي الدولار الأمريكي والسنت، لذا 'أدنى' تعني -0.01$ و'أعلى' تعني +0.01$. ومع ذلك، تستخدم الشريحة الدولارات الكاملة للتبسيط.</span></p>
+
+                <div class="note info">
+                    <strong><span class="i18n" data-en="Takeaway">الخلاصة</span>:</strong>
+                    <span class="i18n" data-en="Goofy Mortgage boundaries: $1,000 and $83,333. Test data: {$999, $1,000, $1,001} and {$83,332, $83,333, $83,334}. Avoid duplicating tests when values fall into adjacent partitions.">حدود شركة الرهن: 1,000$ و83,333$. بيانات الاختبار: {999$، 1,000$، 1,001$} و{83,332$، 83,333$، 83,334$}. تجنب تكرار الاختبارات عندما تقع القيم في أقسام متجاورة.</span>
+                </div>
+            </article>
+
+            <!-- ===== SLIDE 10 ===== -->
+            <article id="slide-10" class="card" aria-labelledby="slide-10-title">
+                <h2 id="slide-10-title">Slide 10 — <span class="i18n" data-en="Assignment No. 4">الواجب رقم 4</span></h2>
+
+                <div class="source-label">SOURCE — Original Content</div>
+                <p><strong>ASSIGNMENT NO. 4</strong></p>
+                <p>What are the differences between Equivalence Partitioning AND Boundary Value Analysis?</p>
+
+                <div class="explain-label">EXPLANATION — Expanded</div>
+                <p><span class="i18n" data-en="This assignment asks you to compare and contrast the two techniques. Key differences: Equivalence Partitioning divides the input space into partitions and tests one value per partition. Boundary Value Analysis extends this by focusing on the edges of each partition, testing values at, below, and above the boundaries. BVA requires ordered data; EP does not. BVA is more effective at finding boundary defects; EP is better for broad coverage.">يطلب منك هذا الواجب مقارنة ومقابلة التقنيتين. الاختلافات الرئيسية: يقسم تقسيم التكافؤ فضاء الإدخال إلى أقسام ويختبر قيمة واحدة لكل قسم. يمتد تحليل القيم الحدية على ذلك من خلال التركيز على حواف كل قسم، واختبار القيم عند، وأدنى، وأعلى الحدود. يتطلب تحليل القيم الحدية بيانات مرتبة؛ تقسيم التكافؤ لا يتطلب ذلك. تحليل القيم الحدية أكثر فعالية في اكتشاف عيوب الحدود؛ تقسيم التكافؤ أفضل للتغطية الواسعة.</span></p>
+
+                <div class="note info">
+                    <strong><span class="i18n" data-en="Takeaway">الخلاصة</span>:</strong>
+                    <span class="i18n" data-en="Assignment: Compare EP and BVA. EP tests one value per partition; BVA tests boundary values (at, below, above). BVA requires ordered data and targets edge defects.">الواجب: قارن بين تقسيم التكافؤ وتحليل القيم الحدية. يختبر تقسيم التكافؤ قيمة واحدة لكل قسم؛ يختبر تحليل القيم الحدية القيم الحدية (عند، أدنى، أعلى). يتطلب تحليل القيم الحدية بيانات مرتبة ويستهدف عيوب الحواف.</span>
+                </div>
+            </article>
+
+            <!-- ===== SLIDE 11 ===== -->
+            <article id="slide-11" class="card" aria-labelledby="slide-11-title">
+                <h2 id="slide-11-title">Slide 11 — <span class="i18n" data-en="Fundamentals of Testing">أساسيات الاختبار</span></h2>
+
+                <div class="source-label">SOURCE — Original Content</div>
+                <p><strong>FUNDAMENTAL OF TESTING</strong></p>
+
+                <div class="explain-label">EXPLANATION — Expanded</div>
+                <p><span class="i18n" data-en="This is a transition slide indicating the end of the Black Box techniques section and the beginning of a new topic: Fundamentals of Testing. No specific content is provided on this slide.">هذه شريحة انتقالية تشير إلى نهاية قسم تقنيات الصندوق الأسود وبداية موضوع جديد: أساسيات الاختبار. لا يوجد محتوى محدد في هذه الشريحة.</span></p>
+
+                <div class="note info">
+                    <strong><span class="i18n" data-en="Takeaway">الخلاصة</span>:</strong>
+                    <span class="i18n" data-en="Transition slide — the next topic is Fundamentals of Testing.">شريحة انتقالية — الموضوع التالي هو أساسيات الاختبار.</span>
+                </div>
+            </article>
+
+        </section>
+
+        <!-- ===== 03 DIAGRAMS & CHARTS ===== -->
+        <section id="diagrams" class="section" aria-labelledby="diagrams-title">
+            <h2 id="diagrams-title" class="section-title"><span class="section-num">03</span> <span class="i18n" data-en="Diagrams & Charts">الرسوم البيانية والمخططات</span></h2>
+
+            <div class="diagram-block">
+                <div class="diagram-header">
+                    <h3><span class="i18n" data-en="Equivalence Partitions for Range 1–5">أقسام التكافؤ للنطاق 1–5</span></h3>
+                    <span class="badge accent">Slide 03</span>
+                </div>
+                <p><span class="i18n" data-en="Three partitions: invalid (too low) &lt; 1, valid 1–5, invalid (too high) &gt; 5. Boundary values: 0, 1, 5, 6.">ثلاثة أقسام: غير صحيح (أدنى) أقل من 1، صحيح 1–5، غير صحيح (أعلى) أكبر من 5. القيم الحدية: 0، 1، 5، 6.</span></p>
+                <div class="reconstruction">
+┌─────────────────────────────────────────────────────┐
+│  invalid (too low)  →  Less than 1                  │
+│  valid              →  1 to 5                       │
+│  invalid (too high) →  More than 5                  │
+└─────────────────────────────────────────────────────┘
+                </div>
+                <details>
+                    <summary>🖼 Show detailed description</summary>
+                    <div class="details-content">
+                        <p><strong>Type:</strong> Partition table with arrows.</p>
+                        <p><strong>Reading order:</strong> Top row: "invalid (too low)" → "Less than 1". Middle row: "valid" → "1 to 5". Bottom row: "invalid (too high)" → "More than 5".</p>
+                        <p><strong>Boundary values:</strong> Lower boundary: 0 (invalid) and 1 (valid). Upper boundary: 5 (valid) and 6 (invalid).</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="diagram-block">
+                <div class="diagram-header">
+                    <h3><span class="i18n" data-en="Age Rules Boundary Values">القيم الحدية لقواعد العمر</span></h3>
+                    <span class="badge accent">Slide 07</span>
+                </div>
+                <p><span class="i18n" data-en="Boundary values and test sets for the corrected age rules: 0, 16, 18, 55, 99. Each test set includes one value below, the boundary, and one value above.">القيم الحدية ومجموعات الاختبار لقواعد العمر المصححة: 0، 16، 18، 55، 99. تتضمن كل مجموعة اختبار قيمة أدنى، والحد، وقيمة أعلى.</span></p>
+                <div class="reconstruction">
+0   →  {-1, 0, 1}
+16  →  {15, 16, 17}
+18  →  {17, 18, 19}
+55  →  {54, 55, 56}
+99  →  {98, 99, 100}
+                </div>
+                <details>
+                    <summary>🖼 Show detailed description</summary>
+                    <div class="details-content">
+                        <p><strong>Type:</strong> Table of boundary values and test sets.</p>
+                        <p><strong>Layout:</strong> Two columns: left shows boundary values (0, 18, 99) and right shows (16, 55). Each has an arrow to a set.</p>
+                        <p><strong>Meaning:</strong> For each boundary, test the value before, at, and after. This is the three-point boundary approach.</p>
+                    </div>
+                </details>
+            </div>
+
+            <div class="diagram-block">
+                <div class="diagram-header">
+                    <h3><span class="i18n" data-en="Goofy Mortgage Income Boundaries">حدود دخل شركة الرهن العقاري</span></h3>
+                    <span class="badge accent">Slide 09</span>
+                </div>
+                <p><span class="i18n" data-en="Number line showing valid income range between $1,000/month and $83,333/month. Test data includes values at and just outside each boundary.">خط أعداد يوضح نطاق الدخل الصحيح بين 1,000$/شهر و83,333$/شهر. تتضمن بيانات الاختبار قيماً عند و خارج كل حد مباشرة.</span></p>
+                <div class="reconstruction">
+Low end:   $999  →  $1,000  →  $1,001
+High end:  $83,332 → $83,333 → $83,334
+                </div>
+                <details>
+                    <summary>🖼 Show detailed description</summary>
+                    <div class="details-content">
+                        <p><strong>Type:</strong> Number line with two vertical arrows marking boundaries.</p>
+                        <p><strong>Layout:</strong> Horizontal line. Left arrow at $1,000/month, right arrow at $83,333/month. Shaded region between arrows.</p>
+                        <p><strong>Test data:</strong> Low end: $999 (below), $1,000 (at), $1,001 (above). High end: $83,332 (below), $83,333 (at), $83,334 (above).</p>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <!-- ===== 04 SUMMARY ===== -->
+        <section id="summary" class="section" aria-labelledby="summary-title">
+            <h2 id="summary-title" class="section-title"><span class="section-num">04</span> <span class="i18n" data-en="Summary">الملخص</span></h2>
+
+            <div class="table-wrapper">
+                <table>
+                    <caption>Key Terms, Definitions, and Notations</caption>
+                    <thead>
+                        <tr>
+                            <th scope="col">Term / Notation</th>
+                            <th scope="col">Definition / Meaning</th>
+                            <th scope="col">Source</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="term-en">Boundary Value Analysis (BVA)</span></td>
+                            <td><span class="i18n" data-en="A black-box test design technique that focuses on testing the boundaries of input partitions.">تقنية تصميم اختبار الصندوق الأسود التي تركز على اختبار حدود أقسام الإدخال.</span></td>
+                            <td><a href="#slide-03">Slide 03</a></td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-en">Equivalence Partitioning</span></td>
+                            <td><span class="i18n" data-en="Dividing input data into partitions where all values should be treated the same.">تقسيم بيانات الإدخال إلى أقسام حيث يجب معاملة جميع القيم بنفس الطريقة.</span></td>
+                            <td><a href="#slide-03">Slide 03</a></td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-en">Ordered Partition</span></td>
+                            <td><span class="i18n" data-en="A partition with numeric or sequential data that has a defined order (e.g., 1–5).">قسم ببيانات رقمية أو تسلسلية له ترتيب محدد (مثل 1–5).</span></td>
+                            <td><a href="#slide-03">Slide 03</a></td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-en">Two-Point Boundary</span></td>
+                            <td><span class="i18n" data-en="Testing two values per boundary: the boundary value and the value just outside the partition.">اختبار قيمتين لكل حد: القيمة الحدية والقيمة خارج القسم مباشرة.</span></td>
+                            <td><a href="#slide-04">Slide 04</a></td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-en">Three-Point Boundary</span></td>
+                            <td><span class="i18n" data-en="Testing three values per boundary: one below, one at, and one above the boundary.">اختبار ثلاث قيم لكل حد: قيمة أدنى، وعند الحد، وقيمة أعلى.</span></td>
+                            <td><a href="#slide-04">Slide 04</a></td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-en">Boundary Overlap</span></td>
+                            <td><span class="i18n" data-en="A defect where the same value belongs to two different rules or partitions, causing ambiguity.">عيب حيث تنتمي نفس القيمة إلى قاعدتين أو قسمين مختلفين، مما يسبب الغموض.</span></td>
+                            <td><a href="#slide-05">Slide 05</a></td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-en">Below Point</span></td>
+                            <td><span class="i18n" data-en="The value just below the boundary. For integers: -1. For currency: -0.01.">القيمة أقل من الحد مباشرة. للأعداد الصحيحة: -1. للعملة: -0.01.</span></td>
+                            <td><a href="#slide-08">Slide 08</a></td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-en">Above Point</span></td>
+                            <td><span class="i18n" data-en="The value just above the boundary. For integers: +1. For currency: +0.01.">القيمة أعلى من الحد مباشرة. للأعداد الصحيحة: +1. للعملة: +0.01.</span></td>
+                            <td><a href="#slide-08">Slide 08</a></td>
+                        </tr>
+                        <tr>
+                            <td><span class="term-en">Continuous Range</span></td>
+                            <td><span class="i18n" data-en="An input domain where values can take any value in a range. BVA is most appropriate here.">مجال إدخال حيث يمكن للقيم أن تأخذ أي قيمة في نطاق. تحليل القيم الحدية هو الأنسب هنا.</span></td>
+                            <td><a href="#slide-09">Slide 09</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- ===== 05 THREE LEVELS ===== -->
+        <section id="three-levels" class="section" aria-labelledby="levels-title">
+            <h2 id="levels-title" class="section-title"><span class="section-num">05</span> <span class="i18n" data-en="Three Levels">المستويات الثلاثة</span></h2>
+
+            <div class="tabs" role="tablist" aria-label="مستويات الشرح | Explanation levels">
+                <button class="tab-btn" role="tab" aria-selected="true" aria-controls="level-beginner" id="tab-beginner" onclick="switchTab('beginner')"><span class="i18n" data-en="Beginner">مبتدئ</span></button>
+                <button class="tab-btn" role="tab" aria-selected="false" aria-controls="level-university" id="tab-university" onclick="switchTab('university')"><span class="i18n" data-en="University Level">مستوى جامعي</span></button>
+                <button class="tab-btn" role="tab" aria-selected="false" aria-controls="level-quick" id="tab-quick" onclick="switchTab('quick')"><span class="i18n" data-en="Quick Review">مراجعة سريعة</span></button>
+            </div>
+
+            <div id="level-beginner" class="tab-panel active" role="tabpanel" aria-labelledby="tab-beginner">
+                <div class="card">
+                    <h3><span class="i18n" data-en="Simple Explanation">شرح مبسط</span></h3>
+                    <p><span class="i18n" data-en="Imagine you're testing a door that should open for people between 1 meter and 2 meters tall. The boundary values are 1 meter and 2 meters. Boundary Value Analysis says: test people who are 0.99m, 1.00m, 1.01m, 1.99m, 2.00m, and 2.01m tall. Why? Because that's where the door's sensor is most likely to make a mistake.">تخيل أنك تختبر باباً يجب أن يفتح للأشخاص الذين يتراوح طولهم بين 1 متر و2 متر. القيم الحدية هي 1 متر و2 متر. يقول تحليل القيم الحدية: اختبر أشخاصاً بطول 0.99م، 1.00م، 1.01م، 1.99م، 2.00م، و2.01م. لماذا؟ لأن هناك حيث يكون مستشعر الباب أكثر عرضة للخطأ.</span></p>
+                    <p><span class="i18n" data-en="The key idea: don't test the middle of the range (1.5m is boring). Test the edges. That's where bugs hide.">الفكرة الأساسية: لا تختبر منتصف النطاق (1.5م ممل). اختبر الحواف. هناك حيث تختبئ الأخطاء.</span></p>
+                    <div class="note good">
+                        <strong><span class="i18n" data-en="Analogy">تشبيه</span>:</strong>
+                        <span class="i18n" data-en="Think of a fence. You don't need to check every inch of the fence — just check the corners and the gates. That's where problems happen.">فكر في سياج. لا تحتاج إلى فحص كل شبر من السياج — فقط افحص الزوايا والبوابات. هناك حيث تحدث المشاكل.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="level-university" class="tab-panel" role="tabpanel" aria-labelledby="tab-university">
+                <div class="card">
+                    <h3><span class="i18n" data-en="Formal Explanation">شرح أكاديمي</span></h3>
+                    <p><span class="i18n" data-en="Boundary Value Analysis (BVA) is a black-box test design technique that extends Equivalence Partitioning. It is applicable only to ordered equivalence partitions — partitions consisting of numeric or sequential data.">تحليل القيم الحدية (BVA) هو تقنية تصميم اختبار الصندوق الأسود التي تمتد على تقسيم التكافؤ. وهي قابلة للتطبيق فقط على أقسام التكافؤ المرتبة — الأقسام التي تتكون من بيانات رقمية أو تسلسلية.</span></p>
+                    <p><span class="i18n" data-en="For a partition [a, b], the boundary values are a and b. For the invalid partition below a, the boundary value is a-1. For the invalid partition above b, the boundary value is b+1.">بالنسبة لقسم [أ، ب]، القيم الحدية هي أ و ب. بالنسبة للقسم غير الصحيح تحت أ، القيمة الحدية هي أ-1. بالنسبة للقسم غير الصحيح فوق ب، القيمة الحدية هي ب+1.</span></p>
+                    <p><span class="i18n" data-en="The two-point method tests {a-1, a} and {b, b+1}. The three-point method tests {a-1, a, a+1} and {b-1, b, b+1}.">تختبر طريقة النقطتين {أ-1، أ} و{ب، ب+1}. تختبر طريقة الثلاث نقاط {أ-1، أ، أ+1} و{ب-1، ب، ب+1}.</span></p>
+                    <p><span class="i18n" data-en="Formal definition of equivalence partition: A partition of the input domain D is a collection of subsets D₁, D₂, ..., Dₙ such that D₁ ∪ D₂ ∪ ... ∪ Dₙ = D and Dᵢ ∩ Dⱼ = ∅ for i ≠ j.">التعريف الرسمي لقسم التكافؤ: قسم من مجال الإدخال D هو مجموعة من المجموعات الفرعية D₁، D₂، ...، Dₙ بحيث يكون D₁ ∪ D₂ ∪ ... ∪ Dₙ = D و Dᵢ ∩ Dⱼ = ∅ لـ i ≠ j.</span></p>
+                    <p><span class="i18n" data-en="In terms of code: if (x >= a && x <= b) is valid, then the boundaries are a and b. The test values are a-1, a, b, b+1.">من حيث الكود: إذا كان (x >= a && x <= b) صحيحاً، فإن الحدود هي a و b. قيم الاختبار هي a-1، a، b، b+1.</span></p>
+                </div>
+            </div>
+
+            <div id="level-quick" class="tab-panel" role="tabpanel" aria-labelledby="tab-quick">
+                <div class="card">
+                    <h3><span class="i18n" data-en="Quick Review Notes">ملاحظات المراجعة السريعة</span></h3>
+                    <ul>
+                        <li><span class="i18n" data-en="BVA = Black Box technique for ordered partitions.">تحليل القيم الحدية = تقنية صندوق أسود للأقسام المرتبة.</span></li>
+                        <li><span class="i18n" data-en="Two-point: test boundary ± 1 unit.">نقطتان: اختبار الحد ± 1 وحدة.</span></li>
+                        <li><span class="i18n" data-en="Three-point: test boundary, below, and above.">ثلاث نقاط: اختبار الحد، والأدنى، والأعلى.</span></li>
+                        <li><span class="i18n" data-en="Defects cluster at boundaries — that's why BVA works.">تتجمع العيوب عند الحدود — لهذا يعمل تحليل القيم الحدية.</span></li>
+                        <li><span class="i18n" data-en="Boundary overlap causes ambiguity (e.g., age 16 in two rules).">تداخل الحدود يسبب الغموض (مثل العمر 16 في قاعدتين).</span></li>
+                        <li><span class="i18n" data-en="Fix: make ranges non-overlapping (0-15, 16-17, 18-54, 55-99).">الإصلاح: اجعل النطاقات غير متداخلة (0-15، 16-17، 18-54، 55-99).</span></li>
+                        <li><span class="i18n" data-en="Steps: 1) Identify partitions. 2) Identify boundaries. 3) Test at, below, above.">الخطوات: 1) حدد الأقسام. 2) حدد الحدود. 3) اختبر عند، وأدنى، وأعلى.</span></li>
+                        <li><span class="i18n" data-en="BVA best for continuous ranges (income, age, temperature).">تحليل القيم الحدية الأفضل للنطاقات المستمرة (الدخل، العمر، درجة الحرارة).</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 06 INTERACTIVE QUIZ ===== -->
+        <section id="quiz" class="section" aria-labelledby="quiz-title">
+            <h2 id="quiz-title" class="section-title"><span class="section-num">06</span> <span class="i18n" data-en="Interactive Quiz">الاختبار التفاعلي</span></h2>
+
+            <div class="quiz-header">
+                <div class="quiz-score" aria-live="polite" aria-atomic="true">
+                    <span class="i18n" data-en="Score">النتيجة</span>: <span id="score-display">0</span>/30
+                </div>
+                <button class="btn btn-sm" onclick="resetQuiz()" aria-label="إعادة تعيين الاختبار | Reset quiz">🔄 <span class="i18n" data-en="Try Again">حاول مرة أخرى</span></button>
+            </div>
+
+            <div class="progress-bar-outer" role="progressbar" aria-valuemin="0" aria-valuemax="30" aria-valuenow="0" id="quiz-progressbar">
+                <div class="progress-bar-inner" id="progress-fill"></div>
+            </div>
+
+            <div id="quiz-container"></div>
+
+            <div class="final-result" id="final-result" role="status" aria-live="polite">
+                <div class="final-score" id="final-score">0/30</div>
+                <div class="final-category" id="final-category"></div>
+                <p id="final-message"></p>
+                <button class="btn btn-primary mt-2" onclick="resetQuiz()">🔄 <span class="i18n" data-en="Try Again">حاول مرة أخرى</span></button>
+            </div>
+        </section>
+
+        <!-- ===== 07 PRO TIPS ===== -->
+        <section id="pro-tips" class="section" aria-labelledby="tips-title">
+            <h2 id="tips-title" class="section-title"><span class="section-num">07</span> <span class="i18n" data-en="Pro Tips">نصائح احترافية</span></h2>
+
+            <div class="grid grid-2">
+                <div class="card tinted">
+                    <h3><span class="i18n" data-en="How to Understand Instead of Memorize">كيف تفهم بدلاً من أن تحفظ</span></h3>
+                    <ul>
+                        <li><span class="i18n" data-en="Trace the algorithm: pick a boundary (e.g., 16) and manually walk through the code. What happens for age=15, 16, 17?">تتبع الخوارزمية: اختر حداً (مثل 16) وامشِ عبر الكود يدوياً. ماذا يحدث للعمر=15، 16، 17؟</span></li>
+                        <li><span class="i18n" data-en="Explain the concept in your own words: why do defects hide at boundaries?">اشرح المفهوم بكلماتك: لماذا تختبئ العيوب عند الحدود؟</span></li>
+                        <li><span class="i18n" data-en="Compare two-point vs. three-point: what extra value does three-point add?">قارن بين النقطتين والثلاث نقاط: ما القيمة الإضافية التي تضيفها الثلاث نقاط؟</span></li>
+                        <li><span class="i18n" data-en="Use concrete values: test range 1–5 with 0, 1, 5, 6. What does the software do?">استخدم قيماً ملموسة: اختبر النطاق 1–5 بـ 0، 1، 5، 6. ماذا يفعل البرنامج؟</span></li>
+                        <li><span class="i18n" data-en="Draw the partitions: sketch a number line with boundaries and test points.">ارسم الأقسام: ارسم خط أعداد بالحدود ونقاط الاختبار.</span></li>
+                    </ul>
+                </div>
+
+                <div class="card tinted">
+                    <h3><span class="i18n" data-en="Suggested Hands-On Practice">تمارين عملية مقترحة</span></h3>
+                    <ul>
+                        <li><span class="i18n" data-en="Write test cases for a login form that accepts passwords 8–20 characters long. Identify boundaries and create test cases.">اكتب حالات اختبار لنموذج تسجيل دخول يقبل كلمات مرور من 8 إلى 20 حرفاً. حدد الحدود وأنشئ حالات اختبار.</span></li>
+                        <li><span class="i18n" data-en="Given the age rules (0-15, 16-17, 18-54, 55-99), create a test set that covers all boundaries.">بالنظر إلى قواعد العمر (0-15، 16-17، 18-54، 55-99)، أنشئ مجموعة اختبار تغطي جميع الحدود.</span></li>
+                        <li><span class="i18n" data-en="Find the boundary overlap in this rule set: 0-10 child, 10-20 teenager, 20-65 adult. Fix the rules.">ابحث عن تداخل الحدود في مجموعة القواعد هذه: 0-10 طفل، 10-20 مراهق، 20-65 بالغ. أصلح القواعد.</span></li>
+                        <li><span class="i18n" data-en="For a date field that accepts 1/1/2000 to 12/31/2025, what are the boundary test values?">بالنسبة لحقل تاريخ يقبل 1/1/2000 إلى 12/31/2025، ما هي قيم اختبار الحدود؟</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="card warn mt-2">
+                <h3>❌ <span class="i18n" data-en="Common Mistakes">أخطاء شائعة</span></h3>
+                <ul>
+                    <li><span class="i18n" data-en="❌ Testing only the middle of the range — you miss boundary defects.">❌ اختبار منتصف النطاق فقط — تفوتك عيوب الحدود.</span></li>
+                    <li><span class="i18n" data-en="❌ Forgetting that 'below' and 'above' depend on the data unit (integer vs. currency).">❌ نسيان أن 'أدنى' و'أعلى' يعتمدان على وحدة البيانات (صحيح مقابل عملة).</span></li>
+                    <li><span class="i18n" data-en="❌ Using overlapping boundaries (e.g., 0-16 and 16-18) which cause ambiguity.">❌ استخدام حدود متداخلة (مثل 0-16 و16-18) التي تسبب الغموض.</span></li>
+                    <li><span class="i18n" data-en="❌ Testing the same value twice when it falls into two partitions — unnecessary duplication.">❌ اختبار نفس القيمة مرتين عندما تقع في قسمين — تكرار غير ضروري.</span></li>
+                    <li><span class="i18n" data-en="❌ Applying BVA to unordered data (e.g., colors, categories) — it only works for ordered data.">❌ تطبيق تحليل القيم الحدية على بيانات غير مرتبة (مثل الألوان، الفئات) — يعمل فقط للبيانات المرتبة.</span></li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- ===== 08 COVERAGE & SOURCE MAP ===== -->
+        <section id="coverage" class="section" aria-labelledby="coverage-title">
+            <h2 id="coverage-title" class="section-title"><span class="section-num">08</span> <span class="i18n" data-en="Coverage & Source Map">التغطية وخريطة المصادر</span></h2>
+
+            <div class="card">
+                <h3><span class="i18n" data-en="Coverage Report">تقرير التغطية</span></h3>
+                <ul>
+                    <li><span class="i18n" data-en="Slides processed: 11/11">الشرائح المعالجة: 11/11</span></li>
+                    <li><span class="i18n" data-en="Informative images processed: 3 (Slide 03, Slide 07, Slide 09)">الصور المعلوماتية المعالجة: 3 (شريحة 03، شريحة 07، شريحة 09)</span></li>
+                    <li><span class="i18n" data-en="Code examples: 1 (Slide 06)">أمثلة الكود: 1 (شريحة 06)</span></li>
+                    <li><span class="i18n" data-en="Tables: 2 (Slide 03 image, Slide 07 image)">الجداول: 2 (صورة شريحة 03، صورة شريحة 07)</span></li>
+                    <li><span class="i18n" data-en="Diagrams: 3 (Slide 03, Slide 07, Slide 09)">المخططات: 3 (شريحة 03، شريحة 07، شريحة 09)</span></li>
+                    <li><span class="i18n" data-en="Formulas: 0">الصيغ: 0</span></li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3><span class="i18n" data-en="Source Map">خريطة المصادر</span></h3>
+                <div class="table-wrapper">
+                    <table>
+                        <caption>Concept → Source Slide</caption>
+                        <thead>
+                            <tr><th scope="col">Concept</th><th scope="col">Source</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td><span class="i18n" data-en="BVA definition">تعريف تحليل القيم الحدية</span></td><td><a href="#slide-03">Slide 03</a></td></tr>
+                            <tr><td><span class="i18n" data-en="Two-point vs. three-point boundaries">الحدود ذات النقطتين مقابل ثلاث نقاط</span></td><td><a href="#slide-04">Slide 04</a></td></tr>
+                            <tr><td><span class="i18n" data-en="Boundary overlap problem">مشكلة تداخل الحدود</span></td><td><a href="#slide-05">Slide 05</a></td></tr>
+                            <tr><td><span class="i18n" data-en="Corrected age rules code">كود قواعد العمر المصححة</span></td><td><a href="#slide-06">Slide 06</a></td></tr>
+                            <tr><td><span class="i18n" data-en="Boundary test sets">مجموعات اختبار الحدود</span></td><td><a href="#slide-07">Slide 07</a></td></tr>
+                            <tr><td><span class="i18n" data-en="Steps for BVA">خطوات تحليل القيم الحدية</span></td><td><a href="#slide-08">Slide 08</a></td></tr>
+                            <tr><td><span class="i18n" data-en="Goofy Mortgage example">مثال شركة الرهن العقاري</span></td><td><a href="#slide-09">Slide 09</a></td></tr>
+                            <tr><td><span class="i18n" data-en="Assignment 4">الواجب 4</span></td><td><a href="#slide-10">Slide 10</a></td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="container" role="contentinfo" style="padding-block: 2rem; border-top: 1px solid var(--border); margin-top: 2rem; text-align: center;">
+        <p class="text-dim text-sm">
+            <span class="i18n" data-en="Lecture 05 — Interactive Bilingual Review Sheet">المحاضرة 05 — ورقة مراجعة تفاعلية ثنائية اللغة</span>
+        </p>
+        <p class="text-dim text-sm">
+            <span class="i18n" data-en="Test Case Design Techniques — Boundary Value Analysis">تقنيات تصميم حالات الاختبار — تحليل القيم الحدية</span>
+        </p>
+    </footer>
+
+    <script>
+        // ===== LANGUAGE SWITCHING =====
+        let currentLang = 'ar';
+
+        function setLang(lang) {
+            currentLang = lang;
+            const html = document.documentElement;
+            html.lang = lang;
+            html.dir = lang === 'ar' ? 'rtl' : 'ltr';
+
+            // Update all i18n elements
+            document.querySelectorAll('.i18n').forEach(el => {
+                const en = el.getAttribute('data-en');
+                if (en) {
+                    if (!el.dataset.ar) {
+                        el.dataset.ar = el.textContent;
+                    }
+                    el.textContent = lang === 'en' ? en : el.dataset.ar;
+                }
+            });
+
+            // Update lang buttons
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.setAttribute('aria-pressed', btn.dataset.lang === lang ? 'true' : 'false');
+            });
+
+            // Update quiz display language
+            renderQuiz();
+
+            // Update direction-specific styling
+            document.body.style.direction = lang === 'ar' ? 'rtl' : 'ltr';
+        }
+
+        // ===== TABS =====
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.setAttribute('aria-selected', 'false');
+            });
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+
+            document.getElementById('tab-' + tabId).setAttribute('aria-selected', 'true');
+            document.getElementById('level-' + tabId).classList.add('active');
+        }
+
+        // ===== ACCESSIBILITY DESCRIPTION CONTROLS =====
+        function showAllDetails() {
+            document.querySelectorAll('details').forEach(d => d.open = true);
+        }
+
+        function hideAllDetails() {
+            document.querySelectorAll('details').forEach(d => d.open = false);
+        }
+
+        // ===== QUIZ DATA =====
+        const QUIZ = [
+            // 1
+            {
+                type: "mcq",
+                prompt: "ما هو تحليل القيم الحدية (BVA)؟",
+                promptEn: "What is Boundary Value Analysis (BVA)?",
+                options: [
+                    "تقنية تصميم اختبار تركز على حدود أقسام الإدخال",
+                    "تقنية لتحسين أداء الكود",
+                    "طريقة لتوثيق متطلبات البرنامج",
+                    "أسلوب لتصميم واجهات المستخدم"
+                ],
+                optionsEn: [
+                    "A test design technique focusing on boundaries of input partitions",
+                    "A technique for optimizing code performance",
+                    "A method for documenting software requirements",
+                    "An approach for designing user interfaces"
+                ],
+                correct: 0,
+                explain: "تحليل القيم الحدية يركز على اختبار القيم عند حدود أقسام الإدخال حيث تكون العيوب أكثر احتمالاً.",
+                explainEn: "BVA focuses on testing values at the boundaries of input partitions where defects are most likely."
+            },
+            // 2
+            {
+                type: "mcq",
+                prompt: "ما نوع البيانات الذي يتطلبه تحليل القيم الحدية؟",
+                promptEn: "What type of data does BVA require?",
+                options: [
+                    "بيانات مرتبة (رقمية أو تسلسلية)",
+                    "بيانات غير مرتبة (فئات)",
+                    "بيانات نصية فقط",
+                    "بيانات منطقية فقط"
+                ],
+                optionsEn: [
+                    "Ordered data (numeric or sequential)",
+                    "Unordered data (categories)",
+                    "Text data only",
+                    "Boolean data only"
+                ],
+                correct: 0,
+                explain: "يُستخدم BVA فقط عندما يكون القسم مرتباً، ويتكون من بيانات رقمية أو تسلسلية.",
+                explainEn: "BVA can only be used when the partition is ordered, consisting of numeric or sequential data."
+            },
+            // 3
+            {
+                type: "mcq",
+                prompt: "في المثال: حقل إدخال يقبل 1-5، ما هي القيم الحدية للقسم الصحيح؟",
+                promptEn: "In the example: input field accepts 1-5, what are the boundary values of the valid partition?",
+                options: [
+                    "1 و 5",
+                    "0 و 6",
+                    "2 و 4",
+                    "1 و 6"
+                ],
+                optionsEn: [
+                    "1 and 5",
+                    "0 and 6",
+                    "2 and 4",
+                    "1 and 6"
+                ],
+                correct: 0,
+                explain: "القسم الصحيح هو [1، 5]، لذا القيم الحدية هي 1 و5.",
+                explainEn: "The valid partition is [1, 5], so the boundary values are 1 and 5."
+            },
+            // 4
+            {
+                type: "mcq",
+                prompt: "في المثال: حقل إدخال يقبل 1-5، ما هي القيمة الحدية للقسم غير الصحيح (أعلى)؟",
+                promptEn: "In the example: input field accepts 1-5, what is the boundary value of the invalid (too high) partition?",
+                options: [
+                    "6",
+                    "5",
+                    "4",
+                    "0"
+                ],
+                optionsEn: [
+                    "6",
+                    "5",
+                    "4",
+                    "0"
+                ],
+                correct: 0,
+                explain: "أول قيمة غير صحيحة فوق 5 هي 6.",
+                explainEn: "The first invalid value above 5 is 6."
+            },
+            // 5
+            {
+                type: "mcq",
+                prompt: "في المثال: حقل إدخال يقبل 1-5، ما هي القيمة الحدية للقسم غير الصحيح (أدنى)؟",
+                promptEn: "In the example: input field accepts 1-5, what is the boundary value of the invalid (too low) partition?",
+                options: [
+                    "0",
+                    "1",
+                    "-1",
+                    "2"
+                ],
+                optionsEn: [
+                    "0",
+                    "1",
+                    "-1",
+                    "2"
+                ],
+                correct: 0,
+                explain: "أول قيمة غير صحيحة تحت 1 هي 0.",
+                explainEn: "The first invalid value below 1 is 0."
+            },
+            // 6
+            {
+                type: "mcq",
+                prompt: "ما الفرق بين طريقة النقطتين وطريقة الثلاث نقاط؟",
+                promptEn: "What is the difference between two-point and three-point boundary methods?",
+                options: [
+                    "طريقة الثلاث نقاط تختبر قيمة إضافية داخل القسم",
+                    "طريقة النقطتين تختبر قيمتين إضافيتين",
+                    "لا يوجد فرق",
+                    "طريقة الثلاث نقاط تختبر ثلاث قيم لكل قسم"
+                ],
+                optionsEn: [
+                    "Three-point tests an additional value inside the partition",
+                    "Two-point tests two additional values",
+                    "There is no difference",
+                    "Three-point tests three values per partition"
+                ],
+                correct: 0,
+                explain: "طريقة الثلاث نقاط تضيف قيمة واحدة داخل القسم الصحيح بالقرب من الحد (مثل 2 للحد 1).",
+                explainEn: "Three-point adds one value inside the valid partition near the boundary (e.g., 2 for boundary 1)."
+            },
+            // 7
+            {
+                type: "mcq",
+                prompt: "في المثال: حقل إدخال يقبل 1-5، ما هي قيم اختبار الحد الأدنى باستخدام طريقة الثلاث نقاط؟",
+                promptEn: "In the example: input field accepts 1-5, what are the lower boundary test values using three-point method?",
+                options: [
+                    "0، 1، 2",
+                    "0، 1",
+                    "1، 2، 3",
+                    "-1، 0، 1"
+                ],
+                optionsEn: [
+                    "0, 1, 2",
+                    "0, 1",
+                    "1, 2, 3",
+                    "-1, 0, 1"
+                ],
+                correct: 0,
+                explain: "طريقة الثلاث نقاط للحد الأدنى: 0 (أدنى)، 1 (عند الحد)، 2 (أعلى).",
+                explainEn: "Three-point for lower boundary: 0 (below), 1 (at), 2 (above)."
+            },
+            // 8
+            {
+                type: "mcq",
+                prompt: "لماذا تركز BVA على الحدود؟",
+                promptEn: "Why does BVA focus on boundaries?",
+                options: [
+                    "لأن العيوب تميل إلى التجمع عند الحدود",
+                    "لأن الحدود أسهل في الاختبار",
+                    "لأن الحدود أقل تكلفة",
+                    "لأن الحدود لا تحتاج إلى توثيق"
+                ],
+                optionsEn: [
+                    "Because defects tend to cluster at boundaries",
+                    "Because boundaries are easier to test",
+                    "Because boundaries are less expensive",
+                    "Because boundaries don't need documentation"
+                ],
+                correct: 0,
+                explain: "السلوك عند حدود أقسام التكافؤ أكثر عرضة للخطأ من السلوك داخل الأقسام.",
+                explainEn: "Behavior at boundaries of equivalence partitions is more likely to be incorrect than behavior within partitions."
+            },
+            // 9
+            {
+                type: "mcq",
+                prompt: "ما المشكلة في قواعد العمر الأصلية: 0-16، 16-18، 18-55، 55-99؟",
+                promptEn: "What is the problem with the original age rules: 0-16, 16-18, 18-55, 55-99?",
+                options: [
+                    "تداخل الحدود (16، 18، 55 تظهر في قاعدتين)",
+                    "القواعد غير مرتبة",
+                    "القواعد لا تغطي جميع الأعمار",
+                    "القواعد تستخدم أرقاماً كبيرة جداً"
+                ],
+                optionsEn: [
+                    "Boundary overlap (16, 18, 55 appear in two rules)",
+                    "Rules are not ordered",
+                    "Rules don't cover all ages",
+                    "Rules use numbers that are too large"
+                ],
+                correct: 0,
+                explain: "العمر 16 يظهر في '0-16' و'16-18'، مما يسبب تناقضاً في النتيجة.",
+                explainEn: "Age 16 appears in '0-16' and '16-18', causing contradictory outcomes."
+            },
+            // 10
+            {
+                type: "mcq",
+                prompt: "ما هي القواعد المصححة لقواعد العمر؟",
+                promptEn: "What are the corrected age rules?",
+                options: [
+                    "0-15، 16-17، 18-54، 55-99",
+                    "0-16، 17-18، 19-55، 56-99",
+                    "0-15، 16-18، 19-54، 55-99",
+                    "0-14، 15-17، 18-55، 56-99"
+                ],
+                optionsEn: [
+                    "0-15, 16-17, 18-54, 55-99",
+                    "0-16, 17-18, 19-55, 56-99",
+                    "0-15, 16-18, 19-54, 55-99",
+                    "0-14, 15-17, 18-55, 56-99"
+                ],
+                correct: 0,
+                explain: "القواعد المصححة تجعل النطاقات غير متداخلة: 0-15، 16-17، 18-54، 55-99.",
+                explainEn: "Corrected rules make ranges non-overlapping: 0-15, 16-17, 18-54, 55-99."
+            },
+            // 11
+            {
+                type: "mcq",
+                prompt: "في كود قواعد العمر المصحح، ماذا يعني hireStatus = 'PART'؟",
+                promptEn: "In the corrected age rules code, what does hireStatus = 'PART' mean?",
+                options: [
+                    "توظيف بدوام جزئي فقط",
+                    "توظيف بدوام كامل",
+                    "عدم التوظيف",
+                    "توظيف مؤقت"
+                ],
+                optionsEn: [
+                    "Part-time hire only",
+                    "Full-time hire",
+                    "Do not hire",
+                    "Temporary hire"
+                ],
+                correct: 0,
+                explain: "PART يعني توظيف بدوام جزئي (للأعمار 16-17).",
+                explainEn: "PART means part-time hire (for ages 16-17)."
+            },
+            // 12
+            {
+                type: "mcq",
+                prompt: "ما هي القيم المثيرة للاهتمام للحد 16 في قواعد العمر؟",
+                promptEn: "What are the interesting values for boundary 16 in the age rules?",
+                options: [
+                    "{15، 16، 17}",
+                    "{14، 15، 16}",
+                    "{16، 17، 18}",
+                    "{15، 16}"
+                ],
+                optionsEn: [
+                    "{15, 16, 17}",
+                    "{14, 15, 16}",
+                    "{16, 17, 18}",
+                    "{15, 16}"
+                ],
+                correct: 0,
+                explain: "الحد 16: القيمة الأدنى 15، عند الحد 16، الأعلى 17.",
+                explainEn: "Boundary 16: below 15, at 16, above 17."
+            },
+            // 13
+            {
+                type: "mcq",
+                prompt: "ما هي خطوات اختبار القيم الحدية؟",
+                promptEn: "What are the steps for boundary value testing?",
+                options: [
+                    "تحديد أقسام التكافؤ، تحديد الحدود، إنشاء حالات اختبار لكل حد",
+                    "كتابة الكود، اختبار الكود، إصلاح الأخطاء",
+                    "تصميم الواجهة، اختبار الواجهة، نشر البرنامج",
+                    "توثيق المتطلبات، مراجعة المتطلبات، اختبار المتطلبات"
+                ],
+                optionsEn: [
+                    "Identify equivalence classes, identify boundaries, create test cases for each boundary",
+                    "Write code, test code, fix bugs",
+                    "Design UI, test UI, deploy software",
+                    "Document requirements, review requirements, test requirements"
+                ],
+                correct: 0,
+                explain: "الخطوات: 1) تحديد الأقسام. 2) تحديد الحدود. 3) إنشاء حالات اختبار لكل حد (عند، أدنى، أعلى).",
+                explainEn: "Steps: 1) Identify partitions. 2) Identify boundaries. 3) Create test cases for each boundary (at, below, above)."
+            },
+            // 14
+            {
+                type: "mcq",
+                prompt: "إذا كان الحد 16 والوحدة 'عدد صحيح'، فما هي النقطة 'الأدنى'؟",
+                promptEn: "If the boundary is 16 and the unit is 'integer', what is the 'below' point?",
+                options: [
+                    "15",
+                    "17",
+                    "16",
+                    "14"
+                ],
+                optionsEn: [
+                    "15",
+                    "17",
+                    "16",
+                    "14"
+                ],
+                correct: 0,
+                explain: "للوحدات الصحيحة، 'الأدنى' يعني -1، لذا 16 - 1 = 15.",
+                explainEn: "For integer units, 'below' means -1, so 16 - 1 = 15."
+            },
+            // 15
+            {
+                type: "mcq",
+                prompt: "إذا كان الحد 5.00$ والوحدة 'دولار وسنت'، فما هي النقطة 'الأعلى'؟",
+                promptEn: "If the boundary is $5.00 and the unit is 'dollars and cents', what is the 'above' point?",
+                options: [
+                    "$5.01",
+                    "$5.10",
+                    "$6.00",
+                    "$4.99"
+                ],
+                optionsEn: [
+                    "$5.01",
+                    "$5.10",
+                    "$6.00",
+                    "$4.99"
+                ],
+                correct: 0,
+                explain: "لوحدات العملة، 'الأعلى' يعني +0.01، لذا 5.00 + 0.01 = 5.01.",
+                explainEn: "For currency units, 'above' means +0.01, so 5.00 + 0.01 = 5.01."
+            },
+            // 16
+            {
+                type: "mcq",
+                prompt: "متى يكون تحليل القيم الحدية أكثر ملاءمة؟",
+                promptEn: "When is BVA most appropriate?",
+                options: [
+                    "عندما يكون الإدخال نطاقاً مستمراً من القيم",
+                    "عندما يكون الإدخال فئات غير مرتبة",
+                    "عندما يكون الإدخال نصوصاً حرة",
+                    "عندما يكون الإدخال صوراً"
+                ],
+                optionsEn: [
+                    "When the input is a continuous range of values",
+                    "When the input is unordered categories",
+                    "When the input is free text",
+                    "When the input is images"
+                ],
+                correct: 0,
+                explain: "BVA الأنسب حيث يكون الإدخال نطاقاً مستمراً من القيم (مثل الدخل، العمر).",
+                explainEn: "BVA is most appropriate where the input is a continuous range of values (e.g., income, age)."
+            },
+            // 17
+            {
+                type: "mcq",
+                prompt: "ما هي حدود الدخل الشهري في مثال شركة الرهن العقاري؟",
+                promptEn: "What are the monthly income boundaries in the Goofy Mortgage example?",
+                options: [
+                    "1,000$ و 83,333$",
+                    "1,000$ و 80,000$",
+                    "500$ و 100,000$",
+                    "1,500$ و 85,000$"
+                ],
+                optionsEn: [
+                    "$1,000 and $83,333",
+                    "$1,000 and $80,000",
+                    "$500 and $100,000",
+                    "$1,500 and $85,000"
+                ],
+                correct: 0,
+                explain: "حدود الدخل الشهري هي 1,000$/شهر و83,333$/شهر.",
+                explainEn: "Monthly income boundaries are $1,000/month and $83,333/month."
+            },
+            // 18
+            {
+                type: "mcq",
+                prompt: "ما هي بيانات اختبار الحد الأدنى في مثال شركة الرهن العقاري؟",
+                promptEn: "What is the low-end test data in the Goofy Mortgage example?",
+                options: [
+                    "{999$، 1,000$، 1,001$}",
+                    "{998$، 999$، 1,000$}",
+                    "{1,000$، 1,001$، 1,002$}",
+                    "{999$، 1,000$}"
+                ],
+                optionsEn: [
+                    "{$999, $1,000, $1,001}",
+                    "{$998, $999, $1,000}",
+                    "{$1,000, $1,001, $1,002}",
+                    "{$999, $1,000}"
+                ],
+                correct: 0,
+                explain: "اختبار الحد الأدنى: 999$ (أدنى)، 1,000$ (عند الحد)، 1,001$ (أعلى).",
+                explainEn: "Low boundary tests: $999 (below), $1,000 (at), $1,001 (above)."
+            },
+            // 19 True/False
+            {
+                type: "tf",
+                prompt: "تحليل القيم الحدية يمكن استخدامه مع البيانات غير المرتبة.",
+                promptEn: "BVA can be used with unordered data.",
+                correct: false,
+                explain: "خطأ. BVA يتطلب بيانات مرتبة (رقمية أو تسلسلية) لتحديد الحدود.",
+                explainEn: "False. BVA requires ordered data (numeric or sequential) to identify boundaries."
+            },
+            // 20 True/False
+            {
+                type: "tf",
+                prompt: "العيوب تميل إلى التجمع عند حدود أقسام التكافؤ.",
+                promptEn: "Defects tend to cluster at boundaries of equivalence partitions.",
+                correct: true,
+                explain: "صحيح. السلوك عند الحدود أكثر عرضة للخطأ من السلوك داخل الأقسام.",
+                explainEn: "True. Behavior at boundaries is more likely to be incorrect than behavior within partitions."
+            },
+            // 21 True/False
+            {
+                type: "tf",
+                prompt: "طريقة النقطتين تختبر ثلاث قيم لكل حد.",
+                promptEn: "The two-point method tests three values per boundary.",
+                correct: false,
+                explain: "خطأ. طريقة النقطتين تختبر قيمتين لكل حد (مثل 0 و1). طريقة الثلاث نقاط تختبر ثلاث قيم.",
+                explainEn: "False. Two-point tests two values per boundary (e.g., 0 and 1). Three-point tests three values."
+            },
+            // 22 True/False
+            {
+                type: "tf",
+                prompt: "في كود قواعد العمر المصحح، يمكن أن ينتمي العمر إلى أكثر من شرط.",
+                promptEn: "In the corrected age rules code, an age can belong to more than one condition.",
+                correct: false,
+                explain: "خطأ. الكود المصحح يستخدم نطاقات غير متداخلة (0-15، 16-17، 18-54، 55-99) بحيث ينتمي كل عمر إلى شرط واحد فقط.",
+                explainEn: "False. The corrected code uses non-overlapping ranges (0-15, 16-17, 18-54, 55-99) so each age belongs to exactly one condition."
+            },
+            // 23 Multi
+            {
+                type: "multi",
+                prompt: "أي من القيم التالية تعتبر قيماً حدية في المثال: حقل إدخال يقبل 1-5؟ (اختر جميع ما ينطبق)",
+                promptEn: "Which of the following are boundary values in the example: input field accepts 1-5? (Select all that apply)",
+                options: [
+                    "0",
+                    "1",
+                    "3",
+                    "5",
+                    "6"
+                ],
+                optionsEn: [
+                    "0",
+                    "1",
+                    "3",
+                    "5",
+                    "6"
+                ],
+                correctSet: [0, 1, 3, 4],
+                explain: "القيم الحدية هي 0 (حد أدنى غير صحيح)، 1 (حد أدنى صحيح)، 5 (حد أعلى صحيح)، 6 (حد أعلى غير صحيح). القيمة 3 هي قيمة داخلية وليست حدية.",
+                explainEn: "Boundary values are 0 (invalid lower), 1 (valid lower), 5 (valid upper), 6 (invalid upper). 3 is an internal value, not a boundary."
+            },
+            // 24 Multi
+            {
+                type: "multi",
+                prompt: "أي من العبارات التالية صحيحة حول BVA؟ (اختر جميع ما ينطبق)",
+                promptEn: "Which of the following statements about BVA are correct? (Select all that apply)",
+                options: [
+                    "يركز على حدود أقسام الإدخال",
+                    "يتطلب بيانات مرتبة",
+                    "يعمل بشكل أفضل مع النطاقات المستمرة",
+                    "يختبر جميع القيم في النطاق"
+                ],
+                optionsEn: [
+                    "Focuses on boundaries of input partitions",
+                    "Requires ordered data",
+                    "Works best with continuous ranges",
+                    "Tests all values in the range"
+                ],
+                correctSet: [0, 1, 2],
+                explain: "BVA يركز على الحدود، يتطلب بيانات مرتبة، ويعمل بشكل أفضل مع النطاقات المستمرة. لا يختبر جميع القيم (هذا مستحيل عادةً).",
+                explainEn: "BVA focuses on boundaries, requires ordered data, and works best with continuous ranges. It does not test all values (that's usually impossible)."
+            },
+            // 25 Multi
+            {
+                type: "multi",
+                prompt: "ما هي خطوات اختبار القيم الحدية؟ (اختر جميع ما ينطبق)",
+                promptEn: "What are the steps for boundary value testing? (Select all that apply)",
+                options: [
+                    "تحديد أقسام التكافؤ",
+                    "تحديد الحدود",
+                    "إنشاء حالات اختبار لكل حد",
+                    "كتابة الكود"
+                ],
+                optionsEn: [
+                    "Identify equivalence classes",
+                    "Identify boundaries",
+                    "Create test cases for each boundary",
+                    "Write code"
+                ],
+                correctSet: [0, 1, 2],
+                explain: "الخطوات هي: تحديد الأقسام، تحديد الحدود، إنشاء حالات اختبار. كتابة الكود ليست جزءاً من BVA.",
+                explainEn: "Steps are: identify partitions, identify boundaries, create test cases. Writing code is not part of BVA."
+            },
+            // 26 Fill
+            {
+                type: "fill",
+                prompt: "في المثال: حقل إدخال يقبل 1-5، القيمة الحدية للقسم غير الصحيح (أعلى) هي ____.",
+                promptEn: "In the example: input field accepts 1-5, the boundary value of the invalid (too high) partition is ____.",
+                acceptedAnswers: ["6", "٦"],
+                explain: "أول قيمة غير صحيحة فوق 5 هي 6.",
+                explainEn: "The first invalid value above 5 is 6."
+            },
+            // 27 Fill
+            {
+                type: "fill",
+                prompt: "إذا كان الحد 16 والوحدة 'عدد صحيح'، فإن النقطة 'الأعلى' هي ____.",
+                promptEn: "If the boundary is 16 and the unit is 'integer', the 'above' point is ____.",
+                acceptedAnswers: ["17", "١٧"],
+                explain: "للوحدات الصحيحة، 'الأعلى' يعني +1، لذا 16 + 1 = 17.",
+                explainEn: "For integer units, 'above' means +1, so 16 + 1 = 17."
+            },
+            // 28 Match
+            {
+                type: "match",
+                prompt: "طابق بين المصطلح وتعريفه.",
+                promptEn: "Match the term with its definition.",
+                pairsA: ["BVA", "تقسيم التكافؤ", "تداخل الحدود"],
+                pairsAEn: ["BVA", "Equivalence Partitioning", "Boundary Overlap"],
+                pairsB: [
+                    "تقنية تركز على حدود الأقسام",
+                    "تقسيم المدخلات إلى أقسام متكافئة",
+                    "ظهور نفس القيمة في قاعدتين مختلفتين"
+                ],
+                pairsBEn: [
+                    "Technique focusing on partition boundaries",
+                    "Dividing inputs into equivalent partitions",
+                    "Same value appearing in two different rules"
+                ],
+                correctMap: { "BVA": 0, "تقسيم التكافؤ": 1, "تداخل الحدود": 2 },
+                explain: "BVA = حدود الأقسام. تقسيم التكافؤ = تقسيم المدخلات. تداخل الحدود = نفس القيمة في قاعدتين.",
+                explainEn: "BVA = partition boundaries. Equivalence Partitioning = dividing inputs. Boundary Overlap = same value in two rules."
+            },
+            // 29 Match
+            {
+                type: "match",
+                prompt: "طابق بين القيمة الحدية ومجموعة الاختبار المقابلة (طريقة الثلاث نقاط).",
+                promptEn: "Match the boundary value with its corresponding test set (three-point method).",
+                pairsA: ["0", "16", "18", "55"],
+                pairsAEn: ["0", "16", "18", "55"],
+                pairsB: [
+                    "{-1، 0، 1}",
+                    "{15، 16، 17}",
+                    "{17، 18، 19}",
+                    "{54، 55، 56}"
+                ],
+                pairsBEn: [
+                    "{-1, 0, 1}",
+                    "{15, 16, 17}",
+                    "{17, 18, 19}",
+                    "{54, 55, 56}"
+                ],
+                correctMap: { "0": 0, "16": 1, "18": 2, "55": 3 },
+                explain: "لكل حد، مجموعة الاختبار تشمل القيمة الأدنى، عند الحد، والأعلى.",
+                explainEn: "For each boundary, the test set includes the value below, at, and above."
+            },
+            // 30 Match
+            {
+                type: "match",
+                prompt: "طابق بين نوع القسم في المثال (1-5) والنطاق المقابل.",
+                promptEn: "Match the partition type in the example (1-5) with its corresponding range.",
+                pairsA: ["غير صحيح (أدنى)", "صحيح", "غير صحيح (أعلى)"],
+                pairsAEn: ["Invalid (too low)", "Valid", "Invalid (too high)"],
+                pairsB: ["أقل من 1", "1 إلى 5", "أكثر من 5"],
+                pairsBEn: ["Less than 1", "1 to 5", "More than 5"],
+                correctMap: { "غير صحيح (أدنى)": 0, "صحيح": 1, "غير صحيح (أعلى)": 2 },
+                explain: "الأقسام هي: أقل من 1 (غير صحيح)، 1-5 (صحيح)، أكثر من 5 (غير صحيح).",
+                explainEn: "Partitions are: less than 1 (invalid), 1-5 (valid), more than 5 (invalid)."
+            }
+        ];
+
+        // ===== QUIZ STATE =====
+        let userAnswers = {};
+        let checked = {};
+        let score = 0;
+        let quizRendered = false;
+
+        // ===== RENDER QUIZ =====
+        function renderQuiz() {
+            const container = document.getElementById('quiz-container');
+            if (!container) return;
+
+            const lang = currentLang;
+            let html = '';
+
+            QUIZ.forEach((q, index) => {
+                const isChecked = checked[index] || false;
+                const userAns = userAnswers[index];
+                const qNum = index + 1;
+                const lockedClass = isChecked ? ' locked' : '';
+
+                html += `<div class="quiz-question${lockedClass}" id="q-${qNum}" data-qindex="${index}">`;
+                html += `<div class="q-prompt"><span class="q-num">${qNum}</span> <span class="q-text">${lang === 'en' ? q.promptEn : q.prompt}</span></div>`;
+
+                // Render based on type
+                if (q.type === 'mcq') {
+                    const opts = lang === 'en' ? q.optionsEn : q.options;
+                    html += `<div class="q-options" role="radiogroup" aria-label="Question ${qNum} options">`;
+                    opts.forEach((opt, oi) => {
+                        const isSelected = userAns === oi;
+                        const isCorrect = q.correct === oi;
+                        let optClass = '';
+                        if (isChecked) {
+                            if (isCorrect) optClass = ' correct-opt locked-opt';
+                            else if (isSelected && !isCorrect) optClass = ' incorrect-opt locked-opt';
+                            else optClass = ' locked-opt';
+                        } else if (isSelected) {
+                            optClass = ' selected';
+                        }
+                        html += `<label class="q-option${optClass}" onclick="selectOption(${index}, ${oi}, 'mcq')">
+                            <input type="radio" name="q-${index}" value="${oi}" ${isSelected ? 'checked' : ''} ${isChecked ? 'disabled' : ''} onchange="selectOption(${index}, ${oi}, 'mcq')">
+                            <span>${opt}</span>
+                        </label>`;
+                    });
+                    html += `</div>`;
+                } else if (q.type === 'tf') {
+                    const isTrueSelected = userAns === true;
+                    const isFalseSelected = userAns === false;
+                    const trueClass = isChecked ? (q.correct === true ? ' correct-opt locked-opt' : (isTrueSelected ? ' incorrect-opt locked-opt' : ' locked-opt')) : (isTrueSelected ? ' selected' : '');
+                    const falseClass = isChecked ? (q.correct === false ? ' correct-opt locked-opt' : (isFalseSelected ? ' incorrect-opt locked-opt' : ' locked-opt')) : (isFalseSelected ? ' selected' : '');
+                    html += `<div class="q-options" role="radiogroup" aria-label="Question ${qNum} options">
+                        <label class="q-option${trueClass}" onclick="selectOption(${index}, true, 'tf')">
+                            <input type="radio" name="q-${index}" value="true" ${isTrueSelected ? 'checked' : ''} ${isChecked ? 'disabled' : ''} onchange="selectOption(${index}, true, 'tf')">
+                            <span>${lang === 'en' ? 'True' : 'صحيح'}</span>
+                        </label>
+                        <label class="q-option${falseClass}" onclick="selectOption(${index}, false, 'tf')">
+                            <input type="radio" name="q-${index}" value="false" ${isFalseSelected ? 'checked' : ''} ${isChecked ? 'disabled' : ''} onchange="selectOption(${index}, false, 'tf')">
+                            <span>${lang === 'en' ? 'False' : 'خطأ'}</span>
+                        </label>
+                    </div>`;
+                } else if (q.type === 'multi') {
+                    const opts = lang === 'en' ? q.optionsEn : q.options;
+                    const selectedSet = Array.isArray(userAns) ? userAns : [];
+                    html += `<div class="q-options" role="group" aria-label="Question ${qNum} options (select all that apply)">`;
+                    opts.forEach((opt, oi) => {
+                        const isSelected = selectedSet.includes(oi);
+                        const isCorrectOpt = q.correctSet.includes(oi);
+                        let optClass = '';
+                        if (isChecked) {
+                            if (isCorrectOpt && isSelected) optClass = ' correct-opt locked-opt';
+                            else if (isCorrectOpt && !isSelected) optClass = ' correct-opt locked-opt';
+                            else if (!isCorrectOpt && isSelected) optClass = ' incorrect-opt locked-opt';
+                            else optClass = ' locked-opt';
+                        } else if (isSelected) {
+                            optClass = ' selected';
+                        }
+                        html += `<label class="q-option${optClass}" onclick="toggleMulti(${index}, ${oi})">
+                            <input type="checkbox" name="q-${index}" value="${oi}" ${isSelected ? 'checked' : ''} ${isChecked ? 'disabled' : ''} onchange="toggleMulti(${index}, ${oi})">
+                            <span>${opt}</span>
+                        </label>`;
+                    });
+                    html += `</div>`;
+                } else if (q.type === 'fill') {
+                    const val = userAns || '';
+                    html += `<div style="margin-block: 0.5rem;">
+                        <input type="text" class="fill-input" id="fill-${index}" value="${val}" placeholder="${lang === 'en' ? 'Type your answer...' : 'اكتب إجابتك...'}" ${isChecked ? 'disabled' : ''} onchange="fillAnswer(${index}, this.value)" aria-label="Answer for question ${qNum}">
+                    </div>`;
+                } else if (q.type === 'match') {
+                    const pairsA = lang === 'en' ? q.pairsAEn : q.pairsA;
+                    const pairsB = lang === 'en' ? q.pairsBEn : q.pairsB;
+                    const currentMap = userAns || {};
+                    html += `<div class="match-container" style="margin-block: 0.5rem;">`;
+                    pairsA.forEach((pa, ai) => {
+                        const selectedB = currentMap[pa] !== undefined ? currentMap[pa] : '';
+                        html += `<div class="match-row">
+                            <span class="match-label">${pa}</span>
+                            <span style="color: var(--text-dim);">↔</span>
+                            <select class="match-select" ${isChecked ? 'disabled' : ''} onchange="matchAnswer(${index}, '${pa.replace(/'/g, "\\'")}', this.value)" aria-label="Match for ${pa}">
+                                <option value="">${lang === 'en' ? '-- Select --' : '-- اختر --'}</option>
+                                ${pairsB.map((pb, bi) => `<option value="${bi}" ${selectedB == bi ? 'selected' : ''}>${pb}</option>`).join('')}
+                            </select>
+                        </div>`;
+                    });
+                    html += `</div>`;
+                }
+
+                // Feedback area
+                const isCorrect = isChecked ? checkAnswer(index) : false;
+                const feedbackClass = isChecked ? (isCorrect ? 'correct' : 'incorrect') : '';
+                const feedbackText = isChecked
+                    ? (isCorrect
+                        ? `✅ ${lang === 'en' ? 'Correct!' : 'صحيح!'} ${lang === 'en' ? q.explainEn : q.explain}`
+                        : `❌ ${lang === 'en' ? 'Incorrect.' : 'خطأ.'} ${lang === 'en' ? q.explainEn : q.explain}`)
+                    : '';
+                html += `<div class="q-feedback ${feedbackClass} ${isChecked ? 'show' : ''}" role="status">${feedbackText}</div>`;
+
+                // Actions
+                html += `<div class="q-actions">`;
+                if (!isChecked) {
+                    html += `<button class="btn btn-primary btn-sm check-btn" onclick="checkQuestion(${index})" ${isAnswerSelected(index) ? '' : 'disabled'} aria-label="Check answer for question ${qNum}">✔️ ${lang === 'en' ? 'Check Answer' : 'تحقق من الإجابة'}</button>`;
+                } else {
+                    html += `<span class="badge ${isCorrect ? 'good' : 'bad'}">${isCorrect ? '✓ ' + (lang === 'en' ? 'Correct' : 'صحيح') : '✗ ' + (lang === 'en' ? 'Incorrect' : 'خطأ')}</span>`;
+                }
+                html += `</div>`;
+
+                html += `</div>`;
+            });
+
+            container.innerHTML = html;
+
+            // Restore fill values after render
+            QUIZ.forEach((q, index) => {
+                if (q.type === 'fill' && userAnswers[index] !== undefined) {
+                    const input = document.getElementById(`fill-${index}`);
+                    if (input) input.value = userAnswers[index];
+                }
+            });
+
+            // Update score display
+            updateScoreDisplay();
+        }
+
+        // ===== QUIZ INTERACTION =====
+        function selectOption(index, value, type) {
+            if (checked[index]) return;
+            userAnswers[index] = value;
+            renderQuiz();
+        }
+
+        function toggleMulti(index, optionIndex) {
+            if (checked[index]) return;
+            const current = Array.isArray(userAnswers[index]) ? [...userAnswers[index]] : [];
+            const pos = current.indexOf(optionIndex);
+            if (pos > -1) {
+                current.splice(pos, 1);
+            } else {
+                current.push(optionIndex);
+            }
+            userAnswers[index] = current;
+            renderQuiz();
+        }
+
+        function fillAnswer(index, value) {
+            if (checked[index]) return;
+            userAnswers[index] = value;
+            const btn = document.querySelector(`#q-${index + 1} .check-btn`);
+            if (btn) {
+                btn.disabled = !isAnswerSelected(index);
+            }
+        }
+
+        function matchAnswer(index, pairA, value) {
+            if (checked[index]) return;
+            if (!userAnswers[index]) userAnswers[index] = {};
+            if (value === '') {
+                delete userAnswers[index][pairA];
+            } else {
+                userAnswers[index][pairA] = parseInt(value);
+            }
+            const btn = document.querySelector(`#q-${index + 1} .check-btn`);
+            if (btn) {
+                btn.disabled = !isAnswerSelected(index);
+            }
+        }
+
+        function isAnswerSelected(index) {
+            const q = QUIZ[index];
+            const ans = userAnswers[index];
+            if (q.type === 'mcq') return ans !== undefined;
+            if (q.type === 'tf') return ans === true || ans === false;
+            if (q.type === 'multi') return Array.isArray(ans) && ans.length > 0;
+            if (q.type === 'fill') return ans && ans.trim().length > 0;
+            if (q.type === 'match') return ans && Object.keys(ans).length === q.pairsA.length;
+            return false;
+        }
+
+        function checkAnswer(index) {
+            const q = QUIZ[index];
+            const ans = userAnswers[index];
+            if (q.type === 'mcq') return ans === q.correct;
+            if (q.type === 'tf') return ans === q.correct;
+            if (q.type === 'multi') {
+                if (!Array.isArray(ans)) return false;
+                const sortedAns = [...ans].sort((a, b) => a - b);
+                const sortedCorrect = [...q.correctSet].sort((a, b) => a - b);
+                return JSON.stringify(sortedAns) === JSON.stringify(sortedCorrect);
+            }
+            if (q.type === 'fill') {
+                if (!ans) return false;
+                const normalized = ans.trim().toLowerCase().replace(/\s+/g, ' ');
+                return q.acceptedAnswers.some(a => a.toLowerCase() === normalized);
+            }
+            if (q.type === 'match') {
+                if (!ans) return false;
+                const pairsA = currentLang === 'en' ? q.pairsAEn : q.pairsA;
+                const correctMap = q.correctMap;
+                // Map current language pairsA to original Arabic pairsA for correctMap
+                const originalPairsA = q.pairsA;
+                for (let i = 0; i < pairsA.length; i++) {
+                    const currentPair = pairsA[i];
+                    const originalPair = originalPairsA[i];
+                    const expected = correctMap[originalPair];
+                    if (ans[currentPair] !== expected) return false;
+                }
+                return true;
+            }
+            return false;
+        }
+
+        function checkQuestion(index) {
+            if (checked[index]) return;
+            checked[index] = true;
+            if (checkAnswer(index)) {
+                score++;
+            }
+            renderQuiz();
+            updateScoreDisplay();
+            checkAllCompleted();
+        }
+
+        function updateScoreDisplay() {
+            const display = document.getElementById('score-display');
+            if (display) display.textContent = score;
+
+            const totalChecked = Object.keys(checked).length;
+            const progressFill = document.getElementById('progress-fill');
+            const progressBar = document.getElementById('quiz-progressbar');
+            if (progressFill) {
+                progressFill.style.width = (totalChecked / QUIZ.length * 100) + '%';
+            }
+            if (progressBar) {
+                progressBar.setAttribute('aria-valuenow', totalChecked);
+            }
+        }
+
+        function checkAllCompleted() {
+            const totalChecked = Object.keys(checked).length;
+            if (totalChecked === QUIZ.length) {
+                showFinalResult();
+            }
+        }
+
+        function showFinalResult() {
+            const finalDiv = document.getElementById('final-result');
+            const finalScore = document.getElementById('final-score');
+            const finalCategory = document.getElementById('final-category');
+            const finalMessage = document.getElementById('final-message');
+
+            const percentage = Math.round((score / QUIZ.length) * 100);
+            finalScore.textContent = `${score}/${QUIZ.length}`;
+
+            let category, categoryClass, message;
+            if (percentage >= 85) {
+                category = currentLang === 'en' ? 'Excellent' : 'ممتاز';
+                categoryClass = 'excellent';
+                message = currentLang === 'en' ? 'You have mastered the material!' : 'لقد أتقنت المادة!';
+            } else if (percentage >= 60) {
+                category = currentLang === 'en' ? 'Good' : 'جيد';
+                categoryClass = 'good';
+                message = currentLang === 'en' ? 'Good job! Review the missed questions.' : 'عمل جيد! راجع الأسئلة التي أخطأت فيها.';
+            } else {
+                category = currentLang === 'en' ? 'Review Recommended' : 'يوصى بالمراجعة';
+                categoryClass = 'review';
+                message = currentLang === 'en' ? 'Review the lecture and try again.' : 'راجع المحاضرة وحاول مرة أخرى.';
+            }
+
+            finalCategory.textContent = `${category} (${percentage}%)`;
+            finalCategory.className = `final-category ${categoryClass}`;
+            finalMessage.textContent = message;
+            finalDiv.classList.add('show');
+
+            // Announce to screen reader
+            finalDiv.setAttribute('aria-label', `${currentLang === 'en' ? 'Final result' : 'النتيجة النهائية'}: ${score}/${QUIZ.length}, ${percentage}%, ${category}`);
+        }
+
+        function resetQuiz() {
+            userAnswers = {};
+            checked = {};
+            score = 0;
+            document.getElementById('final-result').classList.remove('show');
+            renderQuiz();
+            updateScoreDisplay();
+        }
+
+        // ===== SCROLL SPY =====
+        function initScrollSpy() {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav-link');
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const id = entry.target.id;
+                        navLinks.forEach(link => {
+                            link.setAttribute('aria-current', link.getAttribute('href') === '#' + id ? 'true' : 'false');
+                        });
+                    }
+                });
+            }, { rootMargin: '-20% 0px -60% 0px' });
+
+            sections.forEach(section => observer.observe(section));
+        }
+
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', () => {
+            renderQuiz();
+            initScrollSpy();
+
+            // Set initial language
+            setLang('ar');
+
+            // Add accessibility controls dynamically
+            const a11yDiv = document.createElement('div');
+            a11yDiv.className = 'a11y-controls container';
+            a11yDiv.innerHTML = `
+                <button class="btn btn-sm" onclick="showAllDetails()" aria-label="Show all accessibility descriptions">🖼 <span class="i18n" data-en="Show All Accessibility Descriptions">عرض جميع أوصاف الوصول</span></button>
+                <button class="btn btn-sm" onclick="hideAllDetails()" aria-label="Hide all accessibility descriptions">📕 <span class="i18n" data-en="Hide All Accessibility Descriptions">إخفاء جميع أوصاف الوصول</span></button>
+            `;
+            const lectureSection = document.getElementById('lecture-content');
+            if (lectureSection) {
+                lectureSection.insertBefore(a11yDiv, lectureSection.children[1]);
+            }
+
+            // Re-apply language after a11y buttons added
+            setLang('ar');
+        });
+    </script>
+</body>
+</html>

@@ -1,6 +1,7 @@
 {
   "web-engineering": [
     "Ch1-2 How the Web Works.html",
+    "Ch10 — JavaScript 3 Review Sheet.html",
     "Ch3 - HTML 1.html",
     "Ch4 - CSS 1.html",
     "Ch5 - HTML 2 Tables and Forms.html",
@@ -12,7 +13,8 @@
     "Ch1 - Information Security Concepts.html",
     "Ch2 - Malware and Social Engineering.html",
     "Ch3 - Symmetric Cipher.html",
-    "Ch4 - Block Cipher and DES.html"
+    "Ch4 - Block Cipher and DES.html",
+    "ch9 -Public Key Cryptography and RSA.html"
   ],
   "algorithms": [
     "lec1_algorithms_review.html",

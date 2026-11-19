@@ -11,6 +11,7 @@
   ],
   "information-security": [
     "Ch1 - Information Security Concepts.html",
+    "Ch11HashFunction_Interactive_Review.html",
     "Ch2 - Malware and Social Engineering.html",
     "Ch3 - Symmetric Cipher.html",
     "Ch4 - Block Cipher and DES.html",
@@ -40,7 +41,9 @@
     "Topic2-2_review.html",
     "Topic3-1_Data_Preprocessing_review.html",
     "Topic3-2_Data_Preprocessing_review.html",
-    "Topic4-2_OLAP_review.html"
+    "Topic4-2_OLAP_review.html",
+    "Topic5_Frequent_Pattern_Mining_Review (1).html",
+    "Topic6_Classification_Review (1).html"
   ],
   "entrepreneurship": [
     "Lecture_01_Entrepreneurial_Thinking_Review.html",
